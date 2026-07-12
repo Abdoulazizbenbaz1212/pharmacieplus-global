@@ -2,16 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Linking, ActivityIndicator } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
-
-// Données d'exemple - à remplacer par Firestore plus tard
-const HOPITAUX_EXEMPLE = [
-  { id: '1', nom: 'Hôpital Laquintinie', lat: 4.0611, lng: 9.7043, telephone: '+237233421234', urgence24h: true },
-  { id: '2', nom: 'Hôpital Général de Douala', lat: 4.0483, lng: 9.7370, telephone: '+237233422345', urgence24h: true },
-  { id: '3', nom: 'Clinique des Cocotiers', lat: 4.0435, lng: 9.7050, telephone: '+237233423456', urgence24h: false },
-];
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../config/firebase';
 
 function calculerDistance(lat1, lng1, lat2, lng2) {
-  const R = 6371; // Rayon Terre en km
+  const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLng = (lng2 - lng1) * Math.PI / 180;
   const a =
@@ -24,18 +19,33 @@ function calculerDistance(lat1, lng1, lat2, lng2) {
 
 export default function HopitauxScreen() {
   const [position, setPosition] = useState(null);
+  const [hopitaux, setHopitaux] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState(null);
 
   useEffect(() => {
     (async () => {
       try {
+        // 1. Récupérer la position de l'utilisateur
         const { status } = await Location.requestForegroundPermissionsAsync();
         if (status === 'granted') {
           const pos = await Location.getCurrentPositionAsync({});
           setPosition(pos.coords);
         }
+
+        // 2. Récupérer les hôpitaux depuis Firestore
+        const querySnapshot = await getDocs(collection(db, 'hopitaux'));
+        const liste = [];
+        querySnapshot.forEach((doc) => {
+          liste.push({ id: doc.id, ...doc.data() });
+        });
+        setHopitaux(liste);
+
+        if (liste.length === 0) {
+          setErrorMsg('Aucun hôpital enregistré pour le moment.');
+        }
       } catch (error) {
-        console.log('Erreur position:', error);
+        setErrorMsg('Erreur de chargement: ' + error.message);
       } finally {
         setLoading(false);
       }
@@ -46,16 +56,18 @@ export default function HopitauxScreen() {
     Linking.openURL(`tel:${telephone}`);
   };
 
-  const hopitauxAvecDistance = HOPITAUX_EXEMPLE.map((h) => ({
-    ...h,
-    distance: position ? calculerDistance(position.latitude, position.longitude, h.lat, h.lng) : null,
-  })).sort((a, b) => (a.distance || 0) - (b.distance || 0));
+  const hopitauxAvecDistance = hopitaux
+    .map((h) => ({
+      ...h,
+      distance: position ? calculerDistance(position.latitude, position.longitude, h.lat, h.lng) : null,
+    }))
+    .sort((a, b) => (a.distance || 0) - (b.distance || 0));
 
   if (loading) {
     return (
       <View style={styles.center}>
         <ActivityIndicator size="large" color="#e74c3c" />
-        <Text>Localisation en cours...</Text>
+        <Text>Chargement des hôpitaux...</Text>
       </View>
     );
   }
@@ -67,8 +79,8 @@ export default function HopitauxScreen() {
         initialRegion={{
           latitude: position ? position.latitude : 4.0511,
           longitude: position ? position.longitude : 9.7679,
-          latitudeDelta: 0.1,
-          longitudeDelta: 0.1,
+          latitudeDelta: 0.5,
+          longitudeDelta: 0.5,
         }}
       >
         {position && (
@@ -88,6 +100,8 @@ export default function HopitauxScreen() {
           />
         ))}
       </MapView>
+
+      {errorMsg && <Text style={styles.warning}>{errorMsg}</Text>}
 
       <FlatList
         style={styles.list}
@@ -117,6 +131,12 @@ const styles = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   map: { flex: 1 },
   list: { flex: 1, backgroundColor: '#fff' },
+  warning: {
+    padding: 10,
+    textAlign: 'center',
+    color: '#e67e22',
+    backgroundColor: '#fff',
+  },
   card: {
     flexDirection: 'row',
     alignItems: 'center',

@@ -3,9 +3,9 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, Lin
 import * as Location from 'expo-location';
 import { getNumeroUrgence } from '../utils/urgencePays';
 
-const TIMEOUT_GPS_MS = 8000; // 8 secondes max pour localiser, sinon fallback
+const TIMEOUT_GPS_MS = 8000;
 
-export default function HomeScreen() {
+export default function HomeScreen({ navigation }) {
   const [pays, setPays] = useState(null);
   const [loading, setLoading] = useState(false);
   const [statusMsg, setStatusMsg] = useState(null);
@@ -103,6 +103,13 @@ export default function HomeScreen() {
 
       <Text style={styles.subtitle}>Appuyez en cas d'urgence</Text>
 
+      <TouchableOpacity
+        style={styles.hopitauxButton}
+        onPress={() => navigation.navigate('Hopitaux')}
+      >
+        <Text style={styles.hopitauxButtonText}>🏥 Hôpitaux à proximité</Text>
+      </TouchableOpacity>
+
       {!loading && (
         <TouchableOpacity onPress={detecterPositionEtPays} style={styles.retryButton}>
           <Text style={styles.retryText}>🔄 Actualiser ma position</Text>
@@ -169,6 +176,18 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     fontSize: 13,
     color: '#7f8c8d',
+  },
+  hopitauxButton: {
+    marginTop: 25,
+    backgroundColor: '#3498db',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 10,
+  },
+  hopitauxButtonText: {
+    color: '#fff',
+    fontSize: 15,
+    fontWeight: 'bold',
   },
   retryButton: {
     marginTop: 20,

@@ -1,16 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import {
-  View, Text, StyleSheet, TouchableOpacity, TextInput,
-  ScrollView, ActivityIndicator, Alert, FlatList,
+  View, Text, StyleSheet, TouchableOpacity,
+  ScrollView, ActivityIndicator, Alert, FlatList, Platform,
 } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { collection, getDocs, addDoc, query, where, serverTimestamp } from 'firebase/firestore';
 import { db, auth } from '../config/firebase';
+
+function formatDate(d) {
+  const annee = d.getFullYear();
+  const mois = String(d.getMonth() + 1).padStart(2, '0');
+  const jour = String(d.getDate()).padStart(2, '0');
+  return `${annee}-${mois}-${jour}`;
+}
+
+function formatHeure(d) {
+  const heures = String(d.getHours()).padStart(2, '0');
+  const minutes = String(d.getMinutes()).padStart(2, '0');
+  return `${heures}:${minutes}`;
+}
 
 export default function RdvScreen() {
   const [hopitaux, setHopitaux] = useState([]);
   const [hopitalSelectionne, setHopitalSelectionne] = useState(null);
-  const [date, setDate] = useState('');
-  const [heure, setHeure] = useState('');
+  const [dateObj, setDateObj] = useState(new Date());
+  const [heureObj, setHeureObj] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
   const [loading, setLoading] = useState(true);
   const [envoiEnCours, setEnvoiEnCours] = useState(false);
   const [mesRdv, setMesRdv] = useState([]);
@@ -50,20 +66,9 @@ export default function RdvScreen() {
     }
   };
 
-  const validerDate = (texte) => /^\d{4}-\d{2}-\d{2}$/.test(texte);
-  const validerHeure = (texte) => /^([01]\d|2[0-3]):([0-5]\d)$/.test(texte);
-
   const prendreRdv = async () => {
     if (!hopitalSelectionne) {
       Alert.alert('Erreur', 'Merci de choisir un hopital');
-      return;
-    }
-    if (!validerDate(date)) {
-      Alert.alert('Erreur', 'Format de date invalide. Utilisez AAAA-MM-JJ');
-      return;
-    }
-    if (!validerHeure(heure)) {
-      Alert.alert('Erreur', 'Format heure invalide. Utilisez HH:MM');
       return;
     }
 
@@ -74,16 +79,16 @@ export default function RdvScreen() {
         utilisateur_email: auth.currentUser.email,
         hopital_id: hopitalSelectionne.id,
         hopital_nom: hopitalSelectionne.nom,
-        date,
-        heure,
+        date: formatDate(dateObj),
+        heure: formatHeure(heureObj),
         statut: 'en_attente',
         cree_le: serverTimestamp(),
       });
 
       Alert.alert('Succes', 'Votre demande de rendez-vous a ete envoyee');
       setHopitalSelectionne(null);
-      setDate('');
-      setHeure('');
+      setDateObj(new Date());
+      setHeureObj(new Date());
       chargerMesRdv();
       setVue('mesrdv');
     } catch (error) {
@@ -146,22 +151,38 @@ export default function RdvScreen() {
           ))}
 
           <Text style={styles.label}>2. Date souhaitee</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="AAAA-MM-JJ (ex: 2026-07-20)"
-            value={date}
-            onChangeText={setDate}
-            keyboardType="numbers-and-punctuation"
-          />
+          <TouchableOpacity style={styles.input} onPress={() => setShowDatePicker(true)}>
+            <Text style={styles.inputText}>{formatDate(dateObj)}</Text>
+          </TouchableOpacity>
+          {showDatePicker && (
+            <DateTimePicker
+              value={dateObj}
+              mode="date"
+              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+              minimumDate={new Date()}
+              onChange={(event, selectedDate) => {
+                setShowDatePicker(Platform.OS === 'ios');
+                if (selectedDate) setDateObj(selectedDate);
+              }}
+            />
+          )}
 
           <Text style={styles.label}>3. Heure souhaitee</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="HH:MM (ex: 14:30)"
-            value={heure}
-            onChangeText={setHeure}
-            keyboardType="numbers-and-punctuation"
-          />
+          <TouchableOpacity style={styles.input} onPress={() => setShowTimePicker(true)}>
+            <Text style={styles.inputText}>{formatHeure(heureObj)}</Text>
+          </TouchableOpacity>
+          {showTimePicker && (
+            <DateTimePicker
+              value={heureObj}
+              mode="time"
+              is24Hour={true}
+              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+              onChange={(event, selectedTime) => {
+                setShowTimePicker(Platform.OS === 'ios');
+                if (selectedTime) setHeureObj(selectedTime);
+              }}
+            />
+          )}
 
           {envoiEnCours ? (
             <ActivityIndicator size="large" color="#e74c3c" style={{ marginTop: 20 }} />
@@ -216,8 +237,9 @@ const styles = StyleSheet.create({
   checkmark: { color: '#e74c3c', fontWeight: 'bold', fontSize: 14 },
   input: {
     borderWidth: 1, borderColor: '#ddd', borderRadius: 10,
-    paddingHorizontal: 14, paddingVertical: 12, fontSize: 15,
+    paddingHorizontal: 14, paddingVertical: 12,
   },
+  inputText: { fontSize: 15, color: '#2c3e50' },
   submitBtn: {
     backgroundColor: '#e74c3c', borderRadius: 10, paddingVertical: 15,
     alignItems: 'center', marginTop: 25, marginBottom: 30,

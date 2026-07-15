@@ -11,6 +11,7 @@ import HopitauxScreen from '../screens/HopitauxScreen';
 import RdvScreen from '../screens/RdvScreen';
 import MedicamentsScreen from '../screens/MedicamentsScreen';
 import ProfilScreen from '../screens/ProfilScreen';
+import ProfilEtablissementScreen from '../screens/ProfilEtablissementScreen';
 import MarketplaceScreen from '../screens/MarketplaceScreen';
 import AuthScreen from '../screens/AuthScreen';
 import DashboardHopitalScreen from '../screens/DashboardHopitalScreen';
@@ -61,7 +62,7 @@ function TabsHopital() {
         options={{ title: 'Mon Hopital', tabBarLabel: 'Dashboard', tabBarIcon: () => <TabIcon emoji="🏥" /> }} />
       <Tab.Screen name="Marketplace" component={MarketplaceScreen}
         options={{ title: 'Marketplace', tabBarLabel: 'Marketplace', tabBarIcon: () => <TabIcon emoji="🛒" /> }} />
-      <Tab.Screen name="Profil" component={ProfilScreen}
+      <Tab.Screen name="Profil" component={ProfilEtablissementScreen}
         options={{ title: 'Mon profil', tabBarLabel: 'Profil', tabBarIcon: () => <TabIcon emoji="🗂️" /> }} />
     </Tab.Navigator>
   );
@@ -80,7 +81,7 @@ function TabsPharmacie() {
         options={{ title: 'Ma Pharmacie', tabBarLabel: 'Dashboard', tabBarIcon: () => <TabIcon emoji="💊" /> }} />
       <Tab.Screen name="Marketplace" component={MarketplaceScreen}
         options={{ title: 'Marketplace', tabBarLabel: 'Marketplace', tabBarIcon: () => <TabIcon emoji="🛒" /> }} />
-      <Tab.Screen name="Profil" component={ProfilScreen}
+      <Tab.Screen name="Profil" component={ProfilEtablissementScreen}
         options={{ title: 'Mon profil', tabBarLabel: 'Profil', tabBarIcon: () => <TabIcon emoji="🗂️" /> }} />
     </Tab.Navigator>
   );
@@ -99,7 +100,7 @@ function TabsFournisseur() {
         options={{ title: 'Mon entreprise', tabBarLabel: 'Dashboard', tabBarIcon: () => <TabIcon emoji="📦" /> }} />
       <Tab.Screen name="Marketplace" component={MarketplaceScreen}
         options={{ title: 'Marketplace', tabBarLabel: 'Marketplace', tabBarIcon: () => <TabIcon emoji="🛒" /> }} />
-      <Tab.Screen name="Profil" component={ProfilScreen}
+      <Tab.Screen name="Profil" component={ProfilEtablissementScreen}
         options={{ title: 'Mon profil', tabBarLabel: 'Profil', tabBarIcon: () => <TabIcon emoji="🗂️" /> }} />
     </Tab.Navigator>
   );

@@ -1,16 +1,19 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   View, Text, TextInput, StyleSheet, TouchableOpacity,
-  ActivityIndicator, ScrollView, FlatList, Image, Alert, Modal,
+  ActivityIndicator, ScrollView, FlatList, Image, Alert, Modal, Linking,
 } from 'react-native';
 import {
-  collection, addDoc, getDocs, query, orderBy, doc, getDoc, deleteDoc, serverTimestamp,
+  collection, addDoc, getDocs, getDoc, doc, query, orderBy,
+  deleteDoc, serverTimestamp,
 } from 'firebase/firestore';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { db, auth } from '../config/firebase';
+import ChatModal from '../components/ChatModal';
 
 const CATEGORIES = ['Tous', 'Médicaments', 'Matériel médical', 'Services', 'Autre'];
+const ROLES_VENDEURS = ['hopital', 'pharmacie', 'fournisseur'];
 
 function normaliser(texte) {
   return texte.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -25,7 +28,7 @@ function roleLabel(role) {
   }
 }
 
-function AnnonceCard({ item, currentUserId, onDeleted }) {
+function AnnonceCard({ item, currentUserId, onDeleted, onOpenChat }) {
   const [ouvert, setOuvert] = useState(false);
   const [suppression, setSuppression] = useState(false);
   const estProprietaire = item.vendeurId === currentUserId;
@@ -53,6 +56,14 @@ function AnnonceCard({ item, currentUserId, onDeleted }) {
     setSuppression(false);
   }
 
+  function appelerVendeur() {
+    if (!item.vendeurTelephone) {
+      Alert.alert('Indisponible', "Ce vendeur n'a pas renseigné de numéro de téléphone.");
+      return;
+    }
+    Linking.openURL(`tel:${item.vendeurTelephone}`);
+  }
+
   return (
     <TouchableOpacity style={styles.card} onPress={() => setOuvert(!ouvert)} activeOpacity={0.7}>
       <View style={styles.cardHeaderRow}>
@@ -71,6 +82,18 @@ function AnnonceCard({ item, currentUserId, onDeleted }) {
       {ouvert && (
         <View style={styles.details}>
           <Text style={styles.description}>{item.description || 'Aucune description.'}</Text>
+
+          {!estProprietaire && (
+            <View style={styles.contactRow}>
+              <TouchableOpacity style={styles.callBtn} onPress={appelerVendeur}>
+                <Text style={styles.callBtnText}>📞 Appeler</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.chatBtn} onPress={() => onOpenChat(item)}>
+                <Text style={styles.chatBtnText}>💬 Chat</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
           {estProprietaire && (
             <TouchableOpacity
               style={styles.deleteBtn}
@@ -96,6 +119,10 @@ export default function MarketplaceScreen() {
   const [recherche, setRecherche] = useState('');
   const [categorieActive, setCategorieActive] = useState('Tous');
   const [modalVisible, setModalVisible] = useState(false);
+  const [monRole, setMonRole] = useState(null);
+  const [monNom, setMonNom] = useState('Utilisateur');
+  const [chargementRole, setChargementRole] = useState(true);
+  const [chatConfig, setChatConfig] = useState(null);
 
   const [titre, setTitre] = useState('');
   const [description, setDescription] = useState('');
@@ -105,6 +132,28 @@ export default function MarketplaceScreen() {
   const [publication, setPublication] = useState(false);
 
   const currentUserId = auth.currentUser ? auth.currentUser.uid : null;
+  const peutVendre = ROLES_VENDEURS.includes(monRole);
+
+  const chargerMonRole = useCallback(async () => {
+    setChargementRole(true);
+    try {
+      const user = auth.currentUser;
+      if (user) {
+        const docSnap = await getDoc(doc(db, 'utilisateurs', user.uid));
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setMonRole(data.role || 'patient');
+          setMonNom(data.nom || data.etablissementNom || user.email || 'Utilisateur');
+        } else {
+          setMonRole('patient');
+        }
+      }
+    } catch (error) {
+      console.log('Erreur chargement role:', error);
+      setMonRole('patient');
+    }
+    setChargementRole(false);
+  }, []);
 
   const chargerAnnonces = useCallback(async () => {
     setLoading(true);
@@ -118,13 +167,27 @@ export default function MarketplaceScreen() {
     setLoading(false);
   }, []);
 
-  useEffect(() => { chargerAnnonces(); }, [chargerAnnonces]);
+  useEffect(() => { chargerAnnonces(); chargerMonRole(); }, [chargerAnnonces, chargerMonRole]);
 
   const itemsFiltres = items.filter(item => {
     const matchCategorie = categorieActive === 'Tous' || item.categorie === categorieActive;
     const matchRecherche = !recherche || normaliser(item.titre).includes(normaliser(recherche));
     return matchCategorie && matchRecherche;
   });
+
+  function ouvrirChatDepuisAnnonce(item) {
+    setChatConfig({
+      conversationId: `${item.id}_${currentUserId}`,
+      titre: item.titre,
+      autreNom: item.vendeurNom,
+      itemId: item.id,
+      itemTitre: item.titre,
+      buyerId: currentUserId,
+      buyerNom: monNom,
+      sellerId: item.vendeurId,
+      sellerNom: item.vendeurNom,
+    });
+  }
 
   async function choisirImage() {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -146,6 +209,10 @@ export default function MarketplaceScreen() {
   }
 
   async function publierAnnonce() {
+    if (!peutVendre) {
+      Alert.alert('Non autorisé', 'Seuls les hôpitaux, pharmacies et fournisseurs peuvent publier des annonces.');
+      return;
+    }
     if (!titre.trim() || !prix.trim()) {
       Alert.alert('Champs manquants', 'Le titre et le prix sont obligatoires.');
       return;
@@ -157,13 +224,10 @@ export default function MarketplaceScreen() {
     }
     setPublication(true);
     try {
-      let vendeurNom = user.email || 'Utilisateur';
-      let vendeurRole = 'patient';
+      let vendeurTelephone = null;
       const docSnap = await getDoc(doc(db, 'utilisateurs', user.uid));
       if (docSnap.exists()) {
-        const data = docSnap.data();
-        vendeurRole = data.role || 'patient';
-        vendeurNom = data.nom || data.etablissementNom || vendeurNom;
+        vendeurTelephone = docSnap.data().telephone || null;
       }
       await addDoc(collection(db, 'marketplace_items'), {
         titre: titre.trim(),
@@ -172,8 +236,9 @@ export default function MarketplaceScreen() {
         categorie,
         imageBase64: imageBase64 || null,
         vendeurId: user.uid,
-        vendeurNom,
-        vendeurRole,
+        vendeurNom: monNom,
+        vendeurRole: monRole,
+        vendeurTelephone,
         createdAt: serverTimestamp(),
       });
       setModalVisible(false);
@@ -216,22 +281,31 @@ export default function MarketplaceScreen() {
         <View style={styles.emptyState}>
           <Text style={styles.emoji}>🛒</Text>
           <Text style={styles.title}>Aucune annonce</Text>
-          <Text style={styles.subtitle}>Sois le premier à publier un produit ou un service.</Text>
+          <Text style={styles.subtitle}>
+            {peutVendre ? 'Sois le premier à publier un produit ou un service.' : 'Reviens bientôt : les pharmacies, hôpitaux et fournisseurs y publieront leurs produits.'}
+          </Text>
         </View>
       ) : (
         <FlatList
           data={itemsFiltres}
           keyExtractor={item => item.id}
           renderItem={({ item }) => (
-            <AnnonceCard item={item} currentUserId={currentUserId} onDeleted={chargerAnnonces} />
+            <AnnonceCard
+              item={item}
+              currentUserId={currentUserId}
+              onDeleted={chargerAnnonces}
+              onOpenChat={ouvrirChatDepuisAnnonce}
+            />
           )}
           contentContainerStyle={{ paddingBottom: 100 }}
         />
       )}
 
-      <TouchableOpacity style={styles.fab} onPress={() => setModalVisible(true)}>
-        <Text style={styles.fabText}>+ Publier</Text>
-      </TouchableOpacity>
+      {!chargementRole && peutVendre && (
+        <TouchableOpacity style={styles.fab} onPress={() => setModalVisible(true)}>
+          <Text style={styles.fabText}>+ Publier</Text>
+        </TouchableOpacity>
+      )}
 
       <Modal visible={modalVisible} animationType="slide" onRequestClose={() => setModalVisible(false)}>
         <ScrollView style={styles.modalContainer} contentContainerStyle={{ padding: 20 }}>
@@ -283,6 +357,15 @@ export default function MarketplaceScreen() {
           </TouchableOpacity>
         </ScrollView>
       </Modal>
+
+      {chatConfig && (
+        <ChatModal
+          visible={!!chatConfig}
+          onClose={() => setChatConfig(null)}
+          monNom={monNom}
+          {...chatConfig}
+        />
+      )}
     </View>
   );
 }
@@ -319,6 +402,17 @@ const styles = StyleSheet.create({
   prix: { fontSize: 15, fontWeight: 'bold', color: '#27ae60' },
   details: { marginTop: 10, paddingTop: 10, borderTopWidth: 1, borderTopColor: '#eee' },
   description: { fontSize: 13, color: '#2c3e50' },
+  contactRow: { flexDirection: 'row', marginTop: 12, gap: 8 },
+  callBtn: {
+    flex: 1, alignItems: 'center', paddingVertical: 10,
+    backgroundColor: '#eafaf1', borderRadius: 8,
+  },
+  callBtnText: { color: '#27ae60', fontWeight: 'bold', fontSize: 13 },
+  chatBtn: {
+    flex: 1, alignItems: 'center', paddingVertical: 10,
+    backgroundColor: '#eaf2fd', borderRadius: 8,
+  },
+  chatBtnText: { color: '#3498db', fontWeight: 'bold', fontSize: 13 },
   deleteBtn: {
     marginTop: 12, alignItems: 'center', paddingVertical: 10,
     backgroundColor: '#fdecea', borderRadius: 8,

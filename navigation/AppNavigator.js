@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Text, View, ActivityIndicator } from 'react-native';
+import { Text, View, ActivityIndicator, Platform } from 'react-native';
 import { onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import * as Notifications from 'expo-notifications';
+import * as Device from 'expo-device';
+import Constants from 'expo-constants';
 import { auth, db } from '../config/firebase';
 
 import HomeScreen from '../screens/HomeScreen';
@@ -18,6 +21,46 @@ import AuthScreen from '../screens/AuthScreen';
 import DashboardHopitalScreen from '../screens/DashboardHopitalScreen';
 import DashboardPharmacieScreen from '../screens/DashboardPharmacieScreen';
 import DashboardFournisseurScreen from '../screens/DashboardFournisseurScreen';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
+
+async function enregistrerTokenNotification(uid) {
+  try {
+    if (Platform.OS === 'android') {
+      await Notifications.setNotificationChannelAsync('default', {
+        name: 'default',
+        importance: Notifications.AndroidImportance.MAX,
+      });
+    }
+    if (!Device.isDevice) {
+      console.log('Notifications push necessitent un appareil physique');
+      return;
+    }
+    const { status: statutExistant } = await Notifications.getPermissionsAsync();
+    let statutFinal = statutExistant;
+    if (statutExistant !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      statutFinal = status;
+    }
+    if (statutFinal !== 'granted') {
+      console.log('Permission de notification refusee');
+      return;
+    }
+    const projectId = Constants.expoConfig?.extra?.eas?.projectId;
+    const tokenData = await Notifications.getExpoPushTokenAsync({ projectId });
+    await setDoc(doc(db, 'utilisateurs', uid), {
+      expoPushToken: tokenData.data,
+    }, { merge: true });
+  } catch (error) {
+    console.log('Erreur enregistrement token notification:', error);
+  }
+}
 
 const Tab = createBottomTabNavigator();
 
@@ -135,6 +178,7 @@ export default function AppNavigator() {
           console.log('Erreur chargement role:', error);
           setRole('patient');
         }
+        enregistrerTokenNotification(user.uid);
       } else {
         setRole(null);
       }

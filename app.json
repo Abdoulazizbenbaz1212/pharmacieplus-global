@@ -10,6 +10,8 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.pharmacieplusglobal.app",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -22,7 +24,14 @@
     },
     "plugins": [
       "@react-native-community/datetimepicker",
-      "expo-localization"
-    ]
+      "expo-localization",
+      "expo-notifications"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "edaa89f2-313f-40d2-bd46-826b9af2e1e1"
+      }
+    },
+    "owner": "abdoul_aziz_ben_baz"
   }
 }

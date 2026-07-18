@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "9762469036",
+    "project_id": "pharmacieplus-global",
+    "storage_bucket": "pharmacieplus-global.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:9762469036:android:bb2b2ed46538e7dc0cdb09",
+        "android_client_info": {
+          "package_name": "com.pharmacieplusglobal.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "9762469036-1oshs5prptdess545od0j2laa53r8k1m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAU_DlM_p-f1pn3mnlgm-HHzMt6sYx01lA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "9762469036-1oshs5prptdess545od0j2laa53r8k1m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

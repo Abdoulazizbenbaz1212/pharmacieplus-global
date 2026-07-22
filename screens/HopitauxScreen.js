@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Linking, ActivityIndicator } from 'react-native';
 import { WebView } from 'react-native-webview';
 import * as Location from 'expo-location';
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../config/firebase';
 
 function calculerDistance(lat1, lng1, lat2, lng2) {
   const R = 6371;
@@ -17,15 +15,67 @@ function calculerDistance(lat1, lng1, lat2, lng2) {
   return (R * c).toFixed(1);
 }
 
-function construireHtmlCarte(centreLat, centreLng, position, hopitaux) {
-  const marqueursHopitaux = hopitaux.map(h => `
-    L.marker([${h.lat}, ${h.lng}], {
+async function chercherEtablissementsProches(latitude, longitude, rayonMetres = 10000) {
+  const requete = `
+    [out:json][timeout:25];
+    (
+      node["amenity"="hospital"](around:${rayonMetres},${latitude},${longitude});
+      node["amenity"="clinic"](around:${rayonMetres},${latitude},${longitude});
+      node["amenity"="pharmacy"](around:${rayonMetres},${latitude},${longitude});
+      way["amenity"="hospital"](around:${rayonMetres},${latitude},${longitude});
+      way["amenity"="clinic"](around:${rayonMetres},${latitude},${longitude});
+    );
+    out center;
+  `;
+  const url = 'https://overpass-api.de/api/interpreter';
+  const reponse = await fetch(url, {
+    method: 'POST',
+    body: requete,
+  });
+  const data = await reponse.json();
+
+  return data.elements
+    .map((el) => {
+      const lat = el.lat || (el.center && el.center.lat);
+      const lng = el.lon || (el.center && el.center.lon);
+      if (!lat || !lng) return null;
+      return {
+        id: String(el.id),
+        nom: (el.tags && el.tags.name) || 'Établissement de santé',
+        type: (el.tags && el.tags.amenity) || 'hospital',
+        telephone: (el.tags && (el.tags.phone || el.tags['contact:phone'])) || null,
+        lat,
+        lng,
+      };
+    })
+    .filter(Boolean);
+}
+
+function construireHtmlCarte(centreLat, centreLng, position, etablissements) {
+  const couleurParType = {
+    hospital: '#e74c3c',
+    clinic: '#f39c12',
+    pharmacy: '#27ae60',
+  };
+
+  const marqueurs = etablissements.map(e => `
+    L.marker([${e.lat}, ${e.lng}], {
       icon: L.divIcon({
-        html: '<div style="background:${h.urgence24h ? '#e74c3c' : '#f39c12'};width:14px;height:14px;border-radius:7px;border:2px solid white;"></div>',
+        html: '<div style="background:${couleurParType[e.type] || '#7f8c8d'};width:14px;height:14px;border-radius:7px;border:2px solid white;"></div>',
         iconSize: [14, 14],
         className: ''
       })
-    }).addTo(map).bindPopup(${JSON.stringify(h.nom)} + '${h.urgence24h ? " (Urgences 24h/24)" : ""}');
+    }).addTo(map).bindPopup(${JSON.stringify('')} + ${JSON.stringify('')} + ${JSON.stringify('')});
+  `).join('\n');
+
+  const marqueursCorriges = etablissements.map(e => `
+    L.marker([${e.lat}, ${e.lng}], {
+      icon: L.divIcon({
+        html: '<div style="background:${couleurParType[e.type] || '#7f8c8d'};width:14px;height:14px;border-radius:7px;border:2px solid white;"></div>',
+        iconSize: [14, 14],
+        className: ''
+      })
+    }).addTo(map).bindPopup(${JSON.stringify(e.nom)});
   `).join('\n');
 
   const marqueurPosition = position ? `
@@ -50,12 +100,12 @@ function construireHtmlCarte(centreLat, centreLng, position, hopitaux) {
   <div id="map"></div>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    var map = L.map('map').setView([${centreLat}, ${centreLng}], 12);
+    var map = L.map('map').setView([${centreLat}, ${centreLng}], 13);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
     ${marqueurPosition}
-    ${marqueursHopitaux}
+    ${marqueursCorriges}
   </script>
 </body>
 </html>
@@ -64,7 +114,7 @@ function construireHtmlCarte(centreLat, centreLng, position, hopitaux) {
 
 export default function HopitauxScreen() {
   const [position, setPosition] = useState(null);
-  const [hopitaux, setHopitaux] = useState([]);
+  const [etablissements, setEtablissements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState(null);
 
@@ -72,20 +122,19 @@ export default function HopitauxScreen() {
     (async () => {
       try {
         const { status } = await Location.requestForegroundPermissionsAsync();
-        if (status === 'granted') {
-          const pos = await Location.getCurrentPositionAsync({});
-          setPosition(pos.coords);
+        if (status !== 'granted') {
+          setErrorMsg('Active la localisation pour voir les établissements autour de toi.');
+          setLoading(false);
+          return;
         }
+        const pos = await Location.getCurrentPositionAsync({});
+        setPosition(pos.coords);
 
-        const querySnapshot = await getDocs(collection(db, 'hopitaux'));
-        const liste = [];
-        querySnapshot.forEach((doc) => {
-          liste.push({ id: doc.id, ...doc.data() });
-        });
-        setHopitaux(liste);
+        const liste = await chercherEtablissementsProches(pos.coords.latitude, pos.coords.longitude);
+        setEtablissements(liste);
 
         if (liste.length === 0) {
-          setErrorMsg('Aucun hôpital enregistré pour le moment.');
+          setErrorMsg('Aucun établissement de santé trouvé dans un rayon de 10 km.');
         }
       } catch (error) {
         setErrorMsg('Erreur de chargement: ' + error.message);
@@ -95,29 +144,32 @@ export default function HopitauxScreen() {
     })();
   }, []);
 
-  const appelerHopital = (telephone) => {
+  const appelerEtablissement = (telephone) => {
+    if (!telephone) return;
     Linking.openURL(`tel:${telephone}`);
   };
 
-  const hopitauxAvecDistance = hopitaux
-    .map((h) => ({
-      ...h,
-      distance: position ? calculerDistance(position.latitude, position.longitude, h.lat, h.lng) : null,
+  const etablissementsAvecDistance = etablissements
+    .map((e) => ({
+      ...e,
+      distance: position ? calculerDistance(position.latitude, position.longitude, e.lat, e.lng) : null,
     }))
     .sort((a, b) => (a.distance || 0) - (b.distance || 0));
+
+  const labelType = { hospital: 'Hôpital', clinic: 'Clinique', pharmacy: 'Pharmacie' };
 
   if (loading) {
     return (
       <View style={styles.center}>
         <ActivityIndicator size="large" color="#e74c3c" />
-        <Text>Chargement des hôpitaux...</Text>
+        <Text>Recherche des établissements autour de toi...</Text>
       </View>
     );
   }
 
   const centreLat = position ? position.latitude : 4.0511;
   const centreLng = position ? position.longitude : 9.7679;
-  const htmlCarte = construireHtmlCarte(centreLat, centreLng, position, hopitauxAvecDistance);
+  const htmlCarte = construireHtmlCarte(centreLat, centreLng, position, etablissementsAvecDistance);
 
   return (
     <View style={styles.container}>
@@ -134,20 +186,22 @@ export default function HopitauxScreen() {
 
       <FlatList
         style={styles.list}
-        data={hopitauxAvecDistance}
+        data={etablissementsAvecDistance}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.card}>
             <View style={{ flex: 1 }}>
               <Text style={styles.nom}>{item.nom}</Text>
               <Text style={styles.details}>
-                {item.distance ? `${item.distance} km` : 'Distance inconnue'}
-                {item.urgence24h ? ' • Urgences 24h/24' : ''}
+                {labelType[item.type] || 'Établissement'}
+                {item.distance ? ` • ${item.distance} km` : ''}
               </Text>
             </View>
-            <TouchableOpacity style={styles.callBtn} onPress={() => appelerHopital(item.telephone)}>
-              <Text style={styles.callBtnText}>📞 Appeler</Text>
-            </TouchableOpacity>
+            {item.telephone && (
+              <TouchableOpacity style={styles.callBtn} onPress={() => appelerEtablissement(item.telephone)}>
+                <Text style={styles.callBtnText}>📞 Appeler</Text>
+              </TouchableOpacity>
+            )}
           </View>
         )}
       />

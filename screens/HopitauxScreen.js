@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Linking, ActivityIndicator } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import { WebView } from 'react-native-webview';
 import * as Location from 'expo-location';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../config/firebase';
@@ -17,6 +17,51 @@ function calculerDistance(lat1, lng1, lat2, lng2) {
   return (R * c).toFixed(1);
 }
 
+function construireHtmlCarte(centreLat, centreLng, position, hopitaux) {
+  const marqueursHopitaux = hopitaux.map(h => `
+    L.marker([${h.lat}, ${h.lng}], {
+      icon: L.divIcon({
+        html: '<div style="background:${h.urgence24h ? '#e74c3c' : '#f39c12'};width:14px;height:14px;border-radius:7px;border:2px solid white;"></div>',
+        iconSize: [14, 14],
+        className: ''
+      })
+    }).addTo(map).bindPopup(${JSON.stringify(h.nom)} + '${h.urgence24h ? " (Urgences 24h/24)" : ""}');
+  `).join('\n');
+
+  const marqueurPosition = position ? `
+    L.marker([${position.latitude}, ${position.longitude}], {
+      icon: L.divIcon({
+        html: '<div style="background:#3498db;width:16px;height:16px;border-radius:8px;border:2px solid white;"></div>',
+        iconSize: [16, 16],
+        className: ''
+      })
+    }).addTo(map).bindPopup('Vous etes ici');
+  ` : '';
+
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style> body { margin: 0; padding: 0; } #map { width: 100vw; height: 100vh; } </style>
+</head>
+<body>
+  <div id="map"></div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    var map = L.map('map').setView([${centreLat}, ${centreLng}], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+    ${marqueurPosition}
+    ${marqueursHopitaux}
+  </script>
+</body>
+</html>
+  `;
+}
+
 export default function HopitauxScreen() {
   const [position, setPosition] = useState(null);
   const [hopitaux, setHopitaux] = useState([]);
@@ -26,14 +71,12 @@ export default function HopitauxScreen() {
   useEffect(() => {
     (async () => {
       try {
-        // 1. Récupérer la position de l'utilisateur
         const { status } = await Location.requestForegroundPermissionsAsync();
         if (status === 'granted') {
           const pos = await Location.getCurrentPositionAsync({});
           setPosition(pos.coords);
         }
 
-        // 2. Récupérer les hôpitaux depuis Firestore
         const querySnapshot = await getDocs(collection(db, 'hopitaux'));
         const liste = [];
         querySnapshot.forEach((doc) => {
@@ -72,34 +115,20 @@ export default function HopitauxScreen() {
     );
   }
 
+  const centreLat = position ? position.latitude : 4.0511;
+  const centreLng = position ? position.longitude : 9.7679;
+  const htmlCarte = construireHtmlCarte(centreLat, centreLng, position, hopitauxAvecDistance);
+
   return (
     <View style={styles.container}>
-      <MapView
-        style={styles.map}
-        initialRegion={{
-          latitude: position ? position.latitude : 4.0511,
-          longitude: position ? position.longitude : 9.7679,
-          latitudeDelta: 0.5,
-          longitudeDelta: 0.5,
-        }}
-      >
-        {position && (
-          <Marker
-            coordinate={{ latitude: position.latitude, longitude: position.longitude }}
-            title="Vous êtes ici"
-            pinColor="blue"
-          />
-        )}
-        {hopitauxAvecDistance.map((h) => (
-          <Marker
-            key={h.id}
-            coordinate={{ latitude: h.lat, longitude: h.lng }}
-            title={h.nom}
-            description={h.urgence24h ? 'Urgences 24h/24' : 'Horaires normaux'}
-            pinColor={h.urgence24h ? 'red' : 'orange'}
-          />
-        ))}
-      </MapView>
+      <View style={styles.map}>
+        <WebView
+          source={{ html: htmlCarte }}
+          style={{ flex: 1 }}
+          javaScriptEnabled
+          domStorageEnabled
+        />
+      </View>
 
       {errorMsg && <Text style={styles.warning}>{errorMsg}</Text>}
 

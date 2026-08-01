@@ -15,9 +15,15 @@ function calculerDistance(lat1, lng1, lat2, lng2) {
   return (R * c).toFixed(1);
 }
 
+const SERVEURS_OVERPASS = [
+  'https://overpass-api.de/api/interpreter',
+  'https://overpass.kumi.systems/api/interpreter',
+  'https://overpass.openstreetmap.ru/api/interpreter',
+];
+
 async function chercherEtablissementsProches(latitude, longitude, rayonMetres = 10000) {
   const requete = `
-    [out:json][timeout:25];
+    [out:json][timeout:20];
     (
       node["amenity"="hospital"](around:${rayonMetres},${latitude},${longitude});
       node["amenity"="clinic"](around:${rayonMetres},${latitude},${longitude});
@@ -27,28 +33,52 @@ async function chercherEtablissementsProches(latitude, longitude, rayonMetres = 
     );
     out center;
   `;
-  const url = 'https://overpass-api.de/api/interpreter';
-  const reponse = await fetch(url, {
-    method: 'POST',
-    body: requete,
-  });
-  const data = await reponse.json();
 
-  return data.elements
-    .map((el) => {
-      const lat = el.lat || (el.center && el.center.lat);
-      const lng = el.lon || (el.center && el.center.lon);
-      if (!lat || !lng) return null;
-      return {
-        id: String(el.id),
-        nom: (el.tags && el.tags.name) || 'Établissement de santé',
-        type: (el.tags && el.tags.amenity) || 'hospital',
-        telephone: (el.tags && (el.tags.phone || el.tags['contact:phone'])) || null,
-        lat,
-        lng,
-      };
-    })
-    .filter(Boolean);
+  let derniereErreur = null;
+
+  for (const url of SERVEURS_OVERPASS) {
+    try {
+      const reponse = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: 'data=' + encodeURIComponent(requete),
+      });
+
+      if (!reponse.ok) {
+        derniereErreur = new Error(`Serveur ${url} a repondu avec le code ${reponse.status}`);
+        continue;
+      }
+
+      const texteReponse = await reponse.text();
+      let data;
+      try {
+        data = JSON.parse(texteReponse);
+      } catch {
+        derniereErreur = new Error(`Serveur ${url} a renvoye une reponse invalide (surcharge probable)`);
+        continue;
+      }
+
+      return data.elements
+        .map((el) => {
+          const lat = el.lat || (el.center && el.center.lat);
+          const lng = el.lon || (el.center && el.center.lon);
+          if (!lat || !lng) return null;
+          return {
+            id: String(el.id),
+            nom: (el.tags && el.tags.name) || 'Établissement de santé',
+            type: (el.tags && el.tags.amenity) || 'hospital',
+            telephone: (el.tags && (el.tags.phone || el.tags['contact:phone'])) || null,
+            lat,
+            lng,
+          };
+        })
+        .filter(Boolean);
+    } catch (erreur) {
+      derniereErreur = erreur;
+    }
+  }
+
+  throw derniereErreur || new Error('Impossible de contacter les serveurs de recherche.');
 }
 
 function construireHtmlCarte(centreLat, centreLng, position, etablissements) {
@@ -65,8 +95,8 @@ function construireHtmlCarte(centreLat, centreLng, position, etablissements) {
         iconSize: [14, 14],
         className: ''
       })
-    }).addTo(map).bindPopup(${JSON.stringify('')} + ${JSON.stringify('')} + ${JSON.stringify('')});
-  `).join('\n');
+    }).addTo(map).bindPopup(${JSON.stringify('placeholder')});
+  `);
 
   const marqueursCorriges = etablissements.map(e => `
     L.marker([${e.lat}, ${e.lng}], {
@@ -130,14 +160,17 @@ export default function HopitauxScreen() {
         const pos = await Location.getCurrentPositionAsync({});
         setPosition(pos.coords);
 
-        const liste = await chercherEtablissementsProches(pos.coords.latitude, pos.coords.longitude);
-        setEtablissements(liste);
-
-        if (liste.length === 0) {
-          setErrorMsg('Aucun établissement de santé trouvé dans un rayon de 10 km.');
+        try {
+          const liste = await chercherEtablissementsProches(pos.coords.latitude, pos.coords.longitude);
+          setEtablissements(liste);
+          if (liste.length === 0) {
+            setErrorMsg('Aucun établissement de santé trouvé dans un rayon de 10 km.');
+          }
+        } catch (erreurRecherche) {
+          setErrorMsg('Le service de recherche est momentanément indisponible. Réessaie dans quelques instants.');
         }
       } catch (error) {
-        setErrorMsg('Erreur de chargement: ' + error.message);
+        setErrorMsg('Erreur de localisation: ' + error.message);
       } finally {
         setLoading(false);
       }

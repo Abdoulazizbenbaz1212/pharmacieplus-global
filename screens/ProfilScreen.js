@@ -3,9 +3,10 @@ import {
   View, Text, StyleSheet, TouchableOpacity, TextInput,
   ScrollView, ActivityIndicator, Alert,
 } from 'react-native';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, collection } from 'firebase/firestore';
 import { db, auth } from '../config/firebase';
 import { signOut } from 'firebase/auth';
+import DocumentsMedicaux from '../components/DocumentsMedicaux';
 
 const GROUPES_SANGUINS = ['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-'];
 
@@ -18,6 +19,7 @@ export default function ProfilScreen() {
   const [loading, setLoading] = useState(true);
   const [enregistrementEnCours, setEnregistrementEnCours] = useState(false);
   const [modeEdition, setModeEdition] = useState(false);
+  const [documentsVisible, setDocumentsVisible] = useState(false);
 
   useEffect(() => {
     chargerProfil();
@@ -79,6 +81,8 @@ export default function ProfilScreen() {
     );
   }
 
+  const documentsCollectionRef = collection(db, 'profils_medicaux', auth.currentUser.uid, 'documents');
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -87,6 +91,12 @@ export default function ProfilScreen() {
         <Text style={styles.headerSubtitle}>
           Vos informations vitales, accessibles en cas d'urgence
         </Text>
+      </View>
+
+      <View style={styles.section}>
+        <TouchableOpacity style={styles.documentsBtn} onPress={() => setDocumentsVisible(true)}>
+          <Text style={styles.documentsBtnText}>📄 Mes documents médicaux</Text>
+        </TouchableOpacity>
       </View>
 
       {!modeEdition ? (
@@ -182,6 +192,13 @@ export default function ProfilScreen() {
       <TouchableOpacity style={styles.logoutBtn} onPress={handleDeconnexion}>
         <Text style={styles.logoutBtnText}>Se deconnecter</Text>
       </TouchableOpacity>
+
+      <DocumentsMedicaux
+        visible={documentsVisible}
+        onClose={() => setDocumentsVisible(false)}
+        collectionRef={documentsCollectionRef}
+        titre="Mes documents médicaux"
+      />
     </ScrollView>
   );
 }
@@ -193,6 +210,11 @@ const styles = StyleSheet.create({
   headerEmoji: { fontSize: 40, marginBottom: 8 },
   headerTitle: { fontSize: 20, fontWeight: '700', color: '#1a2b34' },
   headerSubtitle: { fontSize: 13, color: '#6b7b82', textAlign: 'center', marginTop: 6 },
+  section: { paddingHorizontal: 15, paddingTop: 15 },
+  documentsBtn: {
+    backgroundColor: '#3498db', borderRadius: 10, paddingVertical: 14, alignItems: 'center',
+  },
+  documentsBtnText: { color: '#fff', fontWeight: '700', fontSize: 15 },
   viewMode: { padding: 15 },
   infoCard: {
     backgroundColor: '#fff', borderRadius: 12, padding: 16, marginBottom: 10,

@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity, TextInput,
-  ScrollView, ActivityIndicator, Alert, Modal, FlatList, Share,
+  ScrollView, ActivityIndicator, Alert, Modal, FlatList, Share, KeyboardAvoidingView, Platform,
 } from 'react-native';
 import {
   doc, getDoc, setDoc, collection, addDoc, getDocs,
-  query, where, deleteDoc, updateDoc,
+  query, where, deleteDoc, updateDoc, orderBy, onSnapshot, serverTimestamp,
 } from 'firebase/firestore';
 import { db, auth } from '../config/firebase';
 
@@ -42,6 +42,12 @@ export default function FamilleScreen() {
   const [enregistrement, setEnregistrement] = useState(false);
 
   const [modalDetail, setModalDetail] = useState(null);
+
+  const [chatVisible, setChatVisible] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [texteMessage, setTexteMessage] = useState('');
+  const [envoiMessage, setEnvoiMessage] = useState(false);
+  const flatListRef = useRef(null);
 
   const user = auth.currentUser;
 
@@ -80,6 +86,34 @@ export default function FamilleScreen() {
   }, []);
 
   useEffect(() => { chargerFamille(); }, [chargerFamille]);
+
+  useEffect(() => {
+    if (!chatVisible || !familleId) return;
+    const messagesRef = collection(db, 'familles', familleId, 'messages');
+    const q = query(messagesRef, orderBy('createdAt', 'asc'));
+    const unsubscribe = onSnapshot(q, (snap) => {
+      setMessages(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    });
+    return unsubscribe;
+  }, [chatVisible, familleId]);
+
+  async function envoyerMessageFamille() {
+    if (!texteMessage.trim() || !familleId) return;
+    setEnvoiMessage(true);
+    try {
+      await addDoc(collection(db, 'familles', familleId, 'messages'), {
+        senderId: user.uid,
+        senderNom: user.email,
+        texte: texteMessage.trim(),
+        createdAt: serverTimestamp(),
+      });
+      setTexteMessage('');
+    } catch (error) {
+      Alert.alert('Erreur', "L'envoi a échoué. Réessaie.");
+    } finally {
+      setEnvoiMessage(false);
+    }
+  }
 
   async function creerFamille() {
     try {
@@ -236,6 +270,10 @@ export default function FamilleScreen() {
           <Text style={styles.headerTitle}>Ma famille</Text>
         </View>
 
+        <TouchableOpacity style={styles.chatBtn} onPress={() => setChatVisible(true)}>
+          <Text style={styles.chatBtnText}>💬 Discussion familiale</Text>
+        </TouchableOpacity>
+
         <View style={styles.codeCard}>
           <Text style={styles.codeLabel}>Code d'invitation</Text>
           <Text style={styles.codeValue}>{codeInvitation}</Text>
@@ -276,6 +314,52 @@ export default function FamilleScreen() {
           )}
         </View>
       </ScrollView>
+
+      <Modal visible={chatVisible} animationType="slide" onRequestClose={() => setChatVisible(false)}>
+        <KeyboardAvoidingView
+          style={{ flex: 1, backgroundColor: '#fff' }}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        >
+          <View style={styles.chatHeader}>
+            <TouchableOpacity onPress={() => setChatVisible(false)} style={{ marginRight: 12 }}>
+              <Text style={{ fontSize: 20 }}>←</Text>
+            </TouchableOpacity>
+            <Text style={styles.chatHeaderTitre}>Discussion familiale</Text>
+          </View>
+
+          <FlatList
+            ref={flatListRef}
+            data={messages}
+            keyExtractor={m => m.id}
+            contentContainerStyle={{ padding: 15 }}
+            renderItem={({ item: msg }) => {
+              const estMoi = msg.senderId === user.uid;
+              return (
+                <View style={[styles.bulleContainer, estMoi ? styles.bulleContainerMoi : styles.bulleContainerAutre]}>
+                  {!estMoi && <Text style={styles.bulleAuteur}>{msg.senderNom}</Text>}
+                  <View style={[styles.bulle, estMoi ? styles.bulleMoi : styles.bulleAutre]}>
+                    <Text style={estMoi ? styles.bulleTexteMoi : styles.bulleTexteAutre}>{msg.texte}</Text>
+                  </View>
+                </View>
+              );
+            }}
+            onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
+          />
+
+          <View style={styles.chatInputRow}>
+            <TextInput
+              style={styles.chatInput}
+              value={texteMessage}
+              onChangeText={setTexteMessage}
+              placeholder="Écris un message a la famille..."
+              multiline
+            />
+            <TouchableOpacity style={styles.sendBtn} onPress={envoyerMessageFamille} disabled={envoiMessage}>
+              {envoiMessage ? <ActivityIndicator color="#fff" size="small" /> : <Text style={styles.sendBtnText}>➤</Text>}
+            </TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
 
       <Modal visible={modalAjout} animationType="slide" onRequestClose={() => setModalAjout(false)}>
         <ScrollView style={styles.modalContainer} contentContainerStyle={{ padding: 20 }}>
@@ -381,6 +465,11 @@ const styles = StyleSheet.create({
   headerEmoji: { fontSize: 40, marginBottom: 8 },
   headerTitle: { fontSize: 20, fontWeight: '700', color: '#1a2b34' },
   headerSubtitle: { fontSize: 13, color: '#6b7b82', textAlign: 'center', marginTop: 6, paddingHorizontal: 20 },
+  chatBtn: {
+    marginHorizontal: 15, marginTop: 15, backgroundColor: '#3498db',
+    paddingVertical: 14, borderRadius: 10, alignItems: 'center',
+  },
+  chatBtnText: { color: '#fff', fontWeight: '700', fontSize: 15 },
   section: { padding: 15 },
   sectionHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   sectionTitle: { fontSize: 16, fontWeight: '700', color: '#1a2b34', marginBottom: 10 },
@@ -438,4 +527,31 @@ const styles = StyleSheet.create({
   deleteBtnText: { color: '#e74c3c', fontWeight: 'bold', fontSize: 14 },
   cancelBtn: { alignItems: 'center', paddingVertical: 14, marginTop: 10 },
   cancelBtnText: { color: '#7f8c8d', fontSize: 14 },
+  chatHeader: {
+    flexDirection: 'row', alignItems: 'center', padding: 15,
+    borderBottomWidth: 1, borderBottomColor: '#eee',
+  },
+  chatHeaderTitre: { fontSize: 16, fontWeight: 'bold', color: '#2c3e50' },
+  bulleContainer: { marginBottom: 10, maxWidth: '80%' },
+  bulleContainerMoi: { alignSelf: 'flex-end' },
+  bulleContainerAutre: { alignSelf: 'flex-start' },
+  bulleAuteur: { fontSize: 11, color: '#7f8c8d', marginBottom: 2, marginLeft: 4 },
+  bulle: { padding: 10, borderRadius: 12 },
+  bulleMoi: { backgroundColor: '#3498db', borderBottomRightRadius: 2 },
+  bulleAutre: { backgroundColor: '#f0f0f0', borderBottomLeftRadius: 2 },
+  bulleTexteMoi: { color: '#fff', fontSize: 14 },
+  bulleTexteAutre: { color: '#2c3e50', fontSize: 14 },
+  chatInputRow: {
+    flexDirection: 'row', alignItems: 'center', padding: 10,
+    borderTopWidth: 1, borderTopColor: '#eee',
+  },
+  chatInput: {
+    flex: 1, backgroundColor: '#f8f9fa', borderRadius: 20, paddingHorizontal: 15,
+    paddingVertical: 10, fontSize: 14, maxHeight: 100, marginRight: 8,
+  },
+  sendBtn: {
+    backgroundColor: '#3498db', width: 42, height: 42, borderRadius: 21,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  sendBtnText: { color: '#fff', fontSize: 18 },
 });

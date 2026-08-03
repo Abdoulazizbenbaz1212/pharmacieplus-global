@@ -8,6 +8,7 @@ import {
   query, where, deleteDoc, updateDoc, orderBy, onSnapshot, serverTimestamp,
 } from 'firebase/firestore';
 import { db, auth } from '../config/firebase';
+import DocumentsMedicaux from '../components/DocumentsMedicaux';
 
 const GROUPES_SANGUINS = ['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-'];
 const LIENS_PARENTE = ['Père', 'Mère', 'Enfant', 'Conjoint(e)', 'Grand-parent', 'Autre'];
@@ -42,6 +43,7 @@ export default function FamilleScreen() {
   const [enregistrement, setEnregistrement] = useState(false);
 
   const [modalDetail, setModalDetail] = useState(null);
+  const [documentsProcheVisible, setDocumentsProcheVisible] = useState(false);
 
   const [chatVisible, setChatVisible] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -444,6 +446,10 @@ export default function FamilleScreen() {
               </Text>
             </View>
 
+            <TouchableOpacity style={styles.documentsBtn} onPress={() => setDocumentsProcheVisible(true)}>
+              <Text style={styles.documentsBtnText}>📄 Documents médicaux</Text>
+            </TouchableOpacity>
+
             <TouchableOpacity style={styles.deleteBtn} onPress={() => supprimerDependant(modalDetail.id)}>
               <Text style={styles.deleteBtnText}>🗑️ Retirer ce proche</Text>
             </TouchableOpacity>
@@ -454,6 +460,15 @@ export default function FamilleScreen() {
           </ScrollView>
         )}
       </Modal>
+
+      {modalDetail && (
+        <DocumentsMedicaux
+          visible={documentsProcheVisible}
+          onClose={() => setDocumentsProcheVisible(false)}
+          collectionRef={collection(db, 'familles', familleId, 'dependants', modalDetail.id, 'documents')}
+          titre={`Documents de ${modalDetail.nom}}`}
+        />
+      )}
     </View>
   );
 }
@@ -526,6 +541,11 @@ const styles = StyleSheet.create({
   },
   deleteBtnText: { color: '#e74c3c', fontWeight: 'bold', fontSize: 14 },
   cancelBtn: { alignItems: 'center', paddingVertical: 14, marginTop: 10 },
+  documentsBtn: {
+    marginTop: 20, alignItems: 'center', paddingVertical: 14,
+    backgroundColor: '#3498db', borderRadius: 10,
+  },
+  documentsBtnText: { color: '#fff', fontWeight: 'bold', fontSize: 14 },
   cancelBtnText: { color: '#7f8c8d', fontSize: 14 },
   chatHeader: {
     flexDirection: 'row', alignItems: 'center', padding: 15,

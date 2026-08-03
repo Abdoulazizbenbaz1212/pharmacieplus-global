@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Linking, ActivityIndicator } from 'react-native';
 import { WebView } from 'react-native-webview';
 import * as Location from 'expo-location';
@@ -23,7 +23,7 @@ const SERVEURS_OVERPASS = [
 
 async function chercherEtablissementsProches(latitude, longitude, rayonMetres = 10000) {
   const requete = `
-    [out:json][timeout:20];
+    [out:json][timeout:25];
     (
       node["amenity"="hospital"](around:${rayonMetres},${latitude},${longitude});
       node["amenity"="clinic"](around:${rayonMetres},${latitude},${longitude});
@@ -38,14 +38,19 @@ async function chercherEtablissementsProches(latitude, longitude, rayonMetres = 
 
   for (const url of SERVEURS_OVERPASS) {
     try {
+      const controleur = new AbortController();
+      const minuteur = setTimeout(() => controleur.abort(), 20000);
+
       const reponse = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain' },
         body: 'data=' + encodeURIComponent(requete),
+        signal: controleur.signal,
       });
+      clearTimeout(minuteur);
 
       if (!reponse.ok) {
-        derniereErreur = new Error(`Serveur ${url} a repondu avec le code ${reponse.status}`);
+        derniereErreur = new Error(`Serveur a repondu avec le code ${reponse.status}`);
         continue;
       }
 
@@ -54,7 +59,7 @@ async function chercherEtablissementsProches(latitude, longitude, rayonMetres = 
       try {
         data = JSON.parse(texteReponse);
       } catch {
-        derniereErreur = new Error(`Serveur ${url} a renvoye une reponse invalide (surcharge probable)`);
+        derniereErreur = new Error('Reponse invalide (surcharge probable)');
         continue;
       }
 
@@ -87,16 +92,6 @@ function construireHtmlCarte(centreLat, centreLng, position, etablissements) {
     clinic: '#f39c12',
     pharmacy: '#27ae60',
   };
-
-  const marqueurs = etablissements.map(e => `
-    L.marker([${e.lat}, ${e.lng}], {
-      icon: L.divIcon({
-        html: '<div style="background:${couleurParType[e.type] || '#7f8c8d'};width:14px;height:14px;border-radius:7px;border:2px solid white;"></div>',
-        iconSize: [14, 14],
-        className: ''
-      })
-    }).addTo(map).bindPopup(${JSON.stringify('placeholder')});
-  `);
 
   const marqueursCorriges = etablissements.map(e => `
     L.marker([${e.lat}, ${e.lng}], {
@@ -146,7 +141,24 @@ export default function HopitauxScreen() {
   const [position, setPosition] = useState(null);
   const [etablissements, setEtablissements] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [recherche, setRecherche] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
+
+  const lancerRecherche = useCallback(async (coords) => {
+    setRecherche(true);
+    setErrorMsg(null);
+    try {
+      const liste = await chercherEtablissementsProches(coords.latitude, coords.longitude);
+      setEtablissements(liste);
+      if (liste.length === 0) {
+        setErrorMsg('Aucun établissement de santé trouvé dans un rayon de 10 km.');
+      }
+    } catch (erreurRecherche) {
+      setErrorMsg('Le service de recherche est momentanément indisponible.');
+    } finally {
+      setRecherche(false);
+    }
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -159,23 +171,14 @@ export default function HopitauxScreen() {
         }
         const pos = await Location.getCurrentPositionAsync({});
         setPosition(pos.coords);
-
-        try {
-          const liste = await chercherEtablissementsProches(pos.coords.latitude, pos.coords.longitude);
-          setEtablissements(liste);
-          if (liste.length === 0) {
-            setErrorMsg('Aucun établissement de santé trouvé dans un rayon de 10 km.');
-          }
-        } catch (erreurRecherche) {
-          setErrorMsg('Le service de recherche est momentanément indisponible. Réessaie dans quelques instants.');
-        }
+        await lancerRecherche(pos.coords);
       } catch (error) {
         setErrorMsg('Erreur de localisation: ' + error.message);
       } finally {
         setLoading(false);
       }
     })();
-  }, []);
+  }, [lancerRecherche]);
 
   const appelerEtablissement = (telephone) => {
     if (!telephone) return;
@@ -215,7 +218,24 @@ export default function HopitauxScreen() {
         />
       </View>
 
-      {errorMsg && <Text style={styles.warning}>{errorMsg}</Text>}
+      {errorMsg && (
+        <View style={styles.warningBox}>
+          <Text style={styles.warning}>{errorMsg}</Text>
+          {position && (
+            <TouchableOpacity
+              style={styles.retryBtn}
+              onPress={() => lancerRecherche(position)}
+              disabled={recherche}
+            >
+              {recherche ? (
+                <ActivityIndicator color="#fff" size="small" />
+              ) : (
+                <Text style={styles.retryBtnText}>🔄 Réessayer</Text>
+              )}
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
 
       <FlatList
         style={styles.list}
@@ -247,12 +267,23 @@ const styles = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   map: { flex: 1 },
   list: { flex: 1, backgroundColor: '#fff' },
-  warning: {
+  warningBox: {
     padding: 10,
-    textAlign: 'center',
-    color: '#e67e22',
+    alignItems: 'center',
     backgroundColor: '#fff',
   },
+  warning: {
+    textAlign: 'center',
+    color: '#e67e22',
+    marginBottom: 8,
+  },
+  retryBtn: {
+    backgroundColor: '#3498db',
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+  },
+  retryBtnText: { color: '#fff', fontWeight: 'bold', fontSize: 13 },
   card: {
     flexDirection: 'row',
     alignItems: 'center',

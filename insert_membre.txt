@@ -1,0 +1,17 @@
+
+  async function supprimerMembre(membreId) {
+    Alert.alert('Retirer ce membre ?', "Il ne pourra plus acceder a cette famille.", [
+      { text: 'Annuler', style: 'cancel' },
+      {
+        text: 'Retirer', style: 'destructive', onPress: async () => {
+          try {
+            await deleteDoc(doc(db, 'familles', familleId, 'membres', membreId));
+            setModalMembre(null);
+            chargerFamille();
+          } catch (error) {
+            Alert.alert('Erreur', "Impossible de retirer: " + error.message);
+          }
+        },
+      },
+    ]);
+  }

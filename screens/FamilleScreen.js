@@ -44,6 +44,7 @@ export default function FamilleScreen() {
 
   const [modalDetail, setModalDetail] = useState(null);
   const [documentsProcheVisible, setDocumentsProcheVisible] = useState(false);
+  const [modalMembre, setModalMembre] = useState(null);
 
   const [chatVisible, setChatVisible] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -222,6 +223,23 @@ export default function FamilleScreen() {
     ]);
   }
 
+  async function supprimerMembre(membreId) {
+    Alert.alert('Retirer ce membre ?', "Il ne pourra plus acceder a cette famille.", [
+      { text: 'Annuler', style: 'cancel' },
+      {
+        text: 'Retirer', style: 'destructive', onPress: async () => {
+          try {
+            await deleteDoc(doc(db, 'familles', familleId, 'membres', membreId));
+            setModalMembre(null);
+            chargerFamille();
+          } catch (error) {
+            Alert.alert('Erreur', "Impossible de retirer: " + error.message);
+          }
+        },
+      },
+    ]);
+  }
+
   if (loading) {
     return (
       <View style={styles.center}>
@@ -287,10 +305,10 @@ export default function FamilleScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Membres ({membres.length})</Text>
           {membres.map((m) => (
-            <View key={m.id} style={styles.membreRow}>
+            <TouchableOpacity key={m.id} style={styles.membreRow} onPress={() => setModalMembre(m)}>
               <Text style={styles.membreNom}>{m.nom}</Text>
               <Text style={styles.membreRole}>{m.role === 'proprietaire' ? 'Propriétaire' : 'Membre'}</Text>
-            </View>
+            </TouchableOpacity>
           ))}
         </View>
 
@@ -466,7 +484,7 @@ export default function FamilleScreen() {
           visible={documentsProcheVisible}
           onClose={() => setDocumentsProcheVisible(false)}
           collectionRef={collection(db, 'familles', familleId, 'dependants', modalDetail.id, 'documents')}
-          titre={`Documents de ${modalDetail.nom}}`}
+          titre={`Documents de ${modalDetail.nom}`}
         />
       )}
     </View>

@@ -487,6 +487,32 @@ export default function FamilleScreen() {
           titre={`Documents de ${modalDetail.nom}`}
         />
       )}
+
+      <Modal visible={!!modalMembre} animationType="slide" onRequestClose={() => setModalMembre(null)}>
+        {modalMembre && (
+          <ScrollView style={styles.modalContainer} contentContainerStyle={{ padding: 20 }}>
+            <Text style={styles.modalTitle}>{modalMembre.nom}</Text>
+            <Text style={styles.sousTitre}>{modalMembre.role === 'proprietaire' ? 'Proprietaire' : 'Membre'}</Text>
+
+            <View style={styles.infoCard}>
+              <Text style={styles.infoLabel}>A rejoint le</Text>
+              <Text style={styles.infoValue}>
+                {modalMembre.rejointLe ? new Date(modalMembre.rejointLe).toLocaleDateString('fr-FR') : 'Non renseigne'}
+              </Text>
+            </View>
+
+            {membres.find(x => x.id === user.uid) && membres.find(x => x.id === user.uid).role === 'proprietaire' && modalMembre.id !== user.uid && (
+              <TouchableOpacity style={styles.deleteBtn} onPress={() => supprimerMembre(modalMembre.id)}>
+                <Text style={styles.deleteBtnText}>Retirer ce membre</Text>
+              </TouchableOpacity>
+            )}
+
+            <TouchableOpacity style={styles.cancelBtn} onPress={() => setModalMembre(null)}>
+              <Text style={styles.cancelBtnText}>Fermer</Text>
+            </TouchableOpacity>
+          </ScrollView>
+        )}
+      </Modal>
     </View>
   );
 }

@@ -240,6 +240,19 @@ export default function FamilleScreen() {
     ]);
   }
 
+
+  async function genererCodeLiaisonDependant(dependantId) {
+    const code = genererCode();
+    try {
+      await updateDoc(doc(db, 'familles', familleId, 'dependants', dependantId), { codeLiaison: code });
+      Share.share({
+        message: `Utilise ce code pour lier ton compte a ton profil sante sur Pharmacie+ Global : ${code}`,
+      });
+      chargerFamille();
+    } catch (error) {
+      Alert.alert('Erreur', "Impossible de generer le code: " + error.message);
+    }
+  }
   if (loading) {
     return (
       <View style={styles.center}>
@@ -466,6 +479,10 @@ export default function FamilleScreen() {
 
             <TouchableOpacity style={styles.documentsBtn} onPress={() => setDocumentsProcheVisible(true)}>
               <Text style={styles.documentsBtnText}>📄 Documents médicaux</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.documentsBtn} onPress={() => genererCodeLiaisonDependant(modalDetail.id)}>
+              <Text style={styles.documentsBtnText}>🔗 Generer un code de liaison</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.deleteBtn} onPress={() => supprimerDependant(modalDetail.id)}>

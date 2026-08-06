@@ -1,0 +1,26 @@
+
+  async function lierCompteDependant() {
+    if (!codeLiaisonSaisi.trim()) return;
+    try {
+      const q = query(collectionGroup(db, 'dependants'), where('codeLiaison', '==', codeLiaisonSaisi.trim().toUpperCase()));
+      const snap = await getDocs(q);
+      if (snap.empty) {
+        Alert.alert('Code invalide', "Aucun profil ne correspond a ce code.");
+        return;
+      }
+      const dependantDoc = snap.docs[0];
+      const familleTrouveeId = dependantDoc.ref.parent.parent.id;
+      await setDoc(doc(db, 'familles', familleTrouveeId, 'membres', user.uid), {
+        nom: user.email,
+        role: 'membre',
+        rejointLe: new Date().toISOString(),
+      });
+      await updateDoc(doc(db, 'utilisateurs', user.uid), { familleId: familleTrouveeId });
+      await updateDoc(dependantDoc.ref, { compteLie: user.uid });
+      setCodeLiaisonSaisi('');
+      Alert.alert('Succes', 'Ton compte est maintenant lie.');
+      chargerFamille();
+    } catch (error) {
+      Alert.alert('Erreur', "Impossible de lier: " + error.message);
+    }
+  }

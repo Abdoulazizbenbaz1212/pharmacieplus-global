@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import {
   doc, getDoc, setDoc, collection, addDoc, getDocs,
-  query, where, deleteDoc, updateDoc, orderBy, onSnapshot, serverTimestamp,
+  query, where, deleteDoc, updateDoc, orderBy, onSnapshot, serverTimestamp, collectionGroup,
 } from 'firebase/firestore';
 import { db, auth } from '../config/firebase';
 import DocumentsMedicaux from '../components/DocumentsMedicaux';
@@ -45,6 +45,7 @@ export default function FamilleScreen() {
   const [modalDetail, setModalDetail] = useState(null);
   const [documentsProcheVisible, setDocumentsProcheVisible] = useState(false);
   const [modalMembre, setModalMembre] = useState(null);
+  const [codeLiaisonSaisi, setCodeLiaisonSaisi] = useState("");
 
   const [chatVisible, setChatVisible] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -251,6 +252,32 @@ export default function FamilleScreen() {
       chargerFamille();
     } catch (error) {
       Alert.alert('Erreur', "Impossible de generer le code: " + error.message);
+    }
+
+  }
+  async function lierCompteDependant() {
+    if (!codeLiaisonSaisi.trim()) return;
+    try {
+      const q = query(collectionGroup(db, 'dependants'), where('codeLiaison', '==', codeLiaisonSaisi.trim().toUpperCase()));
+      const snap = await getDocs(q);
+      if (snap.empty) {
+        Alert.alert('Code invalide', "Aucun profil ne correspond a ce code.");
+        return;
+      }
+      const dependantDoc = snap.docs[0];
+      const familleTrouveeId = dependantDoc.ref.parent.parent.id;
+      await setDoc(doc(db, 'familles', familleTrouveeId, 'membres', user.uid), {
+        nom: user.email,
+        role: 'membre',
+        rejointLe: new Date().toISOString(),
+      });
+      await updateDoc(doc(db, 'utilisateurs', user.uid), { familleId: familleTrouveeId });
+      await updateDoc(dependantDoc.ref, { compteLie: user.uid });
+      setCodeLiaisonSaisi('');
+      Alert.alert('Succes', 'Ton compte est maintenant lie.');
+      chargerFamille();
+    } catch (error) {
+      Alert.alert('Erreur', "Impossible de lier: " + error.message);
     }
   }
   if (loading) {

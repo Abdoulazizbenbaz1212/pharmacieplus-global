@@ -1,0 +1,25 @@
+
+            {dependants.find(d => d.compteLie === modalMembre.id) && (
+              <>
+                <View style={styles.infoCard}>
+                  <Text style={styles.infoLabel}>Groupe sanguin</Text>
+                  <Text style={styles.infoValue}>
+                    {dependants.find(d => d.compteLie === modalMembre.id).groupeSanguin || 'Non renseigne'}
+                  </Text>
+                </View>
+
+                <View style={styles.infoCard}>
+                  <Text style={styles.infoLabel}>Allergies</Text>
+                  <Text style={styles.infoValue}>
+                    {dependants.find(d => d.compteLie === modalMembre.id).allergies || 'Aucun'}
+                  </Text>
+                </View>
+
+                <View style={styles.infoCard}>
+                  <Text style={styles.infoLabel}>Maladies chroniques</Text>
+                  <Text style={styles.infoValue}>
+                    {dependants.find(d => d.compteLie === modalMembre.id).maladiesChroniques || 'Aucun'}
+                  </Text>
+                </View>
+              </>
+            )}

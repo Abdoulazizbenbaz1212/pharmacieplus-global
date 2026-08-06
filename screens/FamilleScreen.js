@@ -562,6 +562,31 @@ export default function FamilleScreen() {
               </Text>
             </View>
 
+            {dependants.find(d => d.compteLie === modalMembre.id) && (
+              <>
+                <View style={styles.infoCard}>
+                  <Text style={styles.infoLabel}>Groupe sanguin</Text>
+                  <Text style={styles.infoValue}>
+                    {dependants.find(d => d.compteLie === modalMembre.id).groupeSanguin || 'Non renseigne'}
+                  </Text>
+                </View>
+
+                <View style={styles.infoCard}>
+                  <Text style={styles.infoLabel}>Allergies</Text>
+                  <Text style={styles.infoValue}>
+                    {dependants.find(d => d.compteLie === modalMembre.id).allergies || 'Aucun'}
+                  </Text>
+                </View>
+
+                <View style={styles.infoCard}>
+                  <Text style={styles.infoLabel}>Maladies chroniques</Text>
+                  <Text style={styles.infoValue}>
+                    {dependants.find(d => d.compteLie === modalMembre.id).maladiesChroniques || 'Aucun'}
+                  </Text>
+                </View>
+              </>
+            )}
+
             {membres.find(x => x.id === user.uid) && membres.find(x => x.id === user.uid).role === 'proprietaire' && modalMembre.id !== user.uid && (
               <TouchableOpacity style={styles.deleteBtn} onPress={() => supprimerMembre(modalMembre.id)}>
                 <Text style={styles.deleteBtnText}>Retirer ce membre</Text>

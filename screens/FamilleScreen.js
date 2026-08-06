@@ -317,6 +317,20 @@ export default function FamilleScreen() {
           <TouchableOpacity style={styles.secondaryBtn} onPress={rejoindreFamille} disabled={jointure}>
             {jointure ? <ActivityIndicator color="#fff" /> : <Text style={styles.secondaryBtnText}>Rejoindre</Text>}
           </TouchableOpacity>
+
+          <Text style={styles.ou}>ou</Text>
+
+          <Text style={styles.label}>Lier mon compte a un proche</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Code recu de ton parent"
+            value={codeLiaisonSaisi}
+            onChangeText={setCodeLiaisonSaisi}
+            autoCapitalize="characters"
+          />
+          <TouchableOpacity style={styles.secondaryBtn} onPress={lierCompteDependant}>
+            <Text style={styles.secondaryBtnText}>Lier mon compte</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     );

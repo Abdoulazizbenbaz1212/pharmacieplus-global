@@ -1,0 +1,14 @@
+
+          <Text style={styles.ou}>ou</Text>
+
+          <Text style={styles.label}>Lier mon compte a un proche</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Code recu de ton parent"
+            value={codeLiaisonSaisi}
+            onChangeText={setCodeLiaisonSaisi}
+            autoCapitalize="characters"
+          />
+          <TouchableOpacity style={styles.secondaryBtn} onPress={lierCompteDependant}>
+            <Text style={styles.secondaryBtnText}>Lier mon compte</Text>
+          </TouchableOpacity>

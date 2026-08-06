@@ -1,0 +1,3 @@
+          <TouchableOpacity onPress={() => setModalAjout(false)} style={{ marginBottom: 10 }}>
+            <Text style={{ fontSize: 24 }}>⬅️</Text>
+          </TouchableOpacity>

@@ -437,6 +437,9 @@ export default function FamilleScreen() {
 
       <Modal visible={modalAjout} animationType="slide" onRequestClose={() => setModalAjout(false)}>
         <ScrollView style={styles.modalContainer} contentContainerStyle={{ padding: 20 }}>
+          <TouchableOpacity onPress={() => setModalAjout(false)} style={{ marginBottom: 10 }}>
+            <Text style={{ fontSize: 24 }}>⬅️</Text>
+          </TouchableOpacity>
           <Text style={styles.modalTitle}>Ajouter un proche</Text>
 
           <Text style={styles.label}>Nom complet *</Text>

@@ -8,6 +8,7 @@ import {
 } from 'firebase/firestore';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
+import TextRecognition from '@react-native-ml-kit/text-recognition';
 import { db } from '../config/firebase';
 
 const TYPES_DOCUMENTS = [
@@ -30,6 +31,9 @@ export default function DocumentsMedicaux({ visible, onClose, collectionRef, tit
   const [imageBase64, setImageBase64] = useState(null);
   const [enregistrement, setEnregistrement] = useState(false);
   const [documentAgrandi, setDocumentAgrandi] = useState(null);
+  const [imageUri, setImageUri] = useState(null);
+  const [texteExtrait, setTexteExtrait] = useState('');
+  const [ocrEnCours, setOcrEnCours] = useState(false);
 
   const chargerDocuments = useCallback(async () => {
     if (!collectionRef) return;
@@ -66,6 +70,9 @@ export default function DocumentsMedicaux({ visible, onClose, collectionRef, tit
       { compress: 0.6, format: ImageManipulator.SaveFormat.JPEG, base64: true }
     );
     setImageBase64(manipule.base64);
+    setImageUri(result.assets[0].uri);
+    setTexteExtrait("");
+    lancerOCR(manipule.uri);
   }
 
   async function prendrePhoto() {
@@ -82,6 +89,9 @@ export default function DocumentsMedicaux({ visible, onClose, collectionRef, tit
       { compress: 0.6, format: ImageManipulator.SaveFormat.JPEG, base64: true }
     );
     setImageBase64(manipule.base64);
+    setImageUri(result.assets[0].uri);
+    setTexteExtrait("");
+    lancerOCR(manipule.uri);
   }
 
   async function ajouterDocument() {
@@ -186,6 +196,18 @@ export default function DocumentsMedicaux({ visible, onClose, collectionRef, tit
               <Text style={{ color: '#7f8c8d' }}>Aucune photo choisie</Text>
             </View>
           )}
+
+          {ocrEnCours ? (
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+              <ActivityIndicator size="small" color="#e74c3c" />
+              <Text style={{ marginLeft: 8, color: '#7f8c8d', fontSize: 13 }}>Lecture du texte en cours...</Text>
+            </View>
+          ) : texteExtrait ? (
+            <View style={{ backgroundColor: '#f4f7f8', borderRadius: 10, padding: 12, marginTop: 10 }}>
+              <Text style={{ fontSize: 12, fontWeight: '700', color: '#2c3e50', marginBottom: 6 }}>Texte detecte</Text>
+              <Text style={{ fontSize: 13, color: '#34495e' }}>{texteExtrait}</Text>
+            </View>
+          ) : null}
 
           <View style={{ flexDirection: 'row', gap: 10, marginTop: 10 }}>
             <TouchableOpacity style={styles.choixBtn} onPress={prendrePhoto}>

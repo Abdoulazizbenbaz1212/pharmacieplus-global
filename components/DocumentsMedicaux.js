@@ -104,6 +104,7 @@ export default function DocumentsMedicaux({ visible, onClose, collectionRef, tit
       await addDoc(collectionRef, {
         type: typeSelectionne,
         imageBase64,
+        texteOcr: texteExtrait,
         createdAt: serverTimestamp(),
       });
       setModalAjout(false);
@@ -222,7 +223,7 @@ export default function DocumentsMedicaux({ visible, onClose, collectionRef, tit
             {enregistrement ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryBtnText}>Enregistrer</Text>}
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.cancelBtn} onPress={() => { setModalAjout(false); setImageBase64(null); }}>
+          <TouchableOpacity style={styles.cancelBtn} onPress={() => { setModalAjout(false); setImageBase64(null); setImageUri(null); setTexteExtrait(''); }}>
             <Text style={styles.cancelBtnText}>Annuler</Text>
           </TouchableOpacity>
         </ScrollView>

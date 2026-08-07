@@ -6,12 +6,14 @@ import {
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db, auth } from '../config/firebase';
 import { signOut } from 'firebase/auth';
+import QRCode from 'react-native-qrcode-svg';
 
 export default function ProfilEtablissementScreen() {
   const [nom, setNom] = useState('');
   const [adresse, setAdresse] = useState('');
   const [telephone, setTelephone] = useState('');
   const [horaires, setHoraires] = useState('');
+  const [modeAccueil, setModeAccueil] = useState('fiche');
   const [loading, setLoading] = useState(true);
   const [enregistrementEnCours, setEnregistrementEnCours] = useState(false);
   const [modeEdition, setModeEdition] = useState(false);
@@ -30,6 +32,7 @@ export default function ProfilEtablissementScreen() {
         setAdresse(data.adresse || '');
         setTelephone(data.telephone || '');
         setHoraires(data.horaires || '');
+        setModeAccueil(data.modeAccueil || 'fiche');
       } else {
         setModeEdition(true);
       }
@@ -48,6 +51,7 @@ export default function ProfilEtablissementScreen() {
         adresse,
         telephone,
         horaires,
+        modeAccueil,
         maj_le: new Date().toISOString(),
       });
       Alert.alert('Succes', 'Votre profil a ete enregistre');
@@ -64,6 +68,12 @@ export default function ProfilEtablissementScreen() {
       { text: 'Annuler', style: 'cancel' },
       { text: 'Se deconnecter', style: 'destructive', onPress: () => signOut(auth) },
     ]);
+  };
+
+  const modeAccueilLabel = (m) => {
+    if (m === 'rdv') return 'Prise de RDV / Commande directe';
+    if (m === 'contact') return 'Juste les coordonnees';
+    return 'Fiche complete';
   };
 
   if (loading) {
@@ -106,6 +116,25 @@ export default function ProfilEtablissementScreen() {
             <Text style={styles.infoValue}>{horaires || 'Non renseignes'}</Text>
           </View>
 
+          <View style={styles.infoCard}>
+            <Text style={styles.infoLabel}>Mode d'accueil du QR code</Text>
+            <Text style={styles.infoValue}>{modeAccueilLabel(modeAccueil)}</Text>
+          </View>
+
+          {nom ? (
+            <View style={styles.qrCard}>
+              <QRCode
+                value={JSON.stringify({
+                  etablissementId: auth.currentUser.uid,
+                  nom,
+                  mode: modeAccueil,
+                })}
+                size={180}
+              />
+              <Text style={styles.qrLabel}>Mon QR code etablissement</Text>
+            </View>
+          ) : null}
+
           <TouchableOpacity style={styles.editBtn} onPress={() => setModeEdition(true)}>
             <Text style={styles.editBtnText}>Modifier mes informations</Text>
           </TouchableOpacity>
@@ -145,6 +174,34 @@ export default function ProfilEtablissementScreen() {
             onChangeText={setHoraires}
           />
 
+          <Text style={styles.label}>Quand un client scanne mon QR code</Text>
+          <View style={styles.modeRow}>
+            <TouchableOpacity
+              style={[styles.modeBtn, modeAccueil === 'fiche' && styles.modeBtnActive]}
+              onPress={() => setModeAccueil('fiche')}
+            >
+              <Text style={[styles.modeBtnText, modeAccueil === 'fiche' && styles.modeBtnTextActive]}>
+                Fiche complete
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.modeBtn, modeAccueil === 'rdv' && styles.modeBtnActive]}
+              onPress={() => setModeAccueil('rdv')}
+            >
+              <Text style={[styles.modeBtnText, modeAccueil === 'rdv' && styles.modeBtnTextActive]}>
+                RDV / Commande
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.modeBtn, modeAccueil === 'contact' && styles.modeBtnActive]}
+              onPress={() => setModeAccueil('contact')}
+            >
+              <Text style={[styles.modeBtnText, modeAccueil === 'contact' && styles.modeBtnTextActive]}>
+                Juste contact
+              </Text>
+            </TouchableOpacity>
+          </View>
+
           {enregistrementEnCours ? (
             <ActivityIndicator size="large" color="#3498db" style={{ marginTop: 20 }} />
           ) : (
@@ -175,6 +232,10 @@ const styles = StyleSheet.create({
   },
   infoLabel: { fontSize: 12, fontWeight: '600', color: '#6b7b82', marginBottom: 4 },
   infoValue: { fontSize: 15, color: '#1a2b34', fontWeight: '600' },
+  qrCard: {
+    backgroundColor: '#fff', borderRadius: 12, padding: 20, marginBottom: 10, alignItems: 'center',
+  },
+  qrLabel: { marginTop: 10, fontSize: 13, color: '#6b7b82', fontWeight: '600' },
   editBtn: {
     backgroundColor: '#3498db', borderRadius: 10, paddingVertical: 14,
     alignItems: 'center', marginTop: 15,
@@ -186,6 +247,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff', borderWidth: 1, borderColor: '#ddd', borderRadius: 10,
     paddingHorizontal: 14, paddingVertical: 12, fontSize: 15,
   },
+  modeRow: { flexDirection: 'row', gap: 8 },
+  modeBtn: {
+    flex: 1, paddingVertical: 10, borderRadius: 8, alignItems: 'center',
+    backgroundColor: '#fff', borderWidth: 1, borderColor: '#ddd',
+  },
+  modeBtnActive: { backgroundColor: '#3498db', borderColor: '#3498db' },
+  modeBtnText: { fontSize: 12, fontWeight: '700', color: '#6b7b82', textAlign: 'center' },
+  modeBtnTextActive: { color: '#fff' },
   saveBtn: {
     backgroundColor: '#3498db', borderRadius: 10, paddingVertical: 15,
     alignItems: 'center', marginTop: 25,

@@ -9,6 +9,7 @@ import {
 } from 'firebase/firestore';
 import { db, auth } from '../config/firebase';
 import DocumentsMedicaux from '../components/DocumentsMedicaux';
+import QRCode from 'react-native-qrcode-svg';
 
 const GROUPES_SANGUINS = ['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-'];
 const LIENS_PARENTE = ['Père', 'Mère', 'Enfant', 'Conjoint(e)', 'Grand-parent', 'Autre'];
@@ -519,6 +520,21 @@ export default function FamilleScreen() {
               <Text style={styles.infoValue}>
                 {modalDetail.contactUrgenceNom ? `${modalDetail.contactUrgenceNom} - ${modalDetail.contactUrgenceTel}` : 'Non renseigné'}
               </Text>
+            </View>
+
+            <View style={{ alignItems: 'center', marginVertical: 15 }}>
+              <QRCode
+                value={JSON.stringify({
+                  nom: modalDetail.nom,
+                  groupeSanguin: modalDetail.groupeSanguin || '',
+                  allergies: modalDetail.allergies || '',
+                  maladiesChroniques: modalDetail.maladiesChroniques || '',
+                  contactUrgenceNom: modalDetail.contactUrgenceNom || '',
+                  contactUrgenceTel: modalDetail.contactUrgenceTel || '',
+                })}
+                size={180}
+              />
+              <Text style={{ marginTop: 8, color: '#666', fontSize: 12 }}>Carte sante numerique</Text>
             </View>
 
             <TouchableOpacity style={styles.documentsBtn} onPress={() => setDocumentsProcheVisible(true)}>

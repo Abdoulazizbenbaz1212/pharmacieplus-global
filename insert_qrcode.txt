@@ -1,0 +1,15 @@
+
+            <View style={{ alignItems: 'center', marginVertical: 15 }}>
+              <QRCode
+                value={JSON.stringify({
+                  nom: modalDetail.nom,
+                  groupeSanguin: modalDetail.groupeSanguin || '',
+                  allergies: modalDetail.allergies || '',
+                  maladiesChroniques: modalDetail.maladiesChroniques || '',
+                  contactUrgenceNom: modalDetail.contactUrgenceNom || '',
+                  contactUrgenceTel: modalDetail.contactUrgenceTel || '',
+                })}
+                size={180}
+              />
+              <Text style={{ marginTop: 8, color: '#666', fontSize: 12 }}>Carte sante numerique</Text>
+            </View>

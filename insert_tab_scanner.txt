@@ -1,0 +1,2 @@
+      <Tab.Screen name="Scanner" component={ScannerEtablissementScreen}
+        options={{ title: 'Scanner un etablissement', tabBarLabel: 'Scanner', tabBarIcon: () => <TabIcon emoji="📷" /> }} />

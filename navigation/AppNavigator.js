@@ -18,6 +18,7 @@ import ProfilEtablissementScreen from '../screens/ProfilEtablissementScreen';
 import MarketplaceScreen from '../screens/MarketplaceScreen';
 import MessagesScreen from '../screens/MessagesScreen';
 import FamilleScreen from '../screens/FamilleScreen';
+import ScannerEtablissementScreen from '../screens/ScannerEtablissementScreen';
 import AuthScreen from '../screens/AuthScreen';
 import DashboardHopitalScreen from '../screens/DashboardHopitalScreen';
 import DashboardPharmacieScreen from '../screens/DashboardPharmacieScreen';
@@ -92,6 +93,8 @@ function TabsPatient() {
         options={{ title: 'Ma famille', tabBarLabel: 'Famille', tabBarIcon: () => <TabIcon emoji="👨‍👩‍👧‍👦" /> }} />
       <Tab.Screen name="Profil" component={ProfilScreen}
         options={{ title: 'Coffre-fort medical', tabBarLabel: 'Profil', tabBarIcon: () => <TabIcon emoji="🗂️" /> }} />
+      <Tab.Screen name="Scanner" component={ScannerEtablissementScreen}
+        options={{ title: 'Scanner un etablissement', tabBarLabel: 'Scanner', tabBarIcon: () => <TabIcon emoji="📷" /> }} />
       <Tab.Screen name="SOS" component={HomeScreen}
         options={{ title: 'Pharmacie+ Global', tabBarLabel: 'SOS', tabBarIcon: () => <TabIcon emoji="🆘" /> }} />
     </Tab.Navigator>

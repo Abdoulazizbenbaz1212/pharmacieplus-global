@@ -1,0 +1,12 @@
+
+          {role === 'pharmacie' && (
+            <View style={styles.infoCard}>
+              <Text style={styles.infoLabel}>Numero d'agrement ONPC</Text>
+              <Text style={styles.infoValue}>{numeroAgrement || 'Non renseigne'}</Text>
+              {!numeroAgrement && (
+                <Text style={styles.avertissement}>
+                  ⚠️ Requis pour la conformite reglementaire (ONPC Cameroun)
+                </Text>
+              )}
+            </View>
+          )}

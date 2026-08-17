@@ -14,6 +14,8 @@ export default function ProfilEtablissementScreen() {
   const [telephone, setTelephone] = useState('');
   const [horaires, setHoraires] = useState('');
   const [modeAccueil, setModeAccueil] = useState('fiche');
+  const [role, setRole] = useState('');
+  const [numeroAgrement, setNumeroAgrement] = useState('');
   const [loading, setLoading] = useState(true);
   const [enregistrementEnCours, setEnregistrementEnCours] = useState(false);
   const [modeEdition, setModeEdition] = useState(false);
@@ -24,6 +26,8 @@ export default function ProfilEtablissementScreen() {
 
   const chargerProfil = async () => {
     try {
+      const userSnap = await getDoc(doc(db, 'utilisateurs', auth.currentUser.uid));
+      if (userSnap.exists()) setRole(userSnap.data().role || '');
       const docRef = doc(db, 'profils_etablissements', auth.currentUser.uid);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
@@ -33,6 +37,7 @@ export default function ProfilEtablissementScreen() {
         setTelephone(data.telephone || '');
         setHoraires(data.horaires || '');
         setModeAccueil(data.modeAccueil || 'fiche');
+        setNumeroAgrement(data.numeroAgrement || '');
       } else {
         setModeEdition(true);
       }
@@ -52,6 +57,7 @@ export default function ProfilEtablissementScreen() {
         telephone,
         horaires,
         modeAccueil,
+        numeroAgrement,
         maj_le: new Date().toISOString(),
       });
       Alert.alert('Succes', 'Votre profil a ete enregistre');
@@ -116,6 +122,18 @@ export default function ProfilEtablissementScreen() {
             <Text style={styles.infoValue}>{horaires || 'Non renseignes'}</Text>
           </View>
 
+          {role === 'pharmacie' && (
+            <View style={styles.infoCard}>
+              <Text style={styles.infoLabel}>Numero d'agrement / licence professionnelle</Text>
+              <Text style={styles.infoValue}>{numeroAgrement || 'Non renseigne'}</Text>
+              {!numeroAgrement && (
+                <Text style={styles.avertissement}>
+                  ⚠️ Requis pour la conformite reglementaire dans votre pays
+                </Text>
+              )}
+            </View>
+          )}
+
           <View style={styles.infoCard}>
             <Text style={styles.infoLabel}>Mode d'accueil du QR code</Text>
             <Text style={styles.infoValue}>{modeAccueilLabel(modeAccueil)}</Text>
@@ -173,6 +191,18 @@ export default function ProfilEtablissementScreen() {
             value={horaires}
             onChangeText={setHoraires}
           />
+
+          {role === 'pharmacie' && (
+            <>
+              <Text style={styles.label}>Numero d'agrement / licence professionnelle</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Ex: numero delivre par l'ordre des pharmaciens"
+                value={numeroAgrement}
+                onChangeText={setNumeroAgrement}
+              />
+            </>
+          )}
 
           <Text style={styles.label}>Quand un client scanne mon QR code</Text>
           <View style={styles.modeRow}>
@@ -232,6 +262,7 @@ const styles = StyleSheet.create({
   },
   infoLabel: { fontSize: 12, fontWeight: '600', color: '#6b7b82', marginBottom: 4 },
   infoValue: { fontSize: 15, color: '#1a2b34', fontWeight: '600' },
+  avertissement: { fontSize: 12, color: '#e67e22', marginTop: 6, fontWeight: '600' },
   qrCard: {
     backgroundColor: '#fff', borderRadius: 12, padding: 20, marginBottom: 10, alignItems: 'center',
   },

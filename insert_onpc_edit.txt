@@ -1,0 +1,12 @@
+
+          {role === 'pharmacie' && (
+            <>
+              <Text style={styles.label}>Numero d'agrement / licence professionnelle</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Ex: numero delivre par l'ordre des pharmaciens"
+                value={numeroAgrement}
+                onChangeText={setNumeroAgrement}
+              />
+            </>
+          )}

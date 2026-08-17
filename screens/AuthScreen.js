@@ -23,6 +23,7 @@ export default function AuthScreen() {
   const [email, setEmail] = useState('');
   const [motDePasse, setMotDePasse] = useState('');
   const [confirmationMotDePasse, setConfirmationMotDePasse] = useState('');
+  const [cguAcceptees, setCguAcceptees] = useState(false);
   const [roleSelectionne, setRoleSelectionne] = useState('patient');
   const [loading, setLoading] = useState(false);
 
@@ -38,6 +39,10 @@ export default function AuthScreen() {
       }
       if (motDePasse !== confirmationMotDePasse) {
         Alert.alert('Erreur', 'Les deux mots de passe ne correspondent pas');
+        return;
+      }
+      if (!cguAcceptees) {
+        Alert.alert('Conditions requises', "Merci d'accepter les conditions d'utilisation pour continuer.");
         return;
       }
       if (motDePasse.length < 6) {
@@ -158,6 +163,21 @@ export default function AuthScreen() {
             </View>
           )}
 
+          {mode === 'inscription' && (
+            <TouchableOpacity
+              style={styles.cguRow}
+              onPress={() => setCguAcceptees(!cguAcceptees)}
+              activeOpacity={0.7}
+            >
+              <View style={[styles.checkbox, cguAcceptees && styles.checkboxActive]}>
+                {cguAcceptees && <Text style={{ color: '#fff', fontSize: 12 }}>✓</Text>}
+              </View>
+              <Text style={styles.cguText}>
+                J'accepte les conditions d'utilisation. Je confirme que la vente de medicaments necessitant une ordonnance sera toujours accompagnee d'une ordonnance valide, conformement a la reglementation en vigueur dans mon pays.
+              </Text>
+            </TouchableOpacity>
+          )}
+
           {loading ? (
             <ActivityIndicator size="large" color="#0e9594" style={{ marginTop: 20 }} />
           ) : (
@@ -226,6 +246,13 @@ const styles = StyleSheet.create({
     alignItems: 'center', marginTop: 4,
   },
   submitBtnText: { color: '#fff', fontSize: 16, fontWeight: '700' },
+  cguRow: { flexDirection: 'row', alignItems: 'flex-start', marginTop: 15, marginBottom: 5 },
+  checkbox: {
+    width: 22, height: 22, borderRadius: 5, borderWidth: 2, borderColor: '#0e9594',
+    alignItems: 'center', justifyContent: 'center', marginRight: 10, marginTop: 2,
+  },
+  checkboxActive: { backgroundColor: '#0e9594' },
+  cguText: { flex: 1, fontSize: 12, color: '#5a6472', lineHeight: 17 },
   switchBtn: { marginTop: 24, alignItems: 'center' },
   switchBtnText: { color: '#6b7b82', fontSize: 14 },
   switchBtnTextBold: { color: '#0e9594', fontWeight: '700' },

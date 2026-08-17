@@ -1,0 +1,15 @@
+
+          {mode === 'inscription' && (
+            <TouchableOpacity
+              style={styles.cguRow}
+              onPress={() => setCguAcceptees(!cguAcceptees)}
+              activeOpacity={0.7}
+            >
+              <View style={[styles.checkbox, cguAcceptees && styles.checkboxActive]}>
+                {cguAcceptees && <Text style={{ color: '#fff', fontSize: 12 }}>✓</Text>}
+              </View>
+              <Text style={styles.cguText}>
+                J'accepte les conditions d'utilisation. Je confirme que la vente de medicaments necessitant une ordonnance sera toujours accompagnee d'une ordonnance valide, conformement a la reglementation en vigueur dans mon pays.
+              </Text>
+            </TouchableOpacity>
+          )}

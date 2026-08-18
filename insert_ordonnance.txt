@@ -1,0 +1,15 @@
+
+          {categorie === 'Médicaments' && (
+            <TouchableOpacity
+              style={styles.ordonnanceRow}
+              onPress={() => setOrdonnanceRequise(!ordonnanceRequise)}
+              activeOpacity={0.7}
+            >
+              <View style={[styles.checkboxOrdonnance, ordonnanceRequise && styles.checkboxOrdonnanceActive]}>
+                {ordonnanceRequise && <Text style={{ color: '#fff', fontSize: 12 }}>✓</Text>}
+              </View>
+              <Text style={styles.ordonnanceText}>
+                Ce medicament necessite une ordonnance medicale
+              </Text>
+            </TouchableOpacity>
+          )}

@@ -81,6 +81,14 @@ function AnnonceCard({ item, currentUserId, onDeleted, onOpenChat }) {
       </View>
       {ouvert && (
         <View style={styles.details}>
+
+          {item.ordonnanceRequise && (
+            <View style={styles.avertissementBox}>
+              <Text style={styles.avertissementBoxText}>
+                ⚠️ Ordonnance medicale obligatoire pour ce medicament. Tiens-la prete pour le vendeur.
+              </Text>
+            </View>
+          )}
           <Text style={styles.description}>{item.description || 'Aucune description.'}</Text>
 
           {!estProprietaire && (
@@ -128,6 +136,7 @@ export default function MarketplaceScreen() {
   const [description, setDescription] = useState('');
   const [prix, setPrix] = useState('');
   const [categorie, setCategorie] = useState('Médicaments');
+  const [ordonnanceRequise, setOrdonnanceRequise] = useState(false);
   const [imageBase64, setImageBase64] = useState(null);
   const [publication, setPublication] = useState(false);
 
@@ -235,6 +244,7 @@ export default function MarketplaceScreen() {
         prix: Number(prix),
         categorie,
         imageBase64: imageBase64 || null,
+        ordonnanceRequise: categorie === 'Médicaments' ? ordonnanceRequise : false,
         vendeurId: user.uid,
         vendeurNom: monNom,
         vendeurRole: monRole,
@@ -242,7 +252,7 @@ export default function MarketplaceScreen() {
         createdAt: serverTimestamp(),
       });
       setModalVisible(false);
-      setTitre(''); setDescription(''); setPrix(''); setImageBase64(null); setCategorie('Médicaments');
+      setTitre(''); setDescription(''); setPrix(''); setImageBase64(null); setCategorie('Médicaments'); setOrdonnanceRequise(false);
       chargerAnnonces();
       Alert.alert('Publié', 'Ton annonce est en ligne.');
     } catch (error) {
@@ -337,6 +347,22 @@ export default function MarketplaceScreen() {
                 <Text style={[styles.catChipText, categorie === cat && styles.catChipTextActive]}>{cat}</Text>
               </TouchableOpacity>
             ))}
+
+          </View>
+          {categorie === 'Médicaments' && (
+            <TouchableOpacity
+              style={styles.ordonnanceRow}
+              onPress={() => setOrdonnanceRequise(!ordonnanceRequise)}
+              activeOpacity={0.7}
+            >
+              <View style={[styles.checkboxOrdonnance, ordonnanceRequise && styles.checkboxOrdonnanceActive]}>
+                {ordonnanceRequise && <Text style={{ color: '#fff', fontSize: 12 }}>✓</Text>}
+              </View>
+              <Text style={styles.ordonnanceText}>
+                Ce medicament necessite une ordonnance medicale
+              </Text>
+            </TouchableOpacity>
+          )}
           </View>
 
           <Text style={styles.label}>Photo</Text>
@@ -389,6 +415,8 @@ const styles = StyleSheet.create({
   emoji: { fontSize: 50, marginBottom: 10 },
   title: { fontSize: 20, fontWeight: 'bold', color: '#2c3e50' },
   subtitle: { fontSize: 14, color: '#7f8c8d', marginTop: 8, textAlign: 'center' },
+  avertissementBox: { backgroundColor: '#fef5e7', borderRadius: 8, padding: 10, marginBottom: 10 },
+  avertissementBoxText: { color: '#e67e22', fontSize: 12, fontWeight: '600' },
   card: {
     marginHorizontal: 15, marginTop: 12, padding: 12, backgroundColor: '#f8f9fa',
     borderRadius: 10, borderWidth: 1, borderColor: '#eee',
@@ -398,6 +426,13 @@ const styles = StyleSheet.create({
   thumbPlaceholder: { alignItems: 'center', justifyContent: 'center' },
   titre: { fontSize: 15, fontWeight: 'bold', color: '#2c3e50' },
   categorie: { fontSize: 12, color: '#3498db', marginTop: 2 },
+  ordonnanceRow: { flexDirection: 'row', alignItems: 'flex-start', marginTop: 12, marginBottom: 5 },
+  checkboxOrdonnance: {
+    width: 22, height: 22, borderRadius: 5, borderWidth: 2, borderColor: '#e67e22',
+    alignItems: 'center', justifyContent: 'center', marginRight: 10, marginTop: 2,
+  },
+  checkboxOrdonnanceActive: { backgroundColor: '#e67e22' },
+  ordonnanceText: { flex: 1, fontSize: 13, color: '#2c3e50', fontWeight: '600' },
   vendeur: { fontSize: 11, color: '#7f8c8d', marginTop: 2 },
   prix: { fontSize: 15, fontWeight: 'bold', color: '#27ae60' },
   details: { marginTop: 10, paddingTop: 10, borderTopWidth: 1, borderTopColor: '#eee' },

@@ -1,0 +1,8 @@
+
+          {item.ordonnanceRequise && (
+            <View style={styles.avertissementBox}>
+              <Text style={styles.avertissementBoxText}>
+                ⚠️ Ordonnance medicale obligatoire pour ce medicament. Tiens-la prete pour le vendeur.
+              </Text>
+            </View>
+          )}

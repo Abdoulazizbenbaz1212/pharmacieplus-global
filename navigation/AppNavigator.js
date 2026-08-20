@@ -20,6 +20,7 @@ import MessagesScreen from '../screens/MessagesScreen';
 import FamilleScreen from '../screens/FamilleScreen';
 import ScannerEtablissementScreen from '../screens/ScannerEtablissementScreen';
 import CommandesScreen from '../screens/CommandesScreen';
+import PlusScreen from '../screens/PlusScreen';
 import AuthScreen from '../screens/AuthScreen';
 import DashboardHopitalScreen from '../screens/DashboardHopitalScreen';
 import DashboardPharmacieScreen from '../screens/DashboardPharmacieScreen';
@@ -82,24 +83,26 @@ function TabsPatient() {
     >
       <Tab.Screen name="Hopitaux" component={HopitauxScreen}
         options={{ title: 'Hopitaux a proximite', tabBarLabel: 'Hopitaux', tabBarIcon: () => <TabIcon emoji="🏥" /> }} />
-      <Tab.Screen name="Medicaments" component={MedicamentsScreen}
-        options={{ title: 'Medicaments', tabBarLabel: 'Medicaments', tabBarIcon: () => <TabIcon emoji="💊" /> }} />
-      <Tab.Screen name="Rdv" component={RdvScreen}
-        options={{ title: 'Rendez-vous', tabBarLabel: 'RDV', tabBarIcon: () => <TabIcon emoji="📅" /> }} />
       <Tab.Screen name="Marketplace" component={MarketplaceScreen}
         options={{ title: 'Marketplace', tabBarLabel: 'Marketplace', tabBarIcon: () => <TabIcon emoji="🛒" /> }} />
       <Tab.Screen name="Messages" component={MessagesScreen}
-        options={{ title: 'Messages', tabBarLabel: 'Messages', tabBarIcon: () => <TabIcon emoji="💬" /> }} />
+        options={{ title: 'Messages', tabBarLabel: 'Messages', tabBarIcon: () => <TabIcon emoji=" 💬" /> }} />
       <Tab.Screen name="Famille" component={FamilleScreen}
         options={{ title: 'Ma famille', tabBarLabel: 'Famille', tabBarIcon: () => <TabIcon emoji="👨‍👩‍👧‍👦" /> }} />
-      <Tab.Screen name="Commandes" component={CommandesScreen}
-        options={{ title: 'Mes commandes', tabBarLabel: 'Commandes', tabBarIcon: () => <TabIcon emoji="📦" /> }} />
-      <Tab.Screen name="Profil" component={ProfilScreen}
-        options={{ title: 'Coffre-fort medical', tabBarLabel: 'Profil', tabBarIcon: () => <TabIcon emoji="🗂️" /> }} />
-      <Tab.Screen name="Scanner" component={ScannerEtablissementScreen}
-        options={{ title: 'Scanner un etablissement', tabBarLabel: 'Scanner', tabBarIcon: () => <TabIcon emoji="📷" /> }} />
       <Tab.Screen name="SOS" component={HomeScreen}
         options={{ title: 'Pharmacie+ Global', tabBarLabel: 'SOS', tabBarIcon: () => <TabIcon emoji="🆘" /> }} />
+      <Tab.Screen name="Plus" component={PlusScreen}
+        options={{ title: 'Plus', tabBarLabel: 'Plus', tabBarIcon: () => <TabIcon emoji="☰" /> }} />
+      <Tab.Screen name="Medicaments" component={MedicamentsScreen}
+        options={{ title: 'Medicaments', tabBarButton: () => null }} />
+      <Tab.Screen name="Rdv" component={RdvScreen}
+        options={{ title: 'Rendez-vous', tabBarButton: () => null }} />
+      <Tab.Screen name="Commandes" component={CommandesScreen}
+        options={{ title: 'Mes commandes', tabBarButton: () => null }} />
+      <Tab.Screen name="Profil" component={ProfilScreen}
+        options={{ title: 'Coffre-fort medical', tabBarButton: () => null }} />
+      <Tab.Screen name="Scanner" component={ScannerEtablissementScreen}
+        options={{ title: 'Scanner un etablissement', tabBarButton: () => null }} />
     </Tab.Navigator>
   );
 }

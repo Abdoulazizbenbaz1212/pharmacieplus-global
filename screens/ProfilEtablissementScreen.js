@@ -7,6 +7,7 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db, auth } from '../config/firebase';
 import { signOut } from 'firebase/auth';
 import QRCode from 'react-native-qrcode-svg';
+import * as Location from 'expo-location';
 
 export default function ProfilEtablissementScreen() {
   const [nom, setNom] = useState('');
@@ -19,6 +20,9 @@ export default function ProfilEtablissementScreen() {
   const [loading, setLoading] = useState(true);
   const [enregistrementEnCours, setEnregistrementEnCours] = useState(false);
   const [modeEdition, setModeEdition] = useState(false);
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
+  const [captureEnCours, setCaptureEnCours] = useState(false);
 
   useEffect(() => {
     chargerProfil();
@@ -38,6 +42,8 @@ export default function ProfilEtablissementScreen() {
         setHoraires(data.horaires || '');
         setModeAccueil(data.modeAccueil || 'fiche');
         setNumeroAgrement(data.numeroAgrement || '');
+        setLatitude(data.latitude || null);
+        setLongitude(data.longitude || null);
       } else {
         setModeEdition(true);
       }
@@ -58,6 +64,8 @@ export default function ProfilEtablissementScreen() {
         horaires,
         modeAccueil,
         numeroAgrement,
+        latitude,
+        longitude,
         maj_le: new Date().toISOString(),
       });
       Alert.alert('Succes', 'Votre profil a ete enregistre');
@@ -76,6 +84,25 @@ export default function ProfilEtablissementScreen() {
     ]);
   };
 
+
+  const capturerPosition = async () => {
+    setCaptureEnCours(true);
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission refusee', 'Active la localisation pour enregistrer ta position.');
+        return;
+      }
+      const pos = await Location.getCurrentPositionAsync({});
+      setLatitude(pos.coords.latitude);
+      setLongitude(pos.coords.longitude);
+      Alert.alert('Position capturee', "Ta position a ete enregistree. N'oublie pas de sauvegarder.");
+    } catch (error) {
+      Alert.alert('Erreur', 'Impossible de recuperer la position: ' + error.message);
+    } finally {
+      setCaptureEnCours(false);
+    }
+  };
   const modeAccueilLabel = (m) => {
     if (m === 'rdv') return 'Prise de RDV / Commande directe';
     if (m === 'contact') return 'Juste les coordonnees';
@@ -204,6 +231,21 @@ export default function ProfilEtablissementScreen() {
             </>
           )}
 
+          <Text style={styles.label}>Position GPS (pour te faire trouver sur la carte)</Text>
+          <TouchableOpacity
+            style={styles.gpsBtn}
+            onPress={capturerPosition}
+            disabled={captureEnCours}
+          >
+            {captureEnCours ? (
+              <ActivityIndicator color="#fff" size="small" />
+            ) : (
+              <Text style={styles.gpsBtnText}>
+                {latitude ? '📍 Position enregistree - Recapturer' : '📍 Capturer ma position actuelle'}
+              </Text>
+            )}
+          </TouchableOpacity>
+
           <Text style={styles.label}>Quand un client scanne mon QR code</Text>
           <View style={styles.modeRow}>
             <TouchableOpacity
@@ -272,6 +314,8 @@ const styles = StyleSheet.create({
     alignItems: 'center', marginTop: 15,
   },
   editBtnText: { color: '#fff', fontSize: 15, fontWeight: '700' },
+  gpsBtn: { backgroundColor: '#3498db', padding: 14, borderRadius: 10, alignItems: 'center', marginBottom: 20 },
+  gpsBtnText: { color: '#fff', fontWeight: '700', fontSize: 14 },
   editMode: { padding: 15 },
   label: { fontSize: 14, fontWeight: '700', color: '#2c3e50', marginTop: 15, marginBottom: 8 },
   input: {

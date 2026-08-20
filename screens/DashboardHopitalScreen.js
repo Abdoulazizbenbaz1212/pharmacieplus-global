@@ -6,7 +6,7 @@ import {
 import { collection, query, where, getDocs, doc, updateDoc, addDoc, deleteDoc } from 'firebase/firestore';
 import { db, auth } from '../config/firebase';
 
-export default function DashboardHopitalScreen() {
+export default function DashboardHopitalScreen({ navigation }) {
   const [rdvListe, setRdvListe] = useState([]);
   const [mesServices, setMesServices] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -171,6 +171,14 @@ export default function DashboardHopitalScreen() {
                   </View>
                 </View>
                 <Text style={styles.rdvDate}>{item.date} a {item.heure}</Text>
+                {item.statut === 'confirme' && (
+                  <TouchableOpacity
+                    style={styles.visioBtnHop}
+                    onPress={() => navigation.navigate('Visio', { roomName: 'pharmacieplus_rdv_' + item.id })}
+                  >
+                    <Text style={styles.visioBtnHopText}>🎥 Rejoindre la teleconsultation</Text>
+                  </TouchableOpacity>
+                )}
 
                 {item.statut !== 'annule' && (
                   <View style={styles.actionsRow}>
@@ -281,6 +289,8 @@ const styles = StyleSheet.create({
   rdvPatient: { fontSize: 14, fontWeight: '700', color: '#1a2b34', flex: 1 },
   statutBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20 },
   statutBadgeText: { fontSize: 11, fontWeight: '700' },
+  visioBtnHop: { backgroundColor: '#27ae60', borderRadius: 8, paddingVertical: 10, alignItems: 'center', marginTop: 10 },
+  visioBtnHopText: { color: '#fff', fontWeight: '700', fontSize: 13 },
   rdvDate: { fontSize: 13, color: '#6b7b82', marginTop: 6 },
   actionsRow: { flexDirection: 'row', marginTop: 12, gap: 8 },
   actionBtn: {

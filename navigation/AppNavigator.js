@@ -98,16 +98,6 @@ function TabsPatient() {
         options={{ title: 'Pharmacie+ Global', tabBarLabel: 'SOS', tabBarIcon: () => <TabIcon emoji="🆘" /> }} />
       <Tab.Screen name="Plus" component={PlusScreen}
         options={{ title: 'Plus', tabBarLabel: 'Plus', tabBarIcon: () => <TabIcon emoji="☰" /> }} />
-      <Tab.Screen name="Medicaments" component={MedicamentsScreen}
-        options={{ title: 'Medicaments', tabBarButton: () => null }} />
-      <Tab.Screen name="Rdv" component={RdvScreen}
-        options={{ title: 'Rendez-vous', tabBarButton: () => null }} />
-      <Tab.Screen name="Commandes" component={CommandesScreen}
-        options={{ title: 'Mes commandes', tabBarButton: () => null }} />
-      <Tab.Screen name="Profil" component={ProfilScreen}
-        options={{ title: 'Coffre-fort medical', tabBarButton: () => null }} />
-      <Tab.Screen name="Scanner" component={ScannerEtablissementScreen}
-        options={{ title: 'Scanner un etablissement', tabBarButton: () => null }} />
     </Tab.Navigator>
   );
 }
@@ -242,6 +232,31 @@ export default function AppNavigator() {
             name="Visio"
             component={VisioScreen}
             options={{ headerShown: true, title: 'Teleconsultation' }}
+          />
+          <Stack.Screen
+            name="Medicaments"
+            component={MedicamentsScreen}
+            options={{ headerShown: true, title: 'Medicaments' }}
+          />
+          <Stack.Screen
+            name="Rdv"
+            component={RdvScreen}
+            options={{ headerShown: true, title: 'Rendez-vous' }}
+          />
+          <Stack.Screen
+            name="Commandes"
+            component={CommandesScreen}
+            options={{ headerShown: true, title: 'Mes commandes' }}
+          />
+          <Stack.Screen
+            name="Profil"
+            component={ProfilScreen}
+            options={{ headerShown: true, title: 'Coffre-fort medical' }}
+          />
+          <Stack.Screen
+            name="Scanner"
+            component={ScannerEtablissementScreen}
+            options={{ headerShown: true, title: 'Scanner un etablissement' }}
           />
         </Stack.Navigator>
       ) : (

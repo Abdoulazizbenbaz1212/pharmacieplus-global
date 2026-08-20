@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Linking, ActivityIndicator } from 'react-native';
 import { WebView } from 'react-native-webview';
 import * as Location from 'expo-location';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { db } from '../config/firebase';
 
 function calculerDistance(lat1, lng1, lat2, lng2) {
   const R = 6371;
@@ -86,6 +88,38 @@ async function chercherEtablissementsProches(latitude, longitude, rayonMetres = 
   throw derniereErreur || new Error('Impossible de contacter les serveurs de recherche.');
 }
 
+async function chercherEtablissementsFirestore(latitude, longitude, rayonKm = 10) {
+  try {
+    const q = query(
+      collection(db, 'profils_etablissements'),
+      where('latitude', '!=', null)
+    );
+    const snap = await getDocs(q);
+    const resultats = [];
+    snap.forEach((docSnap) => {
+      const data = docSnap.data();
+      if (!data.latitude || !data.longitude) return;
+      const distance = parseFloat(
+        calculerDistance(latitude, longitude, data.latitude, data.longitude)
+      );
+      if (distance <= rayonKm) {
+        resultats.push({
+          id: 'app_' + docSnap.id,
+          nom: data.nom || 'Etablissement',
+          type: data.role === 'pharmacie' ? 'pharmacy' : data.role === 'hopital' ? 'hospital' : 'clinic',
+          telephone: data.telephone || null,
+          lat: data.latitude,
+          lng: data.longitude,
+          source: 'app',
+        });
+      }
+    });
+    return resultats;
+  } catch (erreur) {
+    return [];
+  }
+}
+
 function construireHtmlCarte(centreLat, centreLng, position, etablissements) {
   const couleurParType = {
     hospital: '#e74c3c',
@@ -96,7 +130,7 @@ function construireHtmlCarte(centreLat, centreLng, position, etablissements) {
   const marqueursCorriges = etablissements.map(e => `
     L.marker([${e.lat}, ${e.lng}], {
       icon: L.divIcon({
-        html: '<div style="background:${couleurParType[e.type] || '#7f8c8d'};width:14px;height:14px;border-radius:7px;border:2px solid white;"></div>',
+        html: '<div style="background:${couleurParType[e.type] || \'#7f8c8d\'};width:14px;height:14px;border-radius:7px;border:3px solid ${e.source === \'app\' ? \'#f1c40f\' : \'white\'};"></div>',
         iconSize: [14, 14],
         className: ''
       })
@@ -148,9 +182,13 @@ export default function HopitauxScreen() {
     setRecherche(true);
     setErrorMsg(null);
     try {
-      const liste = await chercherEtablissementsProches(coords.latitude, coords.longitude);
-      setEtablissements(liste);
-      if (liste.length === 0) {
+      const [listeOsm, listeApp] = await Promise.all([
+        chercherEtablissementsProches(coords.latitude, coords.longitude).catch(() => []),
+        chercherEtablissementsFirestore(coords.latitude, coords.longitude),
+      ]);
+      const listeCombinee = [...listeApp, ...listeOsm];
+      setEtablissements(listeCombinee);
+      if (listeCombinee.length === 0) {
         setErrorMsg('Aucun établissement de santé trouvé dans un rayon de 10 km.');
       }
     } catch (erreurRecherche) {
@@ -159,6 +197,7 @@ export default function HopitauxScreen() {
       setRecherche(false);
     }
   }, []);
+
 
   useEffect(() => {
     (async () => {

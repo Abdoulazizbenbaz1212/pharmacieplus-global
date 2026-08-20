@@ -130,7 +130,7 @@ function construireHtmlCarte(centreLat, centreLng, position, etablissements) {
   const marqueursCorriges = etablissements.map(e => `
     L.marker([${e.lat}, ${e.lng}], {
       icon: L.divIcon({
-        html: '<div style="background:${couleurParType[e.type] || \'#7f8c8d\'};width:14px;height:14px;border-radius:7px;border:3px solid ${e.source === \'app\' ? \'#f1c40f\' : \'white\'};"></div>',
+        html: '<div style="background:${couleurParType[e.type] || "#7f8c8d"};width:14px;height:14px;border-radius:7px;border:3px solid ${e.source === "app" ? "#f1c40f" : "white"};"></div>',
         iconSize: [14, 14],
         className: ''
       })

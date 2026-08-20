@@ -72,7 +72,7 @@ const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 function TabIcon({ emoji }) {
-  return <Text style={{ fontSize: 22 }}>{emoji}</Text>;
+  return <Text style={{ fontSize: 19 }}>{emoji}</Text>;
 }
 
 function TabsPatient() {
@@ -82,6 +82,8 @@ function TabsPatient() {
         headerShown: true,
         tabBarActiveTintColor: '#e74c3c',
         tabBarInactiveTintColor: '#7f8c8d',
+        tabBarStyle: { height: 62, paddingBottom: 8, paddingTop: 6 },
+        tabBarLabelStyle: { fontSize: 10 },
       }}
     >
       <Tab.Screen name="Hopitaux" component={HopitauxScreen}
@@ -117,6 +119,8 @@ function TabsHopital() {
         headerShown: true,
         tabBarActiveTintColor: '#3498db',
         tabBarInactiveTintColor: '#7f8c8d',
+        tabBarStyle: { height: 62, paddingBottom: 8, paddingTop: 6 },
+        tabBarLabelStyle: { fontSize: 10 },
       }}
     >
       <Tab.Screen name="Dashboard" component={DashboardHopitalScreen}
@@ -140,6 +144,8 @@ function TabsPharmacie() {
         headerShown: true,
         tabBarActiveTintColor: '#9b59b6',
         tabBarInactiveTintColor: '#7f8c8d',
+        tabBarStyle: { height: 62, paddingBottom: 8, paddingTop: 6 },
+        tabBarLabelStyle: { fontSize: 10 },
       }}
     >
       <Tab.Screen name="Dashboard" component={DashboardPharmacieScreen}
@@ -163,6 +169,8 @@ function TabsFournisseur() {
         headerShown: true,
         tabBarActiveTintColor: '#f39c12',
         tabBarInactiveTintColor: '#7f8c8d',
+        tabBarStyle: { height: 62, paddingBottom: 8, paddingTop: 6 },
+        tabBarLabelStyle: { fontSize: 10 },
       }}
     >
       <Tab.Screen name="Dashboard" component={DashboardFournisseurScreen}

@@ -182,10 +182,11 @@ export default function HopitauxScreen() {
     setRecherche(true);
     setErrorMsg(null);
     try {
-      const [listeOsm, listeApp] = await Promise.all([
-        chercherEtablissementsProches(coords.latitude, coords.longitude).catch(() => []),
-        chercherEtablissementsFirestore(coords.latitude, coords.longitude),
-      ]);
+      const listeApp = await chercherEtablissementsFirestore(coords.latitude, coords.longitude);
+      setEtablissements(listeApp);
+      setRecherche(false);
+
+      const listeOsm = await chercherEtablissementsProches(coords.latitude, coords.longitude).catch(() => []);
       const listeCombinee = [...listeApp, ...listeOsm];
       setEtablissements(listeCombinee);
       if (listeCombinee.length === 0) {
@@ -193,10 +194,10 @@ export default function HopitauxScreen() {
       }
     } catch (erreurRecherche) {
       setErrorMsg('Le service de recherche est momentanément indisponible.');
-    } finally {
       setRecherche(false);
     }
   }, []);
+
 
 
   useEffect(() => {

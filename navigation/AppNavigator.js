@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Text, View, ActivityIndicator, Platform } from 'react-native';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
@@ -21,6 +22,7 @@ import FamilleScreen from '../screens/FamilleScreen';
 import ScannerEtablissementScreen from '../screens/ScannerEtablissementScreen';
 import CommandesScreen from '../screens/CommandesScreen';
 import PlusScreen from '../screens/PlusScreen';
+import VisioScreen from '../screens/VisioScreen';
 import AuthScreen from '../screens/AuthScreen';
 import DashboardHopitalScreen from '../screens/DashboardHopitalScreen';
 import DashboardPharmacieScreen from '../screens/DashboardPharmacieScreen';
@@ -67,6 +69,7 @@ async function enregistrerTokenNotification(uid) {
 }
 
 const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
 
 function TabIcon({ emoji }) {
   return <Text style={{ fontSize: 22 }}>{emoji}</Text>;
@@ -222,7 +225,20 @@ export default function AppNavigator() {
 
   return (
     <NavigationContainer>
-      {utilisateur ? renderTabs() : <AuthScreen />}
+      {utilisateur ? (
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="Tabs">
+            {() => renderTabs()}
+          </Stack.Screen>
+          <Stack.Screen
+            name="Visio"
+            component={VisioScreen}
+            options={{ headerShown: true, title: 'Teleconsultation' }}
+          />
+        </Stack.Navigator>
+      ) : (
+        <AuthScreen />
+      )}
     </NavigationContainer>
   );
 }

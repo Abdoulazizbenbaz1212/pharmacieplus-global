@@ -64,6 +64,7 @@ export default function ProfilEtablissementScreen() {
         horaires,
         modeAccueil,
         numeroAgrement,
+        role,
         latitude,
         longitude,
         maj_le: new Date().toISOString(),

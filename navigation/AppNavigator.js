@@ -19,6 +19,7 @@ import MarketplaceScreen from '../screens/MarketplaceScreen';
 import MessagesScreen from '../screens/MessagesScreen';
 import FamilleScreen from '../screens/FamilleScreen';
 import ScannerEtablissementScreen from '../screens/ScannerEtablissementScreen';
+import CommandesScreen from '../screens/CommandesScreen';
 import AuthScreen from '../screens/AuthScreen';
 import DashboardHopitalScreen from '../screens/DashboardHopitalScreen';
 import DashboardPharmacieScreen from '../screens/DashboardPharmacieScreen';
@@ -91,6 +92,8 @@ function TabsPatient() {
         options={{ title: 'Messages', tabBarLabel: 'Messages', tabBarIcon: () => <TabIcon emoji="💬" /> }} />
       <Tab.Screen name="Famille" component={FamilleScreen}
         options={{ title: 'Ma famille', tabBarLabel: 'Famille', tabBarIcon: () => <TabIcon emoji="👨‍👩‍👧‍👦" /> }} />
+      <Tab.Screen name="Commandes" component={CommandesScreen}
+        options={{ title: 'Mes commandes', tabBarLabel: 'Commandes', tabBarIcon: () => <TabIcon emoji="📦" /> }} />
       <Tab.Screen name="Profil" component={ProfilScreen}
         options={{ title: 'Coffre-fort medical', tabBarLabel: 'Profil', tabBarIcon: () => <TabIcon emoji="🗂️" /> }} />
       <Tab.Screen name="Scanner" component={ScannerEtablissementScreen}
@@ -112,6 +115,8 @@ function TabsHopital() {
     >
       <Tab.Screen name="Dashboard" component={DashboardHopitalScreen}
         options={{ title: 'Mon Hopital', tabBarLabel: 'Dashboard', tabBarIcon: () => <TabIcon emoji="🏥" /> }} />
+      <Tab.Screen name="Commandes" component={CommandesScreen}
+        options={{ title: 'Mes commandes', tabBarLabel: 'Commandes', tabBarIcon: () => <TabIcon emoji="📦" /> }} />
       <Tab.Screen name="Marketplace" component={MarketplaceScreen}
         options={{ title: 'Marketplace', tabBarLabel: 'Marketplace', tabBarIcon: () => <TabIcon emoji="🛒" /> }} />
       <Tab.Screen name="Messages" component={MessagesScreen}
@@ -133,6 +138,8 @@ function TabsPharmacie() {
     >
       <Tab.Screen name="Dashboard" component={DashboardPharmacieScreen}
         options={{ title: 'Ma Pharmacie', tabBarLabel: 'Dashboard', tabBarIcon: () => <TabIcon emoji="💊" /> }} />
+      <Tab.Screen name="Commandes" component={CommandesScreen}
+        options={{ title: 'Mes commandes', tabBarLabel: 'Commandes', tabBarIcon: () => <TabIcon emoji="📦" /> }} />
       <Tab.Screen name="Marketplace" component={MarketplaceScreen}
         options={{ title: 'Marketplace', tabBarLabel: 'Marketplace', tabBarIcon: () => <TabIcon emoji="🛒" /> }} />
       <Tab.Screen name="Messages" component={MessagesScreen}
@@ -154,6 +161,8 @@ function TabsFournisseur() {
     >
       <Tab.Screen name="Dashboard" component={DashboardFournisseurScreen}
         options={{ title: 'Mon entreprise', tabBarLabel: 'Dashboard', tabBarIcon: () => <TabIcon emoji="📦" /> }} />
+      <Tab.Screen name="Commandes" component={CommandesScreen}
+        options={{ title: 'Mes commandes', tabBarLabel: 'Commandes', tabBarIcon: () => <TabIcon emoji="📦" /> }} />
       <Tab.Screen name="Marketplace" component={MarketplaceScreen}
         options={{ title: 'Marketplace', tabBarLabel: 'Marketplace', tabBarIcon: () => <TabIcon emoji="🛒" /> }} />
       <Tab.Screen name="Messages" component={MessagesScreen}

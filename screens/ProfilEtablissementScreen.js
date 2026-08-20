@@ -8,6 +8,9 @@ import { db, auth } from '../config/firebase';
 import { signOut } from 'firebase/auth';
 import QRCode from 'react-native-qrcode-svg';
 import * as Location from 'expo-location';
+import * as MediaLibrary from 'expo-media-library';
+import ViewShot from 'react-native-view-shot';
+import { useRef } from 'react';
 
 export default function ProfilEtablissementScreen() {
   const [nom, setNom] = useState('');
@@ -23,6 +26,8 @@ export default function ProfilEtablissementScreen() {
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [captureEnCours, setCaptureEnCours] = useState(false);
+  const qrRef = useRef(null);
+  const [telechargementEnCours, setTelechargementEnCours] = useState(false);
 
   useEffect(() => {
     chargerProfil();
@@ -104,6 +109,24 @@ export default function ProfilEtablissementScreen() {
       setCaptureEnCours(false);
     }
   };
+
+  const telechargerQrCode = async () => {
+    setTelechargementEnCours(true);
+    try {
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission refusee', "Autorise l'acces aux photos pour enregistrer le QR code.");
+        return;
+      }
+      const uri = await qrRef.current.capture();
+      await MediaLibrary.saveToLibraryAsync(uri);
+      Alert.alert('Succes', 'Le QR code a ete enregistre dans ta galerie.');
+    } catch (error) {
+      Alert.alert('Erreur', "Impossible d'enregistrer le QR code: " + error.message);
+    } finally {
+      setTelechargementEnCours(false);
+    }
+  };
   const modeAccueilLabel = (m) => {
     if (m === 'rdv') return 'Prise de RDV / Commande directe';
     if (m === 'contact') return 'Juste les coordonnees';
@@ -169,17 +192,33 @@ export default function ProfilEtablissementScreen() {
 
           {nom ? (
             <View style={styles.qrCard}>
-              <QRCode
-                value={JSON.stringify({
-                  etablissementId: auth.currentUser.uid,
-                  nom,
-                  mode: modeAccueil,
-                })}
-                size={180}
-              />
-              <Text style={styles.qrLabel}>Mon QR code etablissement</Text>
+              <ViewShot ref={qrRef} options={{ format: 'png', quality: 1 }}>
+                <View style={{ backgroundColor: '#fff', padding: 15, alignItems: 'center' }}>
+                  <QRCode
+                    value={JSON.stringify({
+                      etablissementId: auth.currentUser.uid,
+                      nom,
+                      mode: modeAccueil,
+                    })}
+                    size={180}
+                  />
+                  <Text style={styles.qrLabel}>{nom}</Text>
+                </View>
+              </ViewShot>
+              <TouchableOpacity
+                style={styles.telechargerBtn}
+                onPress={telechargerQrCode}
+                disabled={telechargementEnCours}
+              >
+                {telechargementEnCours ? (
+                  <ActivityIndicator color="#fff" size="small" />
+                ) : (
+                  <Text style={styles.telechargerBtnText}>Telecharger le QR code</Text>
+                )}
+              </TouchableOpacity>
             </View>
           ) : null}
+
 
           <TouchableOpacity style={styles.editBtn} onPress={() => setModeEdition(true)}>
             <Text style={styles.editBtnText}>Modifier mes informations</Text>
@@ -317,6 +356,8 @@ const styles = StyleSheet.create({
   editBtnText: { color: '#fff', fontSize: 15, fontWeight: '700' },
   gpsBtn: { backgroundColor: '#3498db', padding: 14, borderRadius: 10, alignItems: 'center', marginBottom: 20 },
   gpsBtnText: { color: '#fff', fontWeight: '700', fontSize: 14 },
+  telechargerBtn: { backgroundColor: '#9b59b6', borderRadius: 8, paddingVertical: 12, paddingHorizontal: 20, marginTop: 12, alignItems: 'center' },
+  telechargerBtnText: { color: '#fff', fontWeight: '700', fontSize: 14 },
   editMode: { padding: 15 },
   label: { fontSize: 14, fontWeight: '700', color: '#2c3e50', marginTop: 15, marginBottom: 8 },
   input: {

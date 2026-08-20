@@ -363,7 +363,6 @@ export default function MarketplaceScreen() {
               </Text>
             </TouchableOpacity>
           )}
-          </View>
 
           <Text style={styles.label}>Photo</Text>
           <TouchableOpacity style={styles.imagePicker} onPress={choisirImage}>

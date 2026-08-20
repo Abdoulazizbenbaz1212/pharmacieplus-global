@@ -20,7 +20,7 @@ function formatHeure(d) {
   return `${heures}:${minutes}`;
 }
 
-export default function RdvScreen() {
+export default function RdvScreen({ navigation }) {
   const [hopitaux, setHopitaux] = useState([]);
   const [hopitalSelectionne, setHopitalSelectionne] = useState(null);
   const [dateObj, setDateObj] = useState(new Date());
@@ -209,6 +209,14 @@ export default function RdvScreen() {
                 <Text style={styles.rdvHopital}>{item.hopital_nom}</Text>
                 <Text style={styles.rdvDate}>{item.date} a {item.heure}</Text>
                 <Text style={[styles.rdvStatut, { color: statut.color }]}>{statut.text}</Text>
+                {item.statut === 'confirme' && (
+                  <TouchableOpacity
+                    style={styles.visioBtn}
+                    onPress={() => navigation.navigate('Visio', { roomName: 'pharmacieplus_rdv_' + item.id })}
+                  >
+                    <Text style={styles.visioBtnText}>🎥 Demarrer la teleconsultation</Text>
+                  </TouchableOpacity>
+                )}
               </View>
             );
           }}
@@ -253,4 +261,6 @@ const styles = StyleSheet.create({
   rdvHopital: { fontSize: 15, fontWeight: '700', color: '#2c3e50' },
   rdvDate: { fontSize: 13, color: '#7f8c8d', marginTop: 4 },
   rdvStatut: { fontSize: 13, fontWeight: '600', marginTop: 6 },
+  visioBtn: { backgroundColor: '#27ae60', borderRadius: 8, paddingVertical: 10, alignItems: 'center', marginTop: 10 },
+  visioBtnText: { color: '#fff', fontWeight: '700', fontSize: 13 },
 });

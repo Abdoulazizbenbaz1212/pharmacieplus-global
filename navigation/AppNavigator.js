@@ -22,6 +22,7 @@ import FamilleScreen from '../screens/FamilleScreen';
 import ScannerEtablissementScreen from '../screens/ScannerEtablissementScreen';
 import CommandesScreen from '../screens/CommandesScreen';
 import PlusScreen from '../screens/PlusScreen';
+import AssistantScreen from '../screens/AssistantScreen';
 import VisioScreen from '../screens/VisioScreen';
 import AuthScreen from '../screens/AuthScreen';
 import DashboardHopitalScreen from '../screens/DashboardHopitalScreen';
@@ -257,6 +258,11 @@ export default function AppNavigator() {
             name="Scanner"
             component={ScannerEtablissementScreen}
             options={{ headerShown: true, title: 'Scanner un etablissement' }}
+          />
+          <Stack.Screen
+            name="Assistant"
+            component={AssistantScreen}
+            options={{ headerShown: true, title: 'Assistant sante IA' }}
           />
         </Stack.Navigator>
       ) : (

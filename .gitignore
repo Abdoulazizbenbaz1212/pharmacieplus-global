@@ -41,3 +41,4 @@ yarn-error.*
 /android
 serviceAccountKey.json
 ngrok.zip
+.env

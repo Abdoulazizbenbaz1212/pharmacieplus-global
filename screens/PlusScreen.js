@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 
 const OPTIONS = [
+  { nom: 'Assistant', label: 'Assistant sante IA', emoji: '🤖' },
   { nom: 'Medicaments', label: 'Medicaments', emoji: '💊' },
   { nom: 'Rdv', label: 'Rendez-vous', emoji: '📅' },
   { nom: 'Commandes', label: 'Mes commandes', emoji: '📦' },

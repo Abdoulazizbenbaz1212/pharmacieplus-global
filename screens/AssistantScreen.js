@@ -34,7 +34,7 @@ export default function AssistantScreen() {
           'Authorization': `Bearer ${process.env.EXPO_PUBLIC_GROQ_API_KEY}`,
         },
         body: JSON.stringify({
-          model: 'llama-3.3-70b-versatile',
+          model: 'openai/gpt-oss-120b',
           messages: [
             {
               role: 'system',
@@ -59,7 +59,7 @@ export default function AssistantScreen() {
       setMessages((prev) => [...prev, {
         id: Date.now() + '_err',
         role: 'assistant',
-        content: 'ERREUR DEBUG: ' + error.message,
+        content: "Desole, une erreur est survenue. Verifie ta connexion et reessaie.",
       }]);
     } finally {
       setEnChargement(false);
@@ -70,7 +70,7 @@ export default function AssistantScreen() {
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
     >
       <FlatList

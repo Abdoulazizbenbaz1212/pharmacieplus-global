@@ -60,6 +60,14 @@ export default function ProfilEtablissementScreen() {
   };
 
   const enregistrerProfil = async () => {
+    if (!nom.trim() || !telephone.trim() || !horaires.trim()) {
+      Alert.alert('Champs manquants', 'Merci de remplir le nom, le telephone et les horaires.');
+      return;
+    }
+    if (!latitude || !longitude) {
+      Alert.alert('Position requise', 'Merci de capturer ta position GPS avant d\'enregistrer, pour que les patients puissent te trouver sur la carte.');
+      return;
+    }
     setEnregistrementEnCours(true);
     try {
       await setDoc(doc(db, 'profils_etablissements', auth.currentUser.uid), {

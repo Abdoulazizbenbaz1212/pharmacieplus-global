@@ -59,7 +59,7 @@ export default function AssistantScreen() {
       setMessages((prev) => [...prev, {
         id: Date.now() + '_err',
         role: 'assistant',
-        content: "Desole, une erreur est survenue. Verifie ta connexion et reessaie.",
+        content: 'ERREUR DEBUG: ' + error.message,
       }]);
     } finally {
       setEnChargement(false);

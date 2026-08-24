@@ -12,6 +12,7 @@
     "android": {
       "package": "com.pharmacieplusglobal.app",
       "softwareKeyboardLayoutMode": "resize",
+      "edgeToEdgeEnabled": true,
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",

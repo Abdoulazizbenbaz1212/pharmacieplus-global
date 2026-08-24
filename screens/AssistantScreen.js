@@ -1,7 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View, Text, StyleSheet, TextInput, TouchableOpacity,
-  FlatList, KeyboardAvoidingView, Platform, ActivityIndicator,
+  FlatList, Platform, ActivityIndicator, Keyboard,
 } from 'react-native';
 
 const MESSAGE_BIENVENUE = {
@@ -14,7 +14,25 @@ export default function AssistantScreen() {
   const [messages, setMessages] = useState([MESSAGE_BIENVENUE]);
   const [texte, setTexte] = useState('');
   const [enChargement, setEnChargement] = useState(false);
+  const [hauteurClavier, setHauteurClavier] = useState(0);
   const listeRef = useRef(null);
+
+  useEffect(() => {
+    const evtShow = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const evtHide = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+
+    const subShow = Keyboard.addListener(evtShow, (e) => {
+      setHauteurClavier(e.endCoordinates.height);
+    });
+    const subHide = Keyboard.addListener(evtHide, () => {
+      setHauteurClavier(0);
+    });
+
+    return () => {
+      subShow.remove();
+      subHide.remove();
+    };
+  }, []);
 
   const envoyerMessage = async () => {
     const contenu = texte.trim();
@@ -59,7 +77,7 @@ export default function AssistantScreen() {
       setMessages((prev) => [...prev, {
         id: Date.now() + '_err',
         role: 'assistant',
-        content: "ERREUR DEBUG: " + error.message,
+        content: "Desole, une erreur est survenue. Verifie ta connexion et reessaie.",
       }]);
     } finally {
       setEnChargement(false);
@@ -68,11 +86,7 @@ export default function AssistantScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
-    >
+    <View style={styles.container}>
       <FlatList
         ref={listeRef}
         data={messages}
@@ -94,7 +108,7 @@ export default function AssistantScreen() {
         </View>
       )}
 
-      <View style={styles.inputRow}>
+      <View style={[styles.inputRow, { marginBottom: hauteurClavier }]}>
         <TextInput
           style={styles.input}
           placeholder="Pose ta question sante..."
@@ -106,7 +120,7 @@ export default function AssistantScreen() {
           <Text style={styles.envoyerBtnText}>➤</Text>
         </TouchableOpacity>
       </View>
-    </KeyboardAvoidingView>
+    </View>
   );
 }
 

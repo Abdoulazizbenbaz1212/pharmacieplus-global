@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   View, Text, TextInput, StyleSheet, TouchableOpacity,
-  ActivityIndicator, FlatList, Modal, Alert, KeyboardAvoidingView, Platform,
+  ActivityIndicator, FlatList, Modal, Alert, Platform, Keyboard,
 } from 'react-native';
 import {
   collection, addDoc, doc, query, orderBy,
@@ -17,6 +17,24 @@ export default function ChatModal({
   const [texte, setTexte] = useState('');
   const [envoi, setEnvoi] = useState(false);
   const [pret, setPret] = useState(false);
+  const [hauteurClavier, setHauteurClavier] = useState(0);
+
+  useEffect(() => {
+    const evtShow = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const evtHide = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+
+    const subShow = Keyboard.addListener(evtShow, (e) => {
+      setHauteurClavier(e.endCoordinates.height);
+    });
+    const subHide = Keyboard.addListener(evtHide, () => {
+      setHauteurClavier(0);
+    });
+
+    return () => {
+      subShow.remove();
+      subHide.remove();
+    };
+  }, []);
   const flatListRef = useRef(null);
   const user = auth.currentUser;
   const suisAcheteur = user && user.uid === buyerId;
@@ -82,10 +100,7 @@ export default function ChatModal({
 
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
-      <KeyboardAvoidingView
-        style={{ flex: 1, backgroundColor: '#fff' }}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      >
+      <View style={{ flex: 1, backgroundColor: '#fff' }}>
         <View style={styles.chatHeader}>
           <TouchableOpacity onPress={onClose} style={{ marginRight: 12 }}>
             <Text style={{ fontSize: 20 }}>←</Text>
@@ -112,7 +127,7 @@ export default function ChatModal({
           onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
         />
 
-        <View style={styles.chatInputRow}>
+        <View style={[styles.chatInputRow, { marginBottom: hauteurClavier }]}>
           <TextInput
             style={styles.chatInput}
             value={texte}
@@ -124,7 +139,7 @@ export default function ChatModal({
             {envoi ? <ActivityIndicator color="#fff" size="small" /> : <Text style={styles.sendBtnText}>➤</Text>}
           </TouchableOpacity>
         </View>
-      </KeyboardAvoidingView>
+      </View>
     </Modal>
   );
 }

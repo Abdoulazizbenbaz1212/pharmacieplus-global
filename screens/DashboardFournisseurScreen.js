@@ -87,6 +87,7 @@ export default function DashboardFournisseurScreen() {
       await addDoc(collection(db, 'produits_fournisseur'), {
         nom_produit: nomProduit.trim(),
         fournisseur_nom: nomFournisseur,
+        proprietaire_id: auth.currentUser.uid,
         prix: parseFloat(prixProduit),
         quantite: quantiteProduit.trim() ? parseInt(quantiteProduit, 10) : null,
         disponible: true,

@@ -83,6 +83,7 @@ export default function DashboardHopitalScreen({ navigation }) {
       await addDoc(collection(db, 'services_hopital'), {
         nom_service: nomService.trim(),
         hopital_nom: nomHopital,
+        proprietaire_id: auth.currentUser.uid,
         prix: parseFloat(prixService),
       });
       setModalVisible(false);

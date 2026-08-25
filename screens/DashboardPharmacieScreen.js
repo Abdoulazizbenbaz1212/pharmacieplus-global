@@ -76,6 +76,7 @@ export default function DashboardPharmacieScreen() {
       await addDoc(collection(db, 'prix_pharmacie'), {
         medicament_nom: medicamentChoisi.nom,
         pharmacie_nom: nomPharmacie,
+        proprietaire_id: auth.currentUser.uid,
         prix: parseFloat(nouveauPrix),
         en_stock: true,
         ville: ville.trim(),

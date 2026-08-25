@@ -108,6 +108,7 @@ async function chercherEtablissementsFirestore(latitude, longitude, rayonKm = 10
           nom: data.nom || 'Etablissement',
           type: data.role === 'pharmacie' ? 'pharmacy' : data.role === 'hopital' ? 'hospital' : 'clinic',
           telephone: data.telephone || null,
+          horairesParJour: data.horairesParJour || null,
           lat: data.latitude,
           lng: data.longitude,
           source: 'app',
@@ -171,6 +172,36 @@ function construireHtmlCarte(centreLat, centreLng, position, etablissements) {
   `;
 }
 
+
+function calculerStatutOuverture(horairesParJour) {
+  if (!horairesParJour) return null;
+  const joursSemaine = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
+  const maintenant = new Date();
+  const jourActuel = joursSemaine[maintenant.getDay()];
+  const horaireJour = horairesParJour[jourActuel];
+  if (!horaireJour || !horaireJour.ouvert) {
+    return { statut: 'ferme', label: 'Ferme', couleur: '#c0392b' };
+  }
+  const [hDebut, mDebut] = horaireJour.debut.split(':').map(Number);
+  const [hFin, mFin] = horaireJour.fin.split(':').map(Number);
+  const minutesMaintenant = maintenant.getHours() * 60 + maintenant.getMinutes();
+  const minutesDebut = hDebut * 60 + mDebut;
+  const minutesFin = hFin * 60 + mFin;
+
+  if (minutesMaintenant < minutesDebut) {
+    if (minutesDebut - minutesMaintenant <= 30) {
+      return { statut: 'ouvre_bientot', label: 'Ouvre bientot', couleur: '#f39c12' };
+    }
+    return { statut: 'ferme', label: 'Ferme', couleur: '#c0392b' };
+  }
+  if (minutesMaintenant >= minutesFin) {
+    return { statut: 'ferme', label: 'Ferme', couleur: '#c0392b' };
+  }
+  if (minutesFin - minutesMaintenant <= 30) {
+    return { statut: 'ferme_bientot', label: 'Ferme bientot', couleur: '#f39c12' };
+  }
+  return { statut: 'ouvert', label: 'Ouvert', couleur: '#1a7f5a' };
+}
 export default function HopitauxScreen() {
   const [position, setPosition] = useState(null);
   const [etablissements, setEtablissements] = useState([]);
@@ -285,6 +316,14 @@ export default function HopitauxScreen() {
           <View style={styles.card}>
             <View style={{ flex: 1 }}>
               <Text style={styles.nom}>{item.nom}</Text>
+              {item.horairesParJour && (() => {
+                const statutInfo = calculerStatutOuverture(item.horairesParJour);
+                return statutInfo ? (
+                  <View style={{ alignSelf: 'flex-start', backgroundColor: statutInfo.couleur, paddingVertical: 2, paddingHorizontal: 8, borderRadius: 10, marginTop: 4, marginBottom: 4 }}>
+                    <Text style={{ color: '#fff', fontSize: 11, fontWeight: 'bold' }}>{statutInfo.label}</Text>
+                  </View>
+                ) : null;
+              })()}
               <Text style={styles.details}>
                 {labelType[item.type] || 'Établissement'}
                 {item.distance ? ` • ${item.distance} km` : ''}

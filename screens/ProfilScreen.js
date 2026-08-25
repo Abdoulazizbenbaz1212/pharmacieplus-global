@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { alertCompatible } from '../utils/alertCompatible';
 import {
   View, Text, StyleSheet, TouchableOpacity, TextInput,
   ScrollView, ActivityIndicator, Alert,
@@ -57,17 +58,17 @@ export default function ProfilScreen() {
         contact_urgence_tel: contactTel,
         maj_le: new Date().toISOString(),
       });
-      Alert.alert('Succes', 'Votre profil medical a ete enregistre');
+      alertCompatible('Succes', 'Votre profil medical a ete enregistre');
       setModeEdition(false);
     } catch (error) {
-      Alert.alert('Erreur', "Impossible d'enregistrer: " + error.message);
+      alertCompatible('Erreur', "Impossible d'enregistrer: " + error.message);
     } finally {
       setEnregistrementEnCours(false);
     }
   };
 
   const handleDeconnexion = () => {
-    Alert.alert('Deconnexion', 'Voulez-vous vraiment vous deconnecter ?', [
+    alertCompatible('Deconnexion', 'Voulez-vous vraiment vous deconnecter ?', [
       { text: 'Annuler', style: 'cancel' },
       { text: 'Se deconnecter', style: 'destructive', onPress: () => signOut(auth) },
     ]);

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { alertCompatible } from '../utils/alertCompatible';
 import {
   View, Text, StyleSheet, FlatList, TouchableOpacity,
   TextInput, ActivityIndicator, Alert, Modal,
@@ -57,12 +58,12 @@ export default function DashboardFournisseurScreen() {
       });
       chargerDonnees();
     } catch (error) {
-      Alert.alert('Erreur', error.message);
+      alertCompatible('Erreur', error.message);
     }
   };
 
   const supprimerProduit = async (produitId) => {
-    Alert.alert('Confirmer', 'Retirer ce produit du catalogue ?', [
+    alertCompatible('Confirmer', 'Retirer ce produit du catalogue ?', [
       { text: 'Annuler', style: 'cancel' },
       {
         text: 'Retirer', style: 'destructive',
@@ -71,7 +72,7 @@ export default function DashboardFournisseurScreen() {
             await deleteDoc(doc(db, 'produits_fournisseur', produitId));
             chargerDonnees();
           } catch (error) {
-            Alert.alert('Erreur', error.message);
+            alertCompatible('Erreur', error.message);
           }
         },
       },
@@ -80,7 +81,7 @@ export default function DashboardFournisseurScreen() {
 
   const ajouterProduit = async () => {
     if (!nomProduit.trim() || !prixProduit.trim()) {
-      Alert.alert('Erreur', 'Merci de remplir au moins le nom et le prix');
+      alertCompatible('Erreur', 'Merci de remplir au moins le nom et le prix');
       return;
     }
     try {
@@ -97,9 +98,9 @@ export default function DashboardFournisseurScreen() {
       setPrixProduit('');
       setQuantiteProduit('');
       chargerDonnees();
-      Alert.alert('Succes', 'Produit ajoute a votre catalogue');
+      alertCompatible('Succes', 'Produit ajoute a votre catalogue');
     } catch (error) {
-      Alert.alert('Erreur', error.message);
+      alertCompatible('Erreur', error.message);
     }
   };
 

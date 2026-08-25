@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { alertCompatible } from '../utils/alertCompatible';
 import {
   View, Text, TextInput, StyleSheet, TouchableOpacity,
   ActivityIndicator, FlatList, Modal, Alert, Platform, Keyboard,
@@ -91,7 +92,7 @@ export default function ChatModal({
       setTexte('');
     } catch (error) {
       console.log('Erreur envoi message:', error);
-      Alert.alert('Erreur', "L'envoi a échoué. Réessaie.");
+      alertCompatible('Erreur', "L'envoi a échoué. Réessaie.");
     }
     setEnvoi(false);
   }

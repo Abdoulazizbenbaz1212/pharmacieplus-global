@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { alertCompatible } from '../utils/alertCompatible';
 import {
   View, Text, StyleSheet, TouchableOpacity, Image,
   ScrollView, ActivityIndicator, Alert, Modal, FlatList,
@@ -56,7 +57,7 @@ export default function DocumentsMedicaux({ visible, onClose, collectionRef, tit
   async function choisirImage() {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
-      Alert.alert('Permission requise', "Autorise l'accès aux photos pour ajouter un document.");
+      alertCompatible('Permission requise', "Autorise l'accès aux photos pour ajouter un document.");
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -78,7 +79,7 @@ export default function DocumentsMedicaux({ visible, onClose, collectionRef, tit
   async function prendrePhoto() {
     const permission = await ImagePicker.requestCameraPermissionsAsync();
     if (!permission.granted) {
-      Alert.alert('Permission requise', "Autorise l'accès à la caméra pour prendre une photo.");
+      alertCompatible('Permission requise', "Autorise l'accès à la caméra pour prendre une photo.");
       return;
     }
     const result = await ImagePicker.launchCameraAsync({ quality: 0.7 });
@@ -96,7 +97,7 @@ export default function DocumentsMedicaux({ visible, onClose, collectionRef, tit
 
   async function ajouterDocument() {
     if (!imageBase64) {
-      Alert.alert('Photo manquante', 'Ajoute une photo du document.');
+      alertCompatible('Photo manquante', 'Ajoute une photo du document.');
       return;
     }
     setEnregistrement(true);
@@ -112,14 +113,14 @@ export default function DocumentsMedicaux({ visible, onClose, collectionRef, tit
       setTypeSelectionne('ordonnance');
       chargerDocuments();
     } catch (error) {
-      Alert.alert('Erreur', "Impossible d'enregistrer: " + error.message);
+      alertCompatible('Erreur', "Impossible d'enregistrer: " + error.message);
     } finally {
       setEnregistrement(false);
     }
   }
 
   async function supprimerDocument(documentId) {
-    Alert.alert('Supprimer ce document ?', 'Cette action est définitive.', [
+    alertCompatible('Supprimer ce document ?', 'Cette action est définitive.', [
       { text: 'Annuler', style: 'cancel' },
       {
         text: 'Supprimer', style: 'destructive', onPress: async () => {
@@ -128,7 +129,7 @@ export default function DocumentsMedicaux({ visible, onClose, collectionRef, tit
             setDocumentAgrandi(null);
             chargerDocuments();
           } catch (error) {
-            Alert.alert('Erreur', "Impossible de supprimer: " + error.message);
+            alertCompatible('Erreur', "Impossible de supprimer: " + error.message);
           }
         },
       },

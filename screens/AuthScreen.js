@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { alertCompatible } from '../utils/alertCompatible';
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
   ActivityIndicator, Alert, KeyboardAvoidingView, Platform, ScrollView,
@@ -29,24 +30,24 @@ export default function AuthScreen() {
 
   const handleSubmit = async () => {
     if (!email.trim() || !motDePasse.trim()) {
-      Alert.alert('Erreur', 'Merci de remplir email et mot de passe');
+      alertCompatible('Erreur', 'Merci de remplir email et mot de passe');
       return;
     }
     if (mode === 'inscription') {
       if (!nom.trim()) {
-        Alert.alert('Erreur', 'Merci de renseigner votre nom');
+        alertCompatible('Erreur', 'Merci de renseigner votre nom');
         return;
       }
       if (motDePasse !== confirmationMotDePasse) {
-        Alert.alert('Erreur', 'Les deux mots de passe ne correspondent pas');
+        alertCompatible('Erreur', 'Les deux mots de passe ne correspondent pas');
         return;
       }
       if (!cguAcceptees) {
-        Alert.alert('Conditions requises', "Merci d'accepter les conditions d'utilisation pour continuer.");
+        alertCompatible('Conditions requises', "Merci d'accepter les conditions d'utilisation pour continuer.");
         return;
       }
       if (motDePasse.length < 6) {
-        Alert.alert('Erreur', 'Le mot de passe doit contenir au moins 6 caracteres');
+        alertCompatible('Erreur', 'Le mot de passe doit contenir au moins 6 caracteres');
         return;
       }
     }
@@ -70,7 +71,7 @@ export default function AuthScreen() {
       if (error.code === 'auth/invalid-email') message = 'Email invalide';
       if (error.code === 'auth/weak-password') message = 'Mot de passe trop court (6 caracteres min)';
       if (error.code === 'auth/invalid-credential') message = 'Email ou mot de passe incorrect';
-      Alert.alert('Erreur', message);
+      alertCompatible('Erreur', message);
     } finally {
       setLoading(false);
     }

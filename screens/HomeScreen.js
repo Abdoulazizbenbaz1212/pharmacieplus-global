@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { alertCompatible } from '../utils/alertCompatible';
 import {
   View, Text, TouchableOpacity, StyleSheet, Alert,
   ActivityIndicator, Linking, ScrollView,
@@ -54,7 +55,7 @@ export default function HomeScreen({ navigation }) {
 
   const handleSOS = () => {
     const numeroUrgence = getNumeroUrgence(pays);
-    Alert.alert(
+    alertCompatible(
       '🆘 Appel d\'urgence',
       `Numéro: ${numeroUrgence}${pays ? `\nPays détecté: ${pays}` : '\n(pays non détecté, numéro par défaut)'}`,
       [
@@ -69,14 +70,14 @@ export default function HomeScreen({ navigation }) {
     try {
       const supported = await Linking.canOpenURL(url);
       if (supported) await Linking.openURL(url);
-      else Alert.alert('Erreur', `Composez manuellement le ${numero}.`);
+      else alertCompatible('Erreur', `Composez manuellement le ${numero}.`);
     } catch (error) {
-      Alert.alert('Erreur', `Composez manuellement le ${numero}.`);
+      alertCompatible('Erreur', `Composez manuellement le ${numero}.`);
     }
   };
 
   const handleDeconnexion = () => {
-    Alert.alert('Déconnexion', 'Voulez-vous vraiment vous déconnecter ?', [
+    alertCompatible('Déconnexion', 'Voulez-vous vraiment vous déconnecter ?', [
       { text: 'Annuler', style: 'cancel' },
       { text: 'Se déconnecter', style: 'destructive', onPress: () => signOut(auth) },
     ]);

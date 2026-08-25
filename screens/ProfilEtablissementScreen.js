@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { alertCompatible } from '../utils/alertCompatible';
 import {
   View, Text, StyleSheet, TouchableOpacity, TextInput,
   ScrollView, ActivityIndicator, Alert,
@@ -69,11 +70,11 @@ export default function ProfilEtablissementScreen() {
 
   const enregistrerProfil = async () => {
     if (!nom.trim() || !telephone.trim()) {
-      Alert.alert('Champs manquants', 'Merci de remplir le nom et le telephone.');
+      alertCompatible('Champs manquants', 'Merci de remplir le nom et le telephone.');
       return;
     }
     if (!latitude || !longitude) {
-      Alert.alert('Position requise', 'Merci de capturer ta position GPS avant d\'enregistrer, pour que les patients puissent te trouver sur la carte.');
+      alertCompatible('Position requise', 'Merci de capturer ta position GPS avant d\'enregistrer, pour que les patients puissent te trouver sur la carte.');
       return;
     }
     setEnregistrementEnCours(true);
@@ -90,17 +91,17 @@ export default function ProfilEtablissementScreen() {
         longitude,
         maj_le: new Date().toISOString(),
       });
-      Alert.alert('Succes', 'Votre profil a ete enregistre');
+      alertCompatible('Succes', 'Votre profil a ete enregistre');
       setModeEdition(false);
     } catch (error) {
-      Alert.alert('Erreur', "Impossible d'enregistrer: " + error.message);
+      alertCompatible('Erreur', "Impossible d'enregistrer: " + error.message);
     } finally {
       setEnregistrementEnCours(false);
     }
   };
 
   const handleDeconnexion = () => {
-    Alert.alert('Deconnexion', 'Voulez-vous vraiment vous deconnecter ?', [
+    alertCompatible('Deconnexion', 'Voulez-vous vraiment vous deconnecter ?', [
       { text: 'Annuler', style: 'cancel' },
       { text: 'Se deconnecter', style: 'destructive', onPress: () => signOut(auth) },
     ]);
@@ -112,15 +113,15 @@ export default function ProfilEtablissementScreen() {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Permission refusee', 'Active la localisation pour enregistrer ta position.');
+        alertCompatible('Permission refusee', 'Active la localisation pour enregistrer ta position.');
         return;
       }
       const pos = await Location.getCurrentPositionAsync({});
       setLatitude(pos.coords.latitude);
       setLongitude(pos.coords.longitude);
-      Alert.alert('Position capturee', "Ta position a ete enregistree. N'oublie pas de sauvegarder.");
+      alertCompatible('Position capturee', "Ta position a ete enregistree. N'oublie pas de sauvegarder.");
     } catch (error) {
-      Alert.alert('Erreur', 'Impossible de recuperer la position: ' + error.message);
+      alertCompatible('Erreur', 'Impossible de recuperer la position: ' + error.message);
     } finally {
       setCaptureEnCours(false);
     }
@@ -131,14 +132,14 @@ export default function ProfilEtablissementScreen() {
     try {
       const { status } = await MediaLibrary.requestPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Permission refusee', "Autorise l'acces aux photos pour enregistrer le QR code.");
+        alertCompatible('Permission refusee', "Autorise l'acces aux photos pour enregistrer le QR code.");
         return;
       }
       const uri = await qrRef.current.capture();
       await MediaLibrary.saveToLibraryAsync(uri);
-      Alert.alert('Succes', 'Le QR code a ete enregistre dans ta galerie.');
+      alertCompatible('Succes', 'Le QR code a ete enregistre dans ta galerie.');
     } catch (error) {
-      Alert.alert('Erreur', "Impossible d'enregistrer le QR code: " + error.message);
+      alertCompatible('Erreur', "Impossible d'enregistrer le QR code: " + error.message);
     } finally {
       setTelechargementEnCours(false);
     }

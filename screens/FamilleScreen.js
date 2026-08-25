@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { alertCompatible } from '../utils/alertCompatible';
 import {
   View, Text, StyleSheet, TouchableOpacity, TextInput,
   ScrollView, ActivityIndicator, Alert, Modal, FlatList, Share, Platform, Keyboard,
@@ -132,7 +133,7 @@ export default function FamilleScreen() {
       });
       setTexteMessage('');
     } catch (error) {
-      Alert.alert('Erreur', "L'envoi a échoué. Réessaie.");
+      alertCompatible('Erreur', "L'envoi a échoué. Réessaie.");
     } finally {
       setEnvoiMessage(false);
     }
@@ -154,7 +155,7 @@ export default function FamilleScreen() {
       await updateDoc(doc(db, 'utilisateurs', user.uid), { familleId: familleRef.id });
       chargerFamille();
     } catch (error) {
-      Alert.alert('Erreur', "Impossible de creer la famille: " + error.message);
+      alertCompatible('Erreur', "Impossible de creer la famille: " + error.message);
     }
   }
 
@@ -165,7 +166,7 @@ export default function FamilleScreen() {
       const q = query(collection(db, 'familles'), where('codeInvitation', '==', codeSaisi.trim().toUpperCase()));
       const snap = await getDocs(q);
       if (snap.empty) {
-        Alert.alert('Code invalide', "Aucune famille ne correspond a ce code.");
+        alertCompatible('Code invalide', "Aucune famille ne correspond a ce code.");
         setJointure(false);
         return;
       }
@@ -179,7 +180,7 @@ export default function FamilleScreen() {
       setCodeSaisi('');
       chargerFamille();
     } catch (error) {
-      Alert.alert('Erreur', "Impossible de rejoindre: " + error.message);
+      alertCompatible('Erreur', "Impossible de rejoindre: " + error.message);
     } finally {
       setJointure(false);
     }
@@ -199,7 +200,7 @@ export default function FamilleScreen() {
 
   async function ajouterDependant() {
     if (!nomDependant.trim()) {
-      Alert.alert('Champ manquant', 'Le nom est obligatoire.');
+      alertCompatible('Champ manquant', 'Le nom est obligatoire.');
       return;
     }
     setEnregistrement(true);
@@ -220,14 +221,14 @@ export default function FamilleScreen() {
       reinitialiserFormulaire();
       chargerFamille();
     } catch (error) {
-      Alert.alert('Erreur', "Impossible d'ajouter: " + error.message);
+      alertCompatible('Erreur', "Impossible d'ajouter: " + error.message);
     } finally {
       setEnregistrement(false);
     }
   }
 
   async function supprimerDependant(dependantId) {
-    Alert.alert('Supprimer ce proche ?', 'Cette action est définitive.', [
+    alertCompatible('Supprimer ce proche ?', 'Cette action est définitive.', [
       { text: 'Annuler', style: 'cancel' },
       {
         text: 'Supprimer', style: 'destructive', onPress: async () => {
@@ -236,7 +237,7 @@ export default function FamilleScreen() {
             setModalDetail(null);
             chargerFamille();
           } catch (error) {
-            Alert.alert('Erreur', "Impossible de supprimer: " + error.message);
+            alertCompatible('Erreur', "Impossible de supprimer: " + error.message);
           }
         },
       },
@@ -244,7 +245,7 @@ export default function FamilleScreen() {
   }
 
   async function supprimerMembre(membreId) {
-    Alert.alert('Retirer ce membre ?', "Il ne pourra plus acceder a cette famille.", [
+    alertCompatible('Retirer ce membre ?', "Il ne pourra plus acceder a cette famille.", [
       { text: 'Annuler', style: 'cancel' },
       {
         text: 'Retirer', style: 'destructive', onPress: async () => {
@@ -253,7 +254,7 @@ export default function FamilleScreen() {
             setModalMembre(null);
             chargerFamille();
           } catch (error) {
-            Alert.alert('Erreur', "Impossible de retirer: " + error.message);
+            alertCompatible('Erreur', "Impossible de retirer: " + error.message);
           }
         },
       },
@@ -270,7 +271,7 @@ export default function FamilleScreen() {
       });
       chargerFamille();
     } catch (error) {
-      Alert.alert('Erreur', "Impossible de generer le code: " + error.message);
+      alertCompatible('Erreur', "Impossible de generer le code: " + error.message);
     }
 
   }
@@ -280,7 +281,7 @@ export default function FamilleScreen() {
       const q = query(collectionGroup(db, 'dependants'), where('codeLiaison', '==', codeLiaisonSaisi.trim().toUpperCase()));
       const snap = await getDocs(q);
       if (snap.empty) {
-        Alert.alert('Code invalide', "Aucun profil ne correspond a ce code.");
+        alertCompatible('Code invalide', "Aucun profil ne correspond a ce code.");
         return;
       }
       const dependantDoc = snap.docs[0];
@@ -293,10 +294,10 @@ export default function FamilleScreen() {
       await updateDoc(doc(db, 'utilisateurs', user.uid), { familleId: familleTrouveeId });
       await updateDoc(dependantDoc.ref, { compteLie: user.uid });
       setCodeLiaisonSaisi('');
-      Alert.alert('Succes', 'Ton compte est maintenant lie.');
+      alertCompatible('Succes', 'Ton compte est maintenant lie.');
       chargerFamille();
     } catch (error) {
-      Alert.alert('Erreur', "Impossible de lier: " + error.message);
+      alertCompatible('Erreur', "Impossible de lier: " + error.message);
     }
   }
   if (loading) {

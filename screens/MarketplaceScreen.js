@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { alertCompatible } from '../utils/alertCompatible';
 import {
   View, Text, TextInput, StyleSheet, TouchableOpacity,
   ActivityIndicator, ScrollView, FlatList, Image, Alert, Modal, Linking,
@@ -34,7 +35,7 @@ function AnnonceCard({ item, currentUserId, onDeleted, onOpenChat }) {
   const estProprietaire = item.vendeurId === currentUserId;
 
   function confirmerSuppression() {
-    Alert.alert(
+    alertCompatible(
       'Supprimer cette annonce ?',
       'Cette action est définitive.',
       [
@@ -51,14 +52,14 @@ function AnnonceCard({ item, currentUserId, onDeleted, onOpenChat }) {
       onDeleted();
     } catch (error) {
       console.log('Erreur suppression:', error);
-      Alert.alert('Erreur', "La suppression a échoué. Réessaie.");
+      alertCompatible('Erreur', "La suppression a échoué. Réessaie.");
     }
     setSuppression(false);
   }
 
   function appelerVendeur() {
     if (!item.vendeurTelephone) {
-      Alert.alert('Indisponible', "Ce vendeur n'a pas renseigné de numéro de téléphone.");
+      alertCompatible('Indisponible', "Ce vendeur n'a pas renseigné de numéro de téléphone.");
       return;
     }
     Linking.openURL(`tel:${item.vendeurTelephone}`);
@@ -201,7 +202,7 @@ export default function MarketplaceScreen() {
   async function choisirImage() {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
-      Alert.alert('Permission requise', "Autorise l'accès aux photos pour ajouter une image.");
+      alertCompatible('Permission requise', "Autorise l'accès aux photos pour ajouter une image.");
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -219,16 +220,16 @@ export default function MarketplaceScreen() {
 
   async function publierAnnonce() {
     if (!peutVendre) {
-      Alert.alert('Non autorisé', 'Seuls les hôpitaux, pharmacies et fournisseurs peuvent publier des annonces.');
+      alertCompatible('Non autorisé', 'Seuls les hôpitaux, pharmacies et fournisseurs peuvent publier des annonces.');
       return;
     }
     if (!titre.trim() || !prix.trim()) {
-      Alert.alert('Champs manquants', 'Le titre et le prix sont obligatoires.');
+      alertCompatible('Champs manquants', 'Le titre et le prix sont obligatoires.');
       return;
     }
     const user = auth.currentUser;
     if (!user) {
-      Alert.alert('Erreur', 'Tu dois être connecté pour publier une annonce.');
+      alertCompatible('Erreur', 'Tu dois être connecté pour publier une annonce.');
       return;
     }
     setPublication(true);
@@ -254,10 +255,10 @@ export default function MarketplaceScreen() {
       setModalVisible(false);
       setTitre(''); setDescription(''); setPrix(''); setImageBase64(null); setCategorie('Médicaments'); setOrdonnanceRequise(false);
       chargerAnnonces();
-      Alert.alert('Publié', 'Ton annonce est en ligne.');
+      alertCompatible('Publié', 'Ton annonce est en ligne.');
     } catch (error) {
       console.log('Erreur publication:', error);
-      Alert.alert('Erreur', "La publication a échoué. Réessaie.");
+      alertCompatible('Erreur', "La publication a échoué. Réessaie.");
     }
     setPublication(false);
   }

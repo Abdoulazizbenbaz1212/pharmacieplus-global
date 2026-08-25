@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { alertCompatible } from '../utils/alertCompatible';
 import {
   View, Text, StyleSheet, TouchableOpacity,
   ScrollView, ActivityIndicator, Alert, FlatList, Platform,
@@ -68,7 +69,7 @@ export default function RdvScreen({ navigation }) {
 
   const prendreRdv = async () => {
     if (!hopitalSelectionne) {
-      Alert.alert('Erreur', 'Merci de choisir un hopital');
+      alertCompatible('Erreur', 'Merci de choisir un hopital');
       return;
     }
 
@@ -85,14 +86,14 @@ export default function RdvScreen({ navigation }) {
         cree_le: serverTimestamp(),
       });
 
-      Alert.alert('Succes', 'Votre demande de rendez-vous a ete envoyee');
+      alertCompatible('Succes', 'Votre demande de rendez-vous a ete envoyee');
       setHopitalSelectionne(null);
       setDateObj(new Date());
       setHeureObj(new Date());
       chargerMesRdv();
       setVue('mesrdv');
     } catch (error) {
-      Alert.alert('Erreur', "Impossible d'enregistrer: " + error.message);
+      alertCompatible('Erreur', "Impossible d'enregistrer: " + error.message);
     } finally {
       setEnvoiEnCours(false);
     }

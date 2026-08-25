@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { alertCompatible } from '../utils/alertCompatible';
 import {
   View, Text, StyleSheet, FlatList, TouchableOpacity,
   TextInput, ActivityIndicator, Alert, Modal, Keyboard, Platform,
@@ -79,7 +80,7 @@ export default function CommandesScreen() {
 
   async function creerCommande() {
     if (!emailClient.trim() || !description.trim()) {
-      Alert.alert('Champs manquants', "Merci de remplir l'email du client et la description.");
+      alertCompatible('Champs manquants', "Merci de remplir l'email du client et la description.");
       return;
     }
     setCreation(true);
@@ -90,7 +91,7 @@ export default function CommandesScreen() {
         where('email', '==', emailClient.trim())
       ));
       if (clientSnap.empty) {
-        Alert.alert('Client introuvable', "Aucun utilisateur n'a cet email.");
+        alertCompatible('Client introuvable', "Aucun utilisateur n'a cet email.");
         setCreation(false);
         return;
       }
@@ -118,9 +119,9 @@ export default function CommandesScreen() {
       setEmailClient('');
       setDescription('');
       chargerCommandes();
-      Alert.alert('Succes', 'Commande creee.');
+      alertCompatible('Succes', 'Commande creee.');
     } catch (error) {
-      Alert.alert('Erreur', error.message);
+      alertCompatible('Erreur', error.message);
     } finally {
       setCreation(false);
     }
@@ -131,7 +132,7 @@ export default function CommandesScreen() {
       await updateDoc(doc(db, 'commandes', commandeId), { statut: nouveauStatut });
       chargerCommandes();
     } catch (error) {
-      Alert.alert('Erreur', error.message);
+      alertCompatible('Erreur', error.message);
     }
   }
 

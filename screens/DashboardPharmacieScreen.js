@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { alertCompatible } from '../utils/alertCompatible';
 import {
   View, Text, StyleSheet, FlatList, TouchableOpacity,
   TextInput, ActivityIndicator, Alert, Modal,
@@ -63,13 +64,13 @@ export default function DashboardPharmacieScreen() {
       });
       chargerDonnees();
     } catch (error) {
-      Alert.alert('Erreur', error.message);
+      alertCompatible('Erreur', error.message);
     }
   };
 
   const ajouterProduit = async () => {
     if (!medicamentChoisi || !nouveauPrix.trim() || !ville.trim()) {
-      Alert.alert('Erreur', 'Merci de remplir tous les champs');
+      alertCompatible('Erreur', 'Merci de remplir tous les champs');
       return;
     }
     try {
@@ -86,9 +87,9 @@ export default function DashboardPharmacieScreen() {
       setNouveauPrix('');
       setVille('');
       chargerDonnees();
-      Alert.alert('Succes', 'Produit ajoute a votre catalogue');
+      alertCompatible('Succes', 'Produit ajoute a votre catalogue');
     } catch (error) {
-      Alert.alert('Erreur', error.message);
+      alertCompatible('Erreur', error.message);
     }
   };
 

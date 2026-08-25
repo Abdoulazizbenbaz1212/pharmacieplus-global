@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { alertCompatible } from '../utils/alertCompatible';
 import {
   View, Text, StyleSheet, FlatList, TouchableOpacity,
   ActivityIndicator, Alert, TextInput, Modal,
@@ -63,12 +64,12 @@ export default function DashboardHopitalScreen({ navigation }) {
       await updateDoc(doc(db, 'rendez_vous', rdvId), { statut: nouveauStatut });
       chargerDonnees();
     } catch (error) {
-      Alert.alert('Erreur', "Impossible de mettre a jour: " + error.message);
+      alertCompatible('Erreur', "Impossible de mettre a jour: " + error.message);
     }
   };
 
   const confirmerAction = (rdvId, action, label) => {
-    Alert.alert('Confirmation', `Voulez-vous ${label} ce rendez-vous ?`, [
+    alertCompatible('Confirmation', `Voulez-vous ${label} ce rendez-vous ?`, [
       { text: 'Annuler', style: 'cancel' },
       { text: 'Confirmer', onPress: () => changerStatut(rdvId, action) },
     ]);
@@ -76,7 +77,7 @@ export default function DashboardHopitalScreen({ navigation }) {
 
   const ajouterService = async () => {
     if (!nomService.trim() || !prixService.trim()) {
-      Alert.alert('Erreur', 'Merci de remplir le nom et le prix');
+      alertCompatible('Erreur', 'Merci de remplir le nom et le prix');
       return;
     }
     try {
@@ -90,14 +91,14 @@ export default function DashboardHopitalScreen({ navigation }) {
       setNomService('');
       setPrixService('');
       chargerDonnees();
-      Alert.alert('Succes', 'Service ajoute');
+      alertCompatible('Succes', 'Service ajoute');
     } catch (error) {
-      Alert.alert('Erreur', error.message);
+      alertCompatible('Erreur', error.message);
     }
   };
 
   const supprimerService = async (id) => {
-    Alert.alert('Confirmer', 'Retirer ce service ?', [
+    alertCompatible('Confirmer', 'Retirer ce service ?', [
       { text: 'Annuler', style: 'cancel' },
       {
         text: 'Retirer', style: 'destructive',
@@ -106,7 +107,7 @@ export default function DashboardHopitalScreen({ navigation }) {
             await deleteDoc(doc(db, 'services_hopital', id));
             chargerDonnees();
           } catch (error) {
-            Alert.alert('Erreur', error.message);
+            alertCompatible('Erreur', error.message);
           }
         },
       },

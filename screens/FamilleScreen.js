@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity, TextInput,
-  ScrollView, ActivityIndicator, Alert, Modal, FlatList, Share, KeyboardAvoidingView, Platform,
+  ScrollView, ActivityIndicator, Alert, Modal, FlatList, Share, Platform, Keyboard,
 } from 'react-native';
 import {
   doc, getDoc, setDoc, collection, addDoc, getDocs,
@@ -52,6 +52,24 @@ export default function FamilleScreen() {
   const [messages, setMessages] = useState([]);
   const [texteMessage, setTexteMessage] = useState('');
   const [envoiMessage, setEnvoiMessage] = useState(false);
+  const [hauteurClavier, setHauteurClavier] = useState(0);
+
+  useEffect(() => {
+    const evtShow = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const evtHide = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+
+    const subShow = Keyboard.addListener(evtShow, (e) => {
+      setHauteurClavier(e.endCoordinates.height);
+    });
+    const subHide = Keyboard.addListener(evtHide, () => {
+      setHauteurClavier(0);
+    });
+
+    return () => {
+      subShow.remove();
+      subHide.remove();
+    };
+  }, []);
   const flatListRef = useRef(null);
 
   const user = auth.currentUser;
@@ -391,10 +409,7 @@ export default function FamilleScreen() {
       </ScrollView>
 
       <Modal visible={chatVisible} animationType="slide" onRequestClose={() => setChatVisible(false)}>
-        <KeyboardAvoidingView
-          style={{ flex: 1, backgroundColor: '#fff' }}
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        >
+        <View style={{ flex: 1, backgroundColor: '#fff' }}>
           <View style={styles.chatHeader}>
             <TouchableOpacity onPress={() => setChatVisible(false)} style={{ marginRight: 12 }}>
               <Text style={{ fontSize: 20 }}>←</Text>
@@ -421,7 +436,7 @@ export default function FamilleScreen() {
             onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
           />
 
-          <View style={styles.chatInputRow}>
+          <View style={[styles.chatInputRow, { marginBottom: hauteurClavier }]}>
             <TextInput
               style={styles.chatInput}
               value={texteMessage}
@@ -433,7 +448,7 @@ export default function FamilleScreen() {
               {envoiMessage ? <ActivityIndicator color="#fff" size="small" /> : <Text style={styles.sendBtnText}>➤</Text>}
             </TouchableOpacity>
           </View>
-        </KeyboardAvoidingView>
+        </View>
       </Modal>
 
       <Modal visible={modalAjout} animationType="slide" onRequestClose={() => setModalAjout(false)}>

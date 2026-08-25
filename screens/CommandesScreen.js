@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   View, Text, StyleSheet, FlatList, TouchableOpacity,
-  TextInput, ActivityIndicator, Alert, Modal,
+  TextInput, ActivityIndicator, Alert, Modal, Keyboard, Platform,
 } from 'react-native';
 import {
   collection, query, where, getDocs, doc, addDoc, updateDoc, orderBy, serverTimestamp,
@@ -23,6 +23,24 @@ export default function CommandesScreen() {
   const [commandes, setCommandes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
+  const [hauteurClavier, setHauteurClavier] = useState(0);
+
+  useEffect(() => {
+    const evtShow = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const evtHide = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+
+    const subShow = Keyboard.addListener(evtShow, (e) => {
+      setHauteurClavier(e.endCoordinates.height);
+    });
+    const subHide = Keyboard.addListener(evtHide, () => {
+      setHauteurClavier(0);
+    });
+
+    return () => {
+      subShow.remove();
+      subHide.remove();
+    };
+  }, []);
   const [emailClient, setEmailClient] = useState('');
   const [description, setDescription] = useState('');
   const [creation, setCreation] = useState(false);
@@ -176,7 +194,7 @@ export default function CommandesScreen() {
 
       <Modal visible={modalVisible} transparent animationType="slide">
         <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
+          <View style={[styles.modalContent, { marginBottom: hauteurClavier }]}>
             <Text style={styles.modalTitle}>Nouvelle commande</Text>
 
             <Text style={styles.modalLabel}>Email du client</Text>

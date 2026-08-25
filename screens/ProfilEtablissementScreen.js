@@ -16,7 +16,15 @@ export default function ProfilEtablissementScreen() {
   const [nom, setNom] = useState('');
   const [adresse, setAdresse] = useState('');
   const [telephone, setTelephone] = useState('');
-  const [horaires, setHoraires] = useState('');
+  const [horairesParJour, setHorairesParJour] = useState({
+    lundi: { ouvert: true, debut: '08:00', fin: '18:00' },
+    mardi: { ouvert: true, debut: '08:00', fin: '18:00' },
+    mercredi: { ouvert: true, debut: '08:00', fin: '18:00' },
+    jeudi: { ouvert: true, debut: '08:00', fin: '18:00' },
+    vendredi: { ouvert: true, debut: '08:00', fin: '18:00' },
+    samedi: { ouvert: true, debut: '08:00', fin: '13:00' },
+    dimanche: { ouvert: false, debut: '08:00', fin: '18:00' },
+  });
   const [modeAccueil, setModeAccueil] = useState('fiche');
   const [role, setRole] = useState('');
   const [numeroAgrement, setNumeroAgrement] = useState('');
@@ -44,7 +52,7 @@ export default function ProfilEtablissementScreen() {
         setNom(data.nom || '');
         setAdresse(data.adresse || '');
         setTelephone(data.telephone || '');
-        setHoraires(data.horaires || '');
+        if (data.horairesParJour) { setHorairesParJour(data.horairesParJour); }
         setModeAccueil(data.modeAccueil || 'fiche');
         setNumeroAgrement(data.numeroAgrement || '');
         setLatitude(data.latitude || null);
@@ -60,8 +68,8 @@ export default function ProfilEtablissementScreen() {
   };
 
   const enregistrerProfil = async () => {
-    if (!nom.trim() || !telephone.trim() || !horaires.trim()) {
-      Alert.alert('Champs manquants', 'Merci de remplir le nom, le telephone et les horaires.');
+    if (!nom.trim() || !telephone.trim()) {
+      Alert.alert('Champs manquants', 'Merci de remplir le nom et le telephone.');
       return;
     }
     if (!latitude || !longitude) {
@@ -74,7 +82,7 @@ export default function ProfilEtablissementScreen() {
         nom,
         adresse,
         telephone,
-        horaires,
+        horairesParJour,
         modeAccueil,
         numeroAgrement,
         role,
@@ -178,7 +186,11 @@ export default function ProfilEtablissementScreen() {
 
           <View style={styles.infoCard}>
             <Text style={styles.infoLabel}>Horaires</Text>
-            <Text style={styles.infoValue}>{horaires || 'Non renseignes'}</Text>
+            {['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'].map((jour) => (
+              <Text key={jour} style={styles.infoValue}>
+                {jour.charAt(0).toUpperCase() + jour.slice(1)} : {horairesParJour[jour] && horairesParJour[jour].ouvert ? `${horairesParJour[jour].debut} - ${horairesParJour[jour].fin}` : 'Ferme'}
+              </Text>
+            ))}
           </View>
 
           {role === 'pharmacie' && (
@@ -260,11 +272,47 @@ export default function ProfilEtablissementScreen() {
           />
 
           <Text style={styles.label}>Horaires d'ouverture</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Ex: Lun-Sam 8h-19h"
-            value={horaires}
-            onChangeText={setHoraires}
+          {['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'].map((jour) => (
+            <View key={jour} style={{ marginBottom: 10, padding: 10, backgroundColor: '#f5f5f5', borderRadius: 8 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                <Text style={{ fontWeight: 'bold' }}>{jour.charAt(0).toUpperCase() + jour.slice(1)}</Text>
+                <TouchableOpacity
+                  onPress={() => setHorairesParJour({
+                    ...horairesParJour,
+                    [jour]: { ...horairesParJour[jour], ouvert: !horairesParJour[jour].ouvert },
+                  })}
+                  style={{
+                    paddingVertical: 4, paddingHorizontal: 10, borderRadius: 6,
+                    backgroundColor: horairesParJour[jour].ouvert ? '#1a7f5a' : '#c0392b',
+                  }}
+                >
+                  <Text style={{ color: '#fff', fontSize: 12 }}>{horairesParJour[jour].ouvert ? 'Ouvert' : 'Ferme'}</Text>
+                </TouchableOpacity>
+              </View>
+              {horairesParJour[jour].ouvert && (
+                <View style={{ flexDirection: 'row', gap: 10 }}>
+                  <TextInput
+                    style={[styles.input, { flex: 1, marginBottom: 0 }]}
+                    placeholder="08:00"
+                    value={horairesParJour[jour].debut}
+                    onChangeText={(v) => setHorairesParJour({
+                      ...horairesParJour,
+                      [jour]: { ...horairesParJour[jour], debut: v },
+                    })}
+                  />
+                  <TextInput
+                    style={[styles.input, { flex: 1, marginBottom: 0 }]}
+                    placeholder="18:00"
+                    value={horairesParJour[jour].fin}
+                    onChangeText={(v) => setHorairesParJour({
+                      ...horairesParJour,
+                      [jour]: { ...horairesParJour[jour], fin: v },
+                    })}
+                  />
+                </View>
+              )}
+            </View>
+          ))}
           />
 
           {role === 'pharmacie' && (

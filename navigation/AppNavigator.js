@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
+import { useSafeAreaInsets, SafeAreaProvider } from 'react-native-safe-area-context';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Text, View, ActivityIndicator, Platform } from 'react-native';
@@ -77,13 +78,14 @@ function TabIcon({ emoji }) {
 }
 
 function TabsPatient() {
+  const insets = useSafeAreaInsets();
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: true,
         tabBarActiveTintColor: '#e74c3c',
         tabBarInactiveTintColor: '#7f8c8d',
-        tabBarStyle: { height: 62, paddingBottom: 8, paddingTop: 6 },
+        tabBarStyle: { height: 56 + insets.bottom, paddingBottom: insets.bottom + 6, paddingTop: 6 },
         tabBarLabelStyle: { fontSize: 10 },
       }}
     >
@@ -104,13 +106,14 @@ function TabsPatient() {
 }
 
 function TabsHopital() {
+  const insets = useSafeAreaInsets();
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: true,
         tabBarActiveTintColor: '#3498db',
         tabBarInactiveTintColor: '#7f8c8d',
-        tabBarStyle: { height: 62, paddingBottom: 8, paddingTop: 6 },
+        tabBarStyle: { height: 56 + insets.bottom, paddingBottom: insets.bottom + 6, paddingTop: 6 },
         tabBarLabelStyle: { fontSize: 10 },
       }}
     >
@@ -129,13 +132,14 @@ function TabsHopital() {
 }
 
 function TabsPharmacie() {
+  const insets = useSafeAreaInsets();
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: true,
         tabBarActiveTintColor: '#9b59b6',
         tabBarInactiveTintColor: '#7f8c8d',
-        tabBarStyle: { height: 62, paddingBottom: 8, paddingTop: 6 },
+        tabBarStyle: { height: 56 + insets.bottom, paddingBottom: insets.bottom + 6, paddingTop: 6 },
         tabBarLabelStyle: { fontSize: 10 },
       }}
     >
@@ -154,13 +158,14 @@ function TabsPharmacie() {
 }
 
 function TabsFournisseur() {
+  const insets = useSafeAreaInsets();
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: true,
         tabBarActiveTintColor: '#f39c12',
         tabBarInactiveTintColor: '#7f8c8d',
-        tabBarStyle: { height: 62, paddingBottom: 8, paddingTop: 6 },
+        tabBarStyle: { height: 56 + insets.bottom, paddingBottom: insets.bottom + 6, paddingTop: 6 },
         tabBarLabelStyle: { fontSize: 10 },
       }}
     >
@@ -223,6 +228,7 @@ export default function AppNavigator() {
   };
 
   return (
+    <SafeAreaProvider>
     <NavigationContainer>
       {utilisateur ? (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -269,5 +275,6 @@ export default function AppNavigator() {
         <AuthScreen />
       )}
     </NavigationContainer>
+    </SafeAreaProvider>
   );
 }

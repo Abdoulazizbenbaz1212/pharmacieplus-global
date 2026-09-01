@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { alertCompatible } from '../utils/alertCompatible';
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
-  ActivityIndicator, Alert, KeyboardAvoidingView, Platform, ScrollView,
+  ActivityIndicator, Alert, Platform, ScrollView, Keyboard,
 } from 'react-native';
 import {
   createUserWithEmailAndPassword,
@@ -27,6 +27,20 @@ export default function AuthScreen() {
   const [cguAcceptees, setCguAcceptees] = useState(false);
   const [roleSelectionne, setRoleSelectionne] = useState('patient');
   const [loading, setLoading] = useState(false);
+  const [hauteurClavier, setHauteurClavier] = useState(0);
+
+  useEffect(() => {
+    const showSub = Keyboard.addListener('keyboardDidShow', (e) => {
+      setHauteurClavier(e.endCoordinates.height);
+    });
+    const hideSub = Keyboard.addListener('keyboardDidHide', () => {
+      setHauteurClavier(0);
+    });
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
   const handleSubmit = async () => {
     if (!email.trim() || !motDePasse.trim()) {
@@ -78,10 +92,7 @@ export default function AuthScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.wrapper}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
+    <View style={[styles.wrapper, { marginBottom: hauteurClavier }]}>
       <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
         <View style={styles.logoCircle}>
           <Text style={styles.logoEmoji}>⚕️</Text>
@@ -206,7 +217,7 @@ export default function AuthScreen() {
           </Text>
         </TouchableOpacity>
       </ScrollView>
-    </KeyboardAvoidingView>
+    </View>
   );
 }
 

@@ -313,7 +313,16 @@ export default function HopitauxScreen() {
         data={etablissementsAvecDistance}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <View style={styles.card}>
+          <TouchableOpacity
+            style={styles.card}
+            activeOpacity={0.7}
+            onPress={() => {
+              if (item.lat && item.lng) {
+                const url = `https://www.google.com/maps/search/?api=1&query=${item.lat},${item.lng}`;
+                Linking.openURL(url);
+              }
+            }}
+          >
             <View style={{ flex: 1 }}>
               <Text style={styles.nom}>{item.nom}</Text>
               {item.horairesParJour && (() => {
@@ -334,7 +343,7 @@ export default function HopitauxScreen() {
                 <Text style={styles.callBtnText}>📞 Appeler</Text>
               </TouchableOpacity>
             )}
-          </View>
+          </TouchableOpacity>
         )}
       />
     </View>

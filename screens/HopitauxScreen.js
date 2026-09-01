@@ -240,7 +240,7 @@ export default function HopitauxScreen() {
           setLoading(false);
           return;
         }
-        const pos = await Location.getCurrentPositionAsync({});
+        const pos = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
         setPosition(pos.coords);
         await lancerRecherche(pos.coords);
       } catch (error) {

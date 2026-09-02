@@ -18,6 +18,13 @@ const ROLES = [
   { id: 'fournisseur', label: 'Fournisseur', emoji: '📦' },
 ];
 
+const PAYS = [
+  'Cameroun', 'Nigeria', 'Tchad', 'Republique Centrafricaine', 'Gabon',
+  'Congo', 'Guinee Equatoriale', 'Cote d\'Ivoire', 'Senegal', 'Mali',
+  'Burkina Faso', 'Benin', 'Togo', 'Niger', 'Republique Democratique du Congo',
+  'France', 'Belgique', 'Canada', 'Etats-Unis', 'Autre',
+];
+
 export default function AuthScreen() {
   const [mode, setMode] = useState('connexion');
   const [nom, setNom] = useState('');
@@ -26,6 +33,10 @@ export default function AuthScreen() {
   const [confirmationMotDePasse, setConfirmationMotDePasse] = useState('');
   const [cguAcceptees, setCguAcceptees] = useState(false);
   const [roleSelectionne, setRoleSelectionne] = useState('patient');
+  const [telephone, setTelephone] = useState('');
+  const [dateNaissance, setDateNaissance] = useState('');
+  const [paysSelectionne, setPaysSelectionne] = useState('Cameroun');
+  const [selecteurPaysVisible, setSelecteurPaysVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [hauteurClavier, setHauteurClavier] = useState(0);
 
@@ -74,6 +85,9 @@ export default function AuthScreen() {
           nom: nom.trim(),
           email: email.trim(),
           role: roleSelectionne,
+          telephone: telephone.trim(),
+          dateNaissance: dateNaissance.trim(),
+          pays: paysSelectionne,
           cree_le: new Date().toISOString(),
         });
       } else {
@@ -132,6 +146,60 @@ export default function AuthScreen() {
                   value={nom}
                   onChangeText={setNom}
                 />
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Telephone</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Ex: 699887766"
+                  placeholderTextColor="#a0a8b0"
+                  value={telephone}
+                  onChangeText={setTelephone}
+                  keyboardType="phone-pad"
+                />
+              </View>
+
+              {roleSelectionne === 'patient' && (
+                <View style={styles.inputGroup}>
+                  <Text style={styles.inputLabel}>Date de naissance</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="JJ/MM/AAAA"
+                    placeholderTextColor="#a0a8b0"
+                    value={dateNaissance}
+                    onChangeText={setDateNaissance}
+                    keyboardType="numeric"
+                  />
+                </View>
+              )}
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Pays</Text>
+                <TouchableOpacity
+                  style={styles.input}
+                  onPress={() => setSelecteurPaysVisible(!selecteurPaysVisible)}
+                >
+                  <Text style={{ color: '#1a2b34' }}>{paysSelectionne}</Text>
+                </TouchableOpacity>
+                {selecteurPaysVisible && (
+                  <View style={{ borderWidth: 1, borderColor: '#e0e4e8', borderRadius: 10, marginTop: 6, maxHeight: 200 }}>
+                    <ScrollView nestedScrollEnabled>
+                      {PAYS.map((p) => (
+                        <TouchableOpacity
+                          key={p}
+                          style={{ padding: 12, borderBottomWidth: 1, borderBottomColor: '#f0f2f4' }}
+                          onPress={() => {
+                            setPaysSelectionne(p);
+                            setSelecteurPaysVisible(false);
+                          }}
+                        >
+                          <Text style={{ color: '#1a2b34' }}>{p}</Text>
+                        </TouchableOpacity>
+                      ))}
+                    </ScrollView>
+                  </View>
+                )}
               </View>
             </>
           )}

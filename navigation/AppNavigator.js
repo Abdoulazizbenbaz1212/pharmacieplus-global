@@ -29,6 +29,7 @@ import AuthScreen from '../screens/AuthScreen';
 import DashboardHopitalScreen from '../screens/DashboardHopitalScreen';
 import DashboardPharmacieScreen from '../screens/DashboardPharmacieScreen';
 import DashboardFournisseurScreen from '../screens/DashboardFournisseurScreen';
+import AdminScreen from '../screens/AdminScreen';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -73,11 +74,13 @@ async function enregistrerTokenNotification(uid) {
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
+const ADMIN_EMAILS = ['abdoulazizbenbaz0@gmail.com', 'abdoulazizbenbaz00@gmail.com'];
+
 function TabIcon({ emoji }) {
   return <Text style={{ fontSize: 19 }}>{emoji}</Text>;
 }
 
-function TabsPatient() {
+function TabsPatient({ isAdmin }) {
   const insets = useSafeAreaInsets();
   return (
     <Tab.Navigator
@@ -101,11 +104,15 @@ function TabsPatient() {
         options={{ title: 'Pharmacie+ Global', tabBarLabel: 'SOS', tabBarIcon: () => <TabIcon emoji="🆘" /> }} />
       <Tab.Screen name="Plus" component={PlusScreen}
         options={{ title: 'Plus', tabBarLabel: 'Plus', tabBarIcon: () => <TabIcon emoji="☰" /> }} />
+      {isAdmin && (
+        <Tab.Screen name="Admin" component={AdminScreen}
+          options={{ title: 'Administration', tabBarLabel: 'Admin', tabBarIcon: () => <TabIcon emoji="🛠️" /> }} />
+      )}
     </Tab.Navigator>
   );
 }
 
-function TabsHopital() {
+function TabsHopital({ isAdmin }) {
   const insets = useSafeAreaInsets();
   return (
     <Tab.Navigator
@@ -127,11 +134,15 @@ function TabsHopital() {
         options={{ title: 'Messages', tabBarLabel: 'Messages', tabBarIcon: () => <TabIcon emoji="💬" /> }} />
       <Tab.Screen name="Profil" component={ProfilEtablissementScreen}
         options={{ title: 'Mon profil', tabBarLabel: 'Profil', tabBarIcon: () => <TabIcon emoji="🗂️" /> }} />
+      {isAdmin && (
+        <Tab.Screen name="Admin" component={AdminScreen}
+          options={{ title: 'Administration', tabBarLabel: 'Admin', tabBarIcon: () => <TabIcon emoji="🛠️" /> }} />
+      )}
     </Tab.Navigator>
   );
 }
 
-function TabsPharmacie() {
+function TabsPharmacie({ isAdmin }) {
   const insets = useSafeAreaInsets();
   return (
     <Tab.Navigator
@@ -153,11 +164,15 @@ function TabsPharmacie() {
         options={{ title: 'Messages', tabBarLabel: 'Messages', tabBarIcon: () => <TabIcon emoji="💬" /> }} />
       <Tab.Screen name="Profil" component={ProfilEtablissementScreen}
         options={{ title: 'Mon profil', tabBarLabel: 'Profil', tabBarIcon: () => <TabIcon emoji="🗂️" /> }} />
+      {isAdmin && (
+        <Tab.Screen name="Admin" component={AdminScreen}
+          options={{ title: 'Administration', tabBarLabel: 'Admin', tabBarIcon: () => <TabIcon emoji="🛠️" /> }} />
+      )}
     </Tab.Navigator>
   );
 }
 
-function TabsFournisseur() {
+function TabsFournisseur({ isAdmin }) {
   const insets = useSafeAreaInsets();
   return (
     <Tab.Navigator
@@ -179,6 +194,10 @@ function TabsFournisseur() {
         options={{ title: 'Messages', tabBarLabel: 'Messages', tabBarIcon: () => <TabIcon emoji="💬" /> }} />
       <Tab.Screen name="Profil" component={ProfilEtablissementScreen}
         options={{ title: 'Mon profil', tabBarLabel: 'Profil', tabBarIcon: () => <TabIcon emoji="🗂️" /> }} />
+      {isAdmin && (
+        <Tab.Screen name="Admin" component={AdminScreen}
+          options={{ title: 'Administration', tabBarLabel: 'Admin', tabBarIcon: () => <TabIcon emoji="🛠️" /> }} />
+      )}
     </Tab.Navigator>
   );
 }
@@ -220,11 +239,13 @@ export default function AppNavigator() {
     );
   }
 
+  const isAdmin = utilisateur && ADMIN_EMAILS.includes(utilisateur.email);
+
   const renderTabs = () => {
-    if (role === 'hopital') return <TabsHopital />;
-    if (role === 'pharmacie') return <TabsPharmacie />;
-    if (role === 'fournisseur') return <TabsFournisseur />;
-    return <TabsPatient />;
+    if (role === 'hopital') return <TabsHopital isAdmin={isAdmin} />;
+    if (role === 'pharmacie') return <TabsPharmacie isAdmin={isAdmin} />;
+    if (role === 'fournisseur') return <TabsFournisseur isAdmin={isAdmin} />;
+    return <TabsPatient isAdmin={isAdmin} />;
   };
 
   return (

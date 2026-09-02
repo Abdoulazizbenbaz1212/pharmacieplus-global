@@ -88,7 +88,7 @@ function TabsPatient({ isAdmin }) {
         headerShown: true,
         tabBarActiveTintColor: '#e74c3c',
         tabBarInactiveTintColor: '#7f8c8d',
-        tabBarStyle: { height: 56 + insets.bottom, paddingBottom: insets.bottom + 6, paddingTop: 6 },
+        tabBarStyle: { height: 56 + Math.max(insets.bottom, 12), paddingBottom: Math.max(insets.bottom, 12) + 6, paddingTop: 6 },
         tabBarLabelStyle: { fontSize: 10 },
       }}
     >
@@ -120,7 +120,7 @@ function TabsHopital({ isAdmin }) {
         headerShown: true,
         tabBarActiveTintColor: '#3498db',
         tabBarInactiveTintColor: '#7f8c8d',
-        tabBarStyle: { height: 56 + insets.bottom, paddingBottom: insets.bottom + 6, paddingTop: 6 },
+        tabBarStyle: { height: 56 + Math.max(insets.bottom, 12), paddingBottom: Math.max(insets.bottom, 12) + 6, paddingTop: 6 },
         tabBarLabelStyle: { fontSize: 10 },
       }}
     >
@@ -150,7 +150,7 @@ function TabsPharmacie({ isAdmin }) {
         headerShown: true,
         tabBarActiveTintColor: '#9b59b6',
         tabBarInactiveTintColor: '#7f8c8d',
-        tabBarStyle: { height: 56 + insets.bottom, paddingBottom: insets.bottom + 6, paddingTop: 6 },
+        tabBarStyle: { height: 56 + Math.max(insets.bottom, 12), paddingBottom: Math.max(insets.bottom, 12) + 6, paddingTop: 6 },
         tabBarLabelStyle: { fontSize: 10 },
       }}
     >
@@ -180,7 +180,7 @@ function TabsFournisseur({ isAdmin }) {
         headerShown: true,
         tabBarActiveTintColor: '#f39c12',
         tabBarInactiveTintColor: '#7f8c8d',
-        tabBarStyle: { height: 56 + insets.bottom, paddingBottom: insets.bottom + 6, paddingTop: 6 },
+        tabBarStyle: { height: 56 + Math.max(insets.bottom, 12), paddingBottom: Math.max(insets.bottom, 12) + 6, paddingTop: 6 },
         tabBarLabelStyle: { fontSize: 10 },
       }}
     >

@@ -43,6 +43,7 @@ export default function CommandesScreen() {
     };
   }, []);
   const [emailClient, setEmailClient] = useState('');
+  const [telephoneClient, setTelephoneClient] = useState('');
   const [description, setDescription] = useState('');
   const [creation, setCreation] = useState(false);
 
@@ -108,6 +109,7 @@ export default function CommandesScreen() {
       await addDoc(collection(db, 'commandes'), {
         clientId,
         clientEmail: emailClient.trim(),
+        clientTelephone: telephoneClient.trim(),
         vendeurId: user.uid,
         vendeurNom,
         description: description.trim(),
@@ -117,6 +119,7 @@ export default function CommandesScreen() {
       });
       setModalVisible(false);
       setEmailClient('');
+      setTelephoneClient('');
       setDescription('');
       chargerCommandes();
       alertCompatible('Succes', 'Commande creee.');
@@ -206,6 +209,15 @@ export default function CommandesScreen() {
               onChangeText={setEmailClient}
               autoCapitalize="none"
               keyboardType="email-address"
+            />
+
+            <Text style={styles.modalLabel}>Telephone du client (optionnel)</Text>
+            <TextInput
+              style={styles.modalInput}
+              placeholder="Ex: 699887766"
+              value={telephoneClient}
+              onChangeText={setTelephoneClient}
+              keyboardType="phone-pad"
             />
 
             <Text style={styles.modalLabel}>Description</Text>

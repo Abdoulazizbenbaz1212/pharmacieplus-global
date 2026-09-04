@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Linking, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Linking, ActivityIndicator, Platform } from 'react-native';
 import { WebView } from 'react-native-webview';
 import * as Location from 'expo-location';
 import { collection, getDocs, query, where } from 'firebase/firestore';
@@ -277,14 +277,20 @@ export default function HopitauxScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.map}>
-        <WebView
-          source={{ html: htmlCarte }}
-          style={{ flex: 1 }}
-          javaScriptEnabled
-          domStorageEnabled
-        />
-      </View>
+      {Platform.OS === 'web' ? (
+        <View style={[styles.map, { alignItems: 'center', justifyContent: 'center', backgroundColor: '#f0f2f4' }]}>
+          <Text style={{ color: '#7f8c8d', fontSize: 13 }}>Carte disponible sur l'application mobile</Text>
+        </View>
+      ) : (
+        <View style={styles.map}>
+          <WebView
+            source={{ html: htmlCarte }}
+            style={{ flex: 1 }}
+            javaScriptEnabled
+            domStorageEnabled
+          />
+        </View>
+      )}
 
       {errorMsg && (
         <View style={styles.warningBox}>

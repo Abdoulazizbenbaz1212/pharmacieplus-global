@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { alertCompatible } from '../utils/alertCompatible';
 import {
   View, Text, StyleSheet, TouchableOpacity, TextInput,
-  ScrollView, ActivityIndicator, Alert,
+  ScrollView, ActivityIndicator, Alert, Modal,
 } from 'react-native';
 import { doc, getDoc, setDoc, collection } from 'firebase/firestore';
 import { db, auth } from '../config/firebase';
@@ -231,9 +231,68 @@ export default function ProfilScreen() {
         </View>
       )}
 
+      <TouchableOpacity style={styles.changerMdpBtn} onPress={() => setModalMotDePasseVisible(true)}>
+        <Text style={styles.changerMdpBtnText}>Changer le mot de passe</Text>
+      </TouchableOpacity>
+
       <TouchableOpacity style={styles.logoutBtn} onPress={handleDeconnexion}>
         <Text style={styles.logoutBtnText}>Se deconnecter</Text>
       </TouchableOpacity>
+
+      <Modal visible={modalMotDePasseVisible} transparent animationType="slide">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Changer le mot de passe</Text>
+
+            <Text style={styles.label}>Mot de passe actuel</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Votre mot de passe actuel"
+              value={ancienMotDePasse}
+              onChangeText={setAncienMotDePasse}
+              secureTextEntry
+            />
+
+            <Text style={styles.label}>Nouveau mot de passe</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="6 caracteres minimum"
+              value={nouveauMotDePasse}
+              onChangeText={setNouveauMotDePasse}
+              secureTextEntry
+            />
+
+            <Text style={styles.label}>Confirmer le nouveau mot de passe</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Retapez le nouveau mot de passe"
+              value={confirmationNouveauMdp}
+              onChangeText={setConfirmationNouveauMdp}
+              secureTextEntry
+            />
+
+            <View style={{ flexDirection: 'row', gap: 10, marginTop: 16 }}>
+              <TouchableOpacity
+                style={[styles.changerMdpBtn, { flex: 1, backgroundColor: '#eee' }]}
+                onPress={() => setModalMotDePasseVisible(false)}
+              >
+                <Text style={[styles.changerMdpBtnText, { color: '#555' }]}>Annuler</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.changerMdpBtn, { flex: 1 }]}
+                onPress={handleChangerMotDePasse}
+                disabled={changementEnCours}
+              >
+                {changementEnCours ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={styles.changerMdpBtnText}>Confirmer</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
 
       <DocumentsMedicaux
         visible={documentsVisible}
@@ -288,5 +347,10 @@ const styles = StyleSheet.create({
   },
   saveBtnText: { color: '#fff', fontSize: 16, fontWeight: '700' },
   logoutBtn: { alignItems: 'center', padding: 20, marginBottom: 20 },
+  changerMdpBtn: { alignItems: 'center', backgroundColor: '#3498db', padding: 14, borderRadius: 10, marginHorizontal: 20, marginTop: 10 },
+  changerMdpBtnText: { color: '#fff', fontSize: 14, fontWeight: '700' },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', padding: 20 },
+  modalContent: { backgroundColor: '#fff', borderRadius: 14, padding: 20 },
+  modalTitle: { fontSize: 17, fontWeight: '700', marginBottom: 16, color: '#2c3e50' },
   logoutBtnText: { color: '#e74c3c', fontSize: 14, fontWeight: '600' },
 });

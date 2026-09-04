@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Linking, ActivityIndicator, Platform } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Linking, ActivityIndicator, Platform, Modal } from 'react-native';
 import { WebView } from 'react-native-webview';
 import * as Location from 'expo-location';
 import { collection, getDocs, query, where } from 'firebase/firestore';
@@ -208,6 +208,7 @@ export default function HopitauxScreen() {
   const [loading, setLoading] = useState(true);
   const [recherche, setRecherche] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
+  const [etablissementSelectionne, setEtablissementSelectionne] = useState(null);
 
   const lancerRecherche = useCallback(async (coords) => {
     setRecherche(true);
@@ -319,12 +320,7 @@ export default function HopitauxScreen() {
           <TouchableOpacity
             style={styles.card}
             activeOpacity={0.7}
-            onPress={() => {
-              if (item.lat && item.lng) {
-                const url = `https://www.google.com/maps/search/?api=1&query=${item.lat},${item.lng}`;
-                Linking.openURL(url);
-              }
-            }}
+            onPress={() => setEtablissementSelectionne(item)}
           >
             <View style={{ flex: 1 }}>
               <Text style={styles.nom}>{item.nom}</Text>
@@ -349,6 +345,53 @@ export default function HopitauxScreen() {
           </TouchableOpacity>
         )}
       />
+
+      <Modal visible={!!etablissementSelectionne} transparent animationType="slide">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            {etablissementSelectionne && (
+              <>
+                <Text style={styles.modalTitre}>{etablissementSelectionne.nom}</Text>
+                <Text style={styles.modalDetail}>
+                  {labelType[etablissementSelectionne.type] || 'Etablissement'}
+                  {etablissementSelectionne.distance ? ` • ${etablissementSelectionne.distance} km` : ''}
+                </Text>
+                {etablissementSelectionne.horairesParJour && (() => {
+                  const statutInfo = calculerStatutOuverture(etablissementSelectionne.horairesParJour);
+                  return statutInfo ? (
+                    <View style={{ alignSelf: 'flex-start', backgroundColor: statutInfo.couleur, paddingVertical: 3, paddingHorizontal: 10, borderRadius: 10, marginTop: 8 }}>
+                      <Text style={{ color: '#fff', fontSize: 12, fontWeight: 'bold' }}>{statutInfo.label}</Text>
+                    </View>
+                  ) : null;
+                })()}
+                {etablissementSelectionne.telephone && (
+                  <Text style={styles.modalDetail}>Telephone : {etablissementSelectionne.telephone}</Text>
+                )}
+
+                <View style={{ flexDirection: 'row', gap: 10, marginTop: 20 }}>
+                  {etablissementSelectionne.lat && etablissementSelectionne.lng && (
+                    <TouchableOpacity
+                      style={styles.modalMapsBtn}
+                      onPress={() => {
+                        const url = `https://www.google.com/maps/search/?api=1&query=${etablissementSelectionne.lat},${etablissementSelectionne.lng}`;
+                        Linking.openURL(url);
+                      }}
+                    >
+                      <Text style={styles.modalMapsBtnText}>📍 Localiser sur Maps</Text>
+                    </TouchableOpacity>
+                  )}
+                  <TouchableOpacity
+                    style={styles.modalFermerBtn}
+                    onPress={() => setEtablissementSelectionne(null)}
+                  >
+                    <Text style={styles.modalFermerBtnText}>Fermer</Text>
+                  </TouchableOpacity>
+                </View>
+              </>
+            )}
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -391,4 +434,12 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   callBtnText: { color: '#fff', fontWeight: 'bold', fontSize: 13 },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', padding: 20 },
+  modalContent: { backgroundColor: '#fff', borderRadius: 14, padding: 20 },
+  modalTitre: { fontSize: 18, fontWeight: '700', color: '#2c3e50' },
+  modalDetail: { fontSize: 13, color: '#7f8c8d', marginTop: 6 },
+  modalMapsBtn: { flex: 1, backgroundColor: '#3498db', paddingVertical: 12, borderRadius: 10, alignItems: 'center' },
+  modalMapsBtnText: { color: '#fff', fontWeight: '700', fontSize: 13 },
+  modalFermerBtn: { flex: 1, backgroundColor: '#eee', paddingVertical: 12, borderRadius: 10, alignItems: 'center' },
+  modalFermerBtnText: { color: '#555', fontWeight: '700', fontSize: 13 },
 });

@@ -97,7 +97,11 @@ export default function CommandesScreen() {
         return;
       }
       let clientId = '';
-      clientSnap.forEach((d) => { clientId = d.id; });
+      let telephoneProfilClient = '';
+      clientSnap.forEach((d) => {
+        clientId = d.id;
+        telephoneProfilClient = d.data().telephone || '';
+      });
 
       const vendeurDoc = await getDocs(query(
         collection(db, 'utilisateurs'),
@@ -109,7 +113,7 @@ export default function CommandesScreen() {
       await addDoc(collection(db, 'commandes'), {
         clientId,
         clientEmail: emailClient.trim(),
-        clientTelephone: telephoneClient.trim(),
+        clientTelephone: telephoneProfilClient || telephoneClient.trim(),
         vendeurId: user.uid,
         vendeurNom,
         description: description.trim(),

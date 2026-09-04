@@ -217,10 +217,7 @@ export default function HopitauxScreen() {
       setEtablissements(listeApp);
       setRecherche(false);
 
-      const listeOsm = await chercherEtablissementsProches(coords.latitude, coords.longitude).catch(() => []);
-      const listeCombinee = [...listeApp, ...listeOsm];
-      setEtablissements(listeCombinee);
-      if (listeCombinee.length === 0) {
+      if (listeApp.length === 0) {
         setErrorMsg('Aucun établissement de santé trouvé dans un rayon de 10 km.');
       }
     } catch (erreurRecherche) {

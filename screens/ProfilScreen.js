@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import { doc, getDoc, setDoc, collection } from 'firebase/firestore';
 import { db, auth } from '../config/firebase';
-import { signOut } from 'firebase/auth';
+import { signOut, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
 import DocumentsMedicaux from '../components/DocumentsMedicaux';
 
 const GROUPES_SANGUINS = ['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-'];
@@ -64,6 +64,47 @@ export default function ProfilScreen() {
       alertCompatible('Erreur', "Impossible d'enregistrer: " + error.message);
     } finally {
       setEnregistrementEnCours(false);
+    }
+  };
+
+  const [modalMotDePasseVisible, setModalMotDePasseVisible] = useState(false);
+  const [ancienMotDePasse, setAncienMotDePasse] = useState('');
+  const [nouveauMotDePasse, setNouveauMotDePasse] = useState('');
+  const [confirmationNouveauMdp, setConfirmationNouveauMdp] = useState('');
+  const [changementEnCours, setChangementEnCours] = useState(false);
+
+  const handleChangerMotDePasse = async () => {
+    if (!ancienMotDePasse.trim() || !nouveauMotDePasse.trim()) {
+      alertCompatible('Erreur', 'Merci de remplir tous les champs.');
+      return;
+    }
+    if (nouveauMotDePasse.length < 6) {
+      alertCompatible('Erreur', 'Le nouveau mot de passe doit contenir au moins 6 caracteres.');
+      return;
+    }
+    if (nouveauMotDePasse !== confirmationNouveauMdp) {
+      alertCompatible('Erreur', 'Les deux mots de passe ne correspondent pas.');
+      return;
+    }
+    setChangementEnCours(true);
+    try {
+      const utilisateurActuel = auth.currentUser;
+      const credential = EmailAuthProvider.credential(utilisateurActuel.email, ancienMotDePasse);
+      await reauthenticateWithCredential(utilisateurActuel, credential);
+      await updatePassword(utilisateurActuel, nouveauMotDePasse);
+      alertCompatible('Succes', 'Votre mot de passe a ete modifie.');
+      setModalMotDePasseVisible(false);
+      setAncienMotDePasse('');
+      setNouveauMotDePasse('');
+      setConfirmationNouveauMdp('');
+    } catch (error) {
+      let message = "Une erreur s'est produite";
+      if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
+        message = 'Ancien mot de passe incorrect';
+      }
+      alertCompatible('Erreur', message);
+    } finally {
+      setChangementEnCours(false);
     }
   };
 

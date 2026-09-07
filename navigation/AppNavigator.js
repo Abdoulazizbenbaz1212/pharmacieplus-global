@@ -74,7 +74,7 @@ async function enregistrerTokenNotification(uid) {
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-const ADMIN_EMAILS = ['abdoulazizbenbaz0@gmail.com', 'abdoulazizbenbaz00@gmail.com'];
+const ADMIN_EMAILS = ['abdoulazizbenbaz0@gmail.com'];
 
 function TabIcon({ emoji }) {
   return <Text style={{ fontSize: 19 }}>{emoji}</Text>;

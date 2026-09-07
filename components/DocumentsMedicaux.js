@@ -35,6 +35,7 @@ export default function DocumentsMedicaux({ visible, onClose, collectionRef, tit
   const [imageUri, setImageUri] = useState(null);
   const [texteExtrait, setTexteExtrait] = useState('');
   const [ocrEnCours, setOcrEnCours] = useState(false);
+  const [imageDechiffree, setImageDechiffree] = useState(null);
 
   const enregistrerAccesDocument = useCallback(async (document) => {
     try {
@@ -51,6 +52,19 @@ export default function DocumentsMedicaux({ visible, onClose, collectionRef, tit
     } catch (error) {
       console.log('Erreur enregistrement log acces:', error);
     }
+  }, []);
+
+  const obtenirCleChiffrement = useCallback(async () => {
+    const utilisateur = auth.currentUser;
+    if (!utilisateur) return null;
+    const refCle = doc(db, 'cles_chiffrement', utilisateur.uid);
+    const snap = await getDoc(refCle);
+    if (snap.exists()) {
+      return snap.data().cle;
+    }
+    const nouvelleCle = CryptoJS.lib.WordArray.random(32).toString();
+    await setDoc(refCle, { cle: nouvelleCle, creeLe: serverTimestamp() });
+    return nouvelleCle;
   }, []);
 
   const chargerDocuments = useCallback(async () => {
@@ -119,10 +133,14 @@ export default function DocumentsMedicaux({ visible, onClose, collectionRef, tit
     }
     setEnregistrement(true);
     try {
+      const cle = await obtenirCleChiffrement();
+      const imageChiffree = CryptoJS.AES.encrypt(imageBase64, cle).toString();
+      const texteChiffre = texteExtrait ? CryptoJS.AES.encrypt(texteExtrait, cle).toString() : '';
       await addDoc(collectionRef, {
         type: typeSelectionne,
-        imageBase64,
-        texteOcr: texteExtrait,
+        imageBase64: imageChiffree,
+        texteOcr: texteChiffre,
+        chiffre: true,
         createdAt: serverTimestamp(),
       });
       setModalAjout(false);
@@ -176,9 +194,21 @@ export default function DocumentsMedicaux({ visible, onClose, collectionRef, tit
           numColumns={2}
           contentContainerStyle={{ padding: 10 }}
           renderItem={({ item }) => (
-            <TouchableOpacity style={styles.carte} onPress={() => {
+            <TouchableOpacity style={styles.carte} onPress={async () => {
               setDocumentAgrandi(item);
               enregistrerAccesDocument(item);
+              if (item.chiffre) {
+                try {
+                  const cle = await obtenirCleChiffrement();
+                  const bytes = CryptoJS.AES.decrypt(item.imageBase64, cle);
+                  setImageDechiffree(bytes.toString(CryptoJS.enc.Utf8));
+                } catch (error) {
+                  console.log('Erreur dechiffrement:', error);
+                  setImageDechiffree(null);
+                }
+              } else {
+                setImageDechiffree(item.imageBase64);
+              }
             }}>
               <Image source={{ uri: `data:image/jpeg;base64,${item.imageBase64}` }} style={styles.miniature} />
               <Text style={styles.carteType}>{labelType(item.type)}</Text>
@@ -253,11 +283,11 @@ export default function DocumentsMedicaux({ visible, onClose, collectionRef, tit
       <Modal visible={!!documentAgrandi} animationType="fade" onRequestClose={() => setDocumentAgrandi(null)}>
         {documentAgrandi && (
           <View style={styles.agrandiContainer}>
-            <TouchableOpacity style={styles.fermerAgrandi} onPress={() => setDocumentAgrandi(null)}>
+            <TouchableOpacity style={styles.fermerAgrandi} onPress={() => { setDocumentAgrandi(null); setImageDechiffree(null); }}>
               <Text style={{ fontSize: 24, color: '#fff' }}>✕</Text>
             </TouchableOpacity>
             <Image
-              source={{ uri: `data:image/jpeg;base64,${documentAgrandi.imageBase64}` }}
+              source={{ uri: `data:image/jpeg;base64,${imageDechiffree || documentAgrandi.imageBase64}` }}
               style={styles.imageAgrandie}
               resizeMode="contain"
             />

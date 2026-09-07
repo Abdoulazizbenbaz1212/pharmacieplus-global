@@ -10,7 +10,7 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import TextRecognition from '@react-native-ml-kit/text-recognition';
-import { db } from '../config/firebase';
+import { db, auth } from '../config/firebase';
 
 const TYPES_DOCUMENTS = [
   { valeur: 'ordonnance', label: 'Ordonnance', emoji: '💊' },
@@ -35,6 +35,23 @@ export default function DocumentsMedicaux({ visible, onClose, collectionRef, tit
   const [imageUri, setImageUri] = useState(null);
   const [texteExtrait, setTexteExtrait] = useState('');
   const [ocrEnCours, setOcrEnCours] = useState(false);
+
+  const enregistrerAccesDocument = useCallback(async (document) => {
+    try {
+      const utilisateur = auth.currentUser;
+      if (!utilisateur) return;
+      await addDoc(collection(db, 'logs_acces'), {
+        utilisateurId: utilisateur.uid,
+        utilisateurEmail: utilisateur.email,
+        documentId: document.id,
+        typeDocument: document.type || 'inconnu',
+        action: 'consultation',
+        date: serverTimestamp(),
+      });
+    } catch (error) {
+      console.log('Erreur enregistrement log acces:', error);
+    }
+  }, []);
 
   const chargerDocuments = useCallback(async () => {
     if (!collectionRef) return;
@@ -159,7 +176,10 @@ export default function DocumentsMedicaux({ visible, onClose, collectionRef, tit
           numColumns={2}
           contentContainerStyle={{ padding: 10 }}
           renderItem={({ item }) => (
-            <TouchableOpacity style={styles.carte} onPress={() => setDocumentAgrandi(item)}>
+            <TouchableOpacity style={styles.carte} onPress={() => {
+              setDocumentAgrandi(item);
+              enregistrerAccesDocument(item);
+            }}>
               <Image source={{ uri: `data:image/jpeg;base64,${item.imageBase64}` }} style={styles.miniature} />
               <Text style={styles.carteType}>{labelType(item.type)}</Text>
             </TouchableOpacity>

@@ -32,6 +32,10 @@ export default function AuthScreen() {
   const [motDePasse, setMotDePasse] = useState('');
   const [confirmationMotDePasse, setConfirmationMotDePasse] = useState('');
   const [cguAcceptees, setCguAcceptees] = useState(false);
+  const [consentDocuments, setConsentDocuments] = useState(false);
+  const [consentGps, setConsentGps] = useState(false);
+  const [consentIA, setConsentIA] = useState(false);
+  const [consentPartageContact, setConsentPartageContact] = useState(false);
   const [roleSelectionne, setRoleSelectionne] = useState('patient');
   const [telephone, setTelephone] = useState('');
   const [dateNaissance, setDateNaissance] = useState('');
@@ -69,6 +73,10 @@ export default function AuthScreen() {
       }
       if (!cguAcceptees) {
         alertCompatible('Conditions requises', "Merci d'accepter les conditions d'utilisation pour continuer.");
+        return;
+      }
+      if (!consentDocuments || !consentGps || !consentIA || !consentPartageContact) {
+        alertCompatible('Consentements requis', 'Merci d\'accepter les 4 autorisations pour continuer.');
         return;
       }
       if (motDePasse.length < 6) {
@@ -256,6 +264,62 @@ export default function AuthScreen() {
                 J'accepte les conditions d'utilisation. Je confirme que la vente de medicaments necessitant une ordonnance sera toujours accompagnee d'une ordonnance valide, conformement a la reglementation en vigueur dans mon pays.
               </Text>
             </TouchableOpacity>
+          )}
+
+          {mode === 'inscription' && (
+            <>
+              <TouchableOpacity
+                style={styles.cguRow}
+                onPress={() => setConsentDocuments(!consentDocuments)}
+                activeOpacity={0.7}
+              >
+                <View style={[styles.checkbox, consentDocuments && styles.checkboxActive]}>
+                  {consentDocuments && <Text style={{ color: '#fff', fontSize: 12 }}>✓</Text>}
+                </View>
+                <Text style={styles.cguText}>
+                  J'autorise le stockage securise de mes documents medicaux (ordonnances, analyses) dans mon coffre-fort numerique.
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.cguRow}
+                onPress={() => setConsentGps(!consentGps)}
+                activeOpacity={0.7}
+              >
+                <View style={[styles.checkbox, consentGps && styles.checkboxActive]}>
+                  {consentGps && <Text style={{ color: '#fff', fontSize: 12 }}>✓</Text>}
+                </View>
+                <Text style={styles.cguText}>
+                  J'autorise l'utilisation de ma position GPS pour trouver les etablissements de sante proches de moi.
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.cguRow}
+                onPress={() => setConsentIA(!consentIA)}
+                activeOpacity={0.7}
+              >
+                <View style={[styles.checkbox, consentIA && styles.checkboxActive]}>
+                  {consentIA && <Text style={{ color: '#fff', fontSize: 12 }}>✓</Text>}
+                </View>
+                <Text style={styles.cguText}>
+                  J'accepte que mes questions posees a l'assistant sante IA soient traitees pour generer une reponse (aucun diagnostic medical officiel).
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.cguRow}
+                onPress={() => setConsentPartageContact(!consentPartageContact)}
+                activeOpacity={0.7}
+              >
+                <View style={[styles.checkbox, consentPartageContact && styles.checkboxActive]}>
+                  {consentPartageContact && <Text style={{ color: '#fff', fontSize: 12 }}>✓</Text>}
+                </View>
+                <Text style={styles.cguText}>
+                  J'autorise le partage de mon telephone et email avec un professionnel de sante lors d'une commande ou d'un rendez-vous.
+                </Text>
+              </TouchableOpacity>
+            </>
           )}
 
           {loading ? (

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { alertCompatible } from '../utils/alertCompatible';
+import { useTranslation } from 'react-i18next';
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
   ActivityIndicator, Alert, Platform, ScrollView, Keyboard,
@@ -26,6 +27,7 @@ const PAYS = [
 ];
 
 export default function AuthScreen() {
+  const { t } = useTranslation();
   const [mode, setMode] = useState('connexion');
   const [nom, setNom] = useState('');
   const [email, setEmail] = useState('');
@@ -119,7 +121,7 @@ export default function AuthScreen() {
         <View style={styles.logoCircle}>
           <Text style={styles.logoEmoji}>⚕️</Text>
         </View>
-        <Text style={styles.title}>Pharmacie+ Global</Text>
+        <Text style={styles.title}>{t('auth.titre')}</Text>
         <Text style={styles.subtitle}>
           {mode === 'connexion' ? 'Content de vous revoir' : 'Creez votre compte sante'}
         </Text>
@@ -149,7 +151,7 @@ export default function AuthScreen() {
                 </Text>
                 <TextInput
                   style={styles.input}
-                  placeholder={roleSelectionne === 'patient' ? 'Ex: Jean Mballa' : 'Ex: Pharmacie du Centre'}
+                  placeholder={roleSelectionne === 'patient' ? t('auth.exempleNomPatient') : t('auth.exempleNomEtablissement')}
                   placeholderTextColor="#a0a8b0"
                   value={nom}
                   onChangeText={setNom}
@@ -157,10 +159,10 @@ export default function AuthScreen() {
               </View>
 
               <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Telephone</Text>
+                <Text style={styles.inputLabel}>{t('auth.telephone')}</Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="Ex: 699887766"
+                  placeholder={t('auth.exempleTelephone')}
                   placeholderTextColor="#a0a8b0"
                   value={telephone}
                   onChangeText={setTelephone}
@@ -170,7 +172,7 @@ export default function AuthScreen() {
 
               {roleSelectionne === 'patient' && (
                 <View style={styles.inputGroup}>
-                  <Text style={styles.inputLabel}>Date de naissance</Text>
+                  <Text style={styles.inputLabel}>{t('auth.dateNaissance')}</Text>
                   <TextInput
                     style={styles.input}
                     placeholder="JJ/MM/AAAA"
@@ -183,7 +185,7 @@ export default function AuthScreen() {
               )}
 
               <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Pays</Text>
+                <Text style={styles.inputLabel}>{t('auth.pays')}</Text>
                 <TouchableOpacity
                   style={styles.input}
                   onPress={() => setSelecteurPaysVisible(!selecteurPaysVisible)}
@@ -213,10 +215,10 @@ export default function AuthScreen() {
           )}
 
           <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Email</Text>
+            <Text style={styles.inputLabel}>{t('auth.email')}</Text>
             <TextInput
               style={styles.input}
-              placeholder="exemple@email.com"
+              placeholder={t('auth.exempleEmail')}
               placeholderTextColor="#a0a8b0"
               value={email}
               onChangeText={setEmail}
@@ -226,10 +228,10 @@ export default function AuthScreen() {
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Mot de passe</Text>
+            <Text style={styles.inputLabel}>{t('auth.motDePasse')}</Text>
             <TextInput
               style={styles.input}
-              placeholder="6 caracteres minimum"
+              placeholder={t('auth.minCaracteres')}
               placeholderTextColor="#a0a8b0"
               value={motDePasse}
               onChangeText={setMotDePasse}
@@ -239,10 +241,10 @@ export default function AuthScreen() {
 
           {mode === 'inscription' && (
             <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Confirmer le mot de passe</Text>
+              <Text style={styles.inputLabel}>{t('auth.confirmerMotDePasse')}</Text>
               <TextInput
                 style={styles.input}
-                placeholder="Retapez le mot de passe"
+                placeholder={t('auth.retaperMotDePasse')}
                 placeholderTextColor="#a0a8b0"
                 value={confirmationMotDePasse}
                 onChangeText={setConfirmationMotDePasse}

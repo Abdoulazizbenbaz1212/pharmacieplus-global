@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Linking, ActivityIndicator, Platform, Modal } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { WebView } from 'react-native-webview';
 import * as Location from 'expo-location';
 import { collection, getDocs, query, where } from 'firebase/firestore';
@@ -203,6 +204,7 @@ function calculerStatutOuverture(horairesParJour) {
   return { statut: 'ouvert', label: 'Ouvert', couleur: '#1a7f5a' };
 }
 export default function HopitauxScreen() {
+  const { t } = useTranslation();
   const [position, setPosition] = useState(null);
   const [etablissements, setEtablissements] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -280,7 +282,7 @@ export default function HopitauxScreen() {
     <View style={styles.container}>
       {Platform.OS === 'web' ? (
         <View style={[styles.map, { alignItems: 'center', justifyContent: 'center', backgroundColor: '#f0f2f4' }]}>
-          <Text style={{ color: '#7f8c8d', fontSize: 13 }}>Carte disponible sur l'application mobile</Text>
+          <Text style={{ color: '#7f8c8d', fontSize: 13 }}>{t('hopitaux.carteIndisponibleWeb')}</Text>
         </View>
       ) : (
         <View style={styles.map}>
@@ -305,7 +307,7 @@ export default function HopitauxScreen() {
               {recherche ? (
                 <ActivityIndicator color="#fff" size="small" />
               ) : (
-                <Text style={styles.retryBtnText}>🔄 Réessayer</Text>
+                <Text style={styles.retryBtnText}>🔄 {t('hopitaux.reessayer')}</Text>
               )}
             </TouchableOpacity>
           )}
@@ -339,7 +341,7 @@ export default function HopitauxScreen() {
             </View>
             {item.telephone && (
               <TouchableOpacity style={styles.callBtn} onPress={() => appelerEtablissement(item.telephone)}>
-                <Text style={styles.callBtnText}>📞 Appeler</Text>
+                <Text style={styles.callBtnText}>📞 {t('hopitaux.appeler')}</Text>
               </TouchableOpacity>
             )}
           </TouchableOpacity>
@@ -365,7 +367,7 @@ export default function HopitauxScreen() {
                   ) : null;
                 })()}
                 {etablissementSelectionne.telephone && (
-                  <Text style={styles.modalDetail}>Telephone : {etablissementSelectionne.telephone}</Text>
+                  <Text style={styles.modalDetail}>{t('hopitaux.telephone')} : {etablissementSelectionne.telephone}</Text>
                 )}
 
                 <View style={{ flexDirection: 'row', gap: 10, marginTop: 20 }}>
@@ -377,14 +379,14 @@ export default function HopitauxScreen() {
                         Linking.openURL(url);
                       }}
                     >
-                      <Text style={styles.modalMapsBtnText}>📍 Localiser sur Maps</Text>
+                      <Text style={styles.modalMapsBtnText}>📍 {t('hopitaux.localiserMaps')}</Text>
                     </TouchableOpacity>
                   )}
                   <TouchableOpacity
                     style={styles.modalFermerBtn}
                     onPress={() => setEtablissementSelectionne(null)}
                   >
-                    <Text style={styles.modalFermerBtnText}>Fermer</Text>
+                    <Text style={styles.modalFermerBtnText}>{t('hopitaux.fermer')}</Text>
                   </TouchableOpacity>
                 </View>
               </>

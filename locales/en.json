@@ -30,5 +30,13 @@
     "accepterCgu": "I accept the terms of use. I confirm that the sale of prescription medication will always be accompanied by a valid prescription, in accordance with the regulations in force in my country.",
     "seConnecter": "Log in",
     "sInscrire": "Sign up"
+  },
+  "hopitaux": {
+    "carteIndisponibleWeb": "Map available on the mobile app",
+    "reessayer": "Retry",
+    "appeler": "Call",
+    "localiserMaps": "Locate on Maps",
+    "fermer": "Close",
+    "telephone": "Phone"
   }
 }

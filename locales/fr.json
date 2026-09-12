@@ -30,5 +30,13 @@
     "accepterCgu": "J'accepte les conditions d'utilisation. Je confirme que la vente de medicaments necessitant une ordonnance sera toujours accompagnee d'une ordonnance valide, conformement a la reglementation en vigueur dans mon pays.",
     "seConnecter": "Se connecter",
     "sInscrire": "S'inscrire"
+  },
+  "hopitaux": {
+    "carteIndisponibleWeb": "Carte disponible sur l'application mobile",
+    "reessayer": "Reessayer",
+    "appeler": "Appeler",
+    "localiserMaps": "Localiser sur Maps",
+    "fermer": "Fermer",
+    "telephone": "Telephone"
   }
 }

@@ -123,13 +123,13 @@ export default function AuthScreen() {
         </View>
         <Text style={styles.title}>{t('auth.titre')}</Text>
         <Text style={styles.subtitle}>
-          {mode === 'connexion' ? 'Content de vous revoir' : 'Creez votre compte sante'}
+          {mode === 'connexion' ? t('auth.sousTitreConnexion') : t('auth.sousTitreInscription')}
         </Text>
 
         <View style={styles.card}>
           {mode === 'inscription' && (
             <>
-              <Text style={styles.inputLabel}>Je suis</Text>
+              <Text style={styles.inputLabel}>{t('auth.jeSuis')}</Text>
               <View style={styles.rolesRow}>
                 {ROLES.map((r) => (
                   <TouchableOpacity
@@ -263,7 +263,7 @@ export default function AuthScreen() {
                 {cguAcceptees && <Text style={{ color: '#fff', fontSize: 12 }}>✓</Text>}
               </View>
               <Text style={styles.cguText}>
-                J'accepte les conditions d'utilisation. Je confirme que la vente de medicaments necessitant une ordonnance sera toujours accompagnee d'une ordonnance valide, conformement a la reglementation en vigueur dans mon pays.
+                {t('auth.accepterCgu')}
               </Text>
             </TouchableOpacity>
           )}

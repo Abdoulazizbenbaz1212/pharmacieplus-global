@@ -1,0 +1,20 @@
+{
+  "commun": {
+    "annuler": "Annuler",
+    "confirmer": "Confirmer",
+    "enregistrer": "Enregistrer",
+    "supprimer": "Supprimer",
+    "fermer": "Fermer",
+    "erreur": "Erreur",
+    "succes": "Succes"
+  },
+  "auth": {
+    "titre": "Pharmacie+ Global",
+    "sousTitreConnexion": "Content de vous revoir",
+    "sousTitreInscription": "Creez votre compte sante",
+    "email": "Email",
+    "motDePasse": "Mot de passe",
+    "seConnecter": "Se connecter",
+    "sInscrire": "S'inscrire"
+  }
+}

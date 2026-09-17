@@ -42,3 +42,4 @@ yarn-error.*
 serviceAccountKey.json
 ngrok.zip
 .env
+.firebase/

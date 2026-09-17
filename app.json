@@ -7,7 +7,11 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.pharmacieplusglobal.app",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "com.pharmacieplusglobal.app",
@@ -26,7 +30,15 @@
     },
     "plugins": [
       "@react-native-community/datetimepicker",
-      ["expo-splash-screen", { "image": "./assets/splash.png", "resizeMode": "contain", "backgroundColor": "#ffffff", "imageWidth": 1000 }],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff",
+          "imageWidth": 1000
+        }
+      ],
       "expo-localization",
       "expo-notifications"
     ],

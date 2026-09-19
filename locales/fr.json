@@ -130,5 +130,22 @@
     "enregistrer": "Enregistrer",
     "annuler": "Annuler",
     "nonRenseigne": "Non renseigne"
+  },
+  "dashboardHopital": {
+    "monEtablissement": "Mon etablissement",
+    "rendezVous": "Rendez-vous",
+    "services": "Services",
+    "aucunRdv": "Aucun rendez-vous pour le moment",
+    "rejoindreTeleconsultation": "🎥 Rejoindre la teleconsultation",
+    "confirmer": "Confirmer",
+    "annuler": "Annuler",
+    "ajouterService": "+ Ajouter un service",
+    "aucunService": "Aucun service dans votre catalogue",
+    "ajouterServiceTitre": "Ajouter un service",
+    "nomService": "Nom du service",
+    "exempleNomService": "Ex: Consultation generale",
+    "prix": "Prix (FCFA)",
+    "exemplePrix": "Ex: 5000",
+    "ajouter": "Ajouter"
   }
 }

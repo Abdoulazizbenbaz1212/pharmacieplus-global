@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState, useEffect } from 'react';
 import { alertCompatible } from '../utils/alertCompatible';
 import {
@@ -8,6 +9,7 @@ import { collection, query, where, getDocs, doc, updateDoc, addDoc, deleteDoc } 
 import { db, auth } from '../config/firebase';
 
 export default function DashboardHopitalScreen({ navigation }) {
+  const { t } = useTranslation();
   const [rdvListe, setRdvListe] = useState([]);
   const [mesServices, setMesServices] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -131,7 +133,7 @@ export default function DashboardHopitalScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.headerBar}>
-        <Text style={styles.headerNom}>{nomHopital || 'Mon etablissement'}</Text>
+        <Text style={styles.headerNom}>{nomHopital || t('dashboardHopital.monEtablissement')}</Text>
         <Text style={styles.headerCount}>
           {onglet === 'rdv' ? `${rdvListe.length} rendez-vous` : `${mesServices.length} services`}
         </Text>
@@ -142,13 +144,13 @@ export default function DashboardHopitalScreen({ navigation }) {
           style={[styles.tabBtn, onglet === 'rdv' && styles.tabBtnActive]}
           onPress={() => setOnglet('rdv')}
         >
-          <Text style={[styles.tabBtnText, onglet === 'rdv' && styles.tabBtnTextActive]}>Rendez-vous</Text>
+          <Text style={[styles.tabBtnText, onglet === 'rdv' && styles.tabBtnTextActive]}>{t('dashboardHopital.rendezVous')}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.tabBtn, onglet === 'services' && styles.tabBtnActive]}
           onPress={() => setOnglet('services')}
         >
-          <Text style={[styles.tabBtnText, onglet === 'services' && styles.tabBtnTextActive]}>Services</Text>
+          <Text style={[styles.tabBtnText, onglet === 'services' && styles.tabBtnTextActive]}>{t('dashboardHopital.services')}</Text>
         </TouchableOpacity>
       </View>
 
@@ -158,7 +160,7 @@ export default function DashboardHopitalScreen({ navigation }) {
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ padding: 15 }}
           ListEmptyComponent={
-            <Text style={styles.emptyText}>Aucun rendez-vous pour le moment</Text>
+            <Text style={styles.emptyText}>{t('dashboardHopital.aucunRdv')}</Text>
           }
           renderItem={({ item }) => {
             const statut = statutInfo(item.statut);
@@ -178,7 +180,7 @@ export default function DashboardHopitalScreen({ navigation }) {
                     style={styles.visioBtnHop}
                     onPress={() => navigation.navigate('Visio', { roomName: 'pharmacieplus_rdv_' + item.id })}
                   >
-                    <Text style={styles.visioBtnHopText}>🎥 Rejoindre la teleconsultation</Text>
+                    <Text style={styles.visioBtnHopText}>🎥 {t('dashboardHopital.rejoindreTeleconsultation')}</Text>
                   </TouchableOpacity>
                 )}
 
@@ -189,14 +191,14 @@ export default function DashboardHopitalScreen({ navigation }) {
                         style={[styles.actionBtn, styles.confirmBtn]}
                         onPress={() => confirmerAction(item.id, 'confirme', 'confirmer')}
                       >
-                        <Text style={styles.actionBtnText}>Confirmer</Text>
+                        <Text style={styles.actionBtnText}>{t('dashboardHopital.confirmer')}</Text>
                       </TouchableOpacity>
                     )}
                     <TouchableOpacity
                       style={[styles.actionBtn, styles.annulerBtn]}
                       onPress={() => confirmerAction(item.id, 'annule', 'annuler')}
                     >
-                      <Text style={[styles.actionBtnText, { color: '#e74c3c' }]}>Annuler</Text>
+                      <Text style={[styles.actionBtnText, { color: '#e74c3c' }]}>{t('dashboardHopital.annuler')}</Text>
                     </TouchableOpacity>
                   </View>
                 )}
@@ -207,14 +209,14 @@ export default function DashboardHopitalScreen({ navigation }) {
       ) : (
         <>
           <TouchableOpacity style={styles.addBtn} onPress={() => setModalVisible(true)}>
-            <Text style={styles.addBtnText}>+ Ajouter un service</Text>
+            <Text style={styles.addBtnText}>+ {t('dashboardHopital.ajouterService')}</Text>
           </TouchableOpacity>
           <FlatList
             data={mesServices}
             keyExtractor={(item) => item.id}
             contentContainerStyle={{ padding: 15 }}
             ListEmptyComponent={
-              <Text style={styles.emptyText}>Aucun service dans votre catalogue</Text>
+              <Text style={styles.emptyText}>{t('dashboardHopital.aucunService')}</Text>
             }
             renderItem={({ item }) => (
               <View style={styles.produitCard}>
@@ -234,20 +236,20 @@ export default function DashboardHopitalScreen({ navigation }) {
       <Modal visible={modalVisible} transparent animationType="slide">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Ajouter un service</Text>
+            <Text style={styles.modalTitle}>{t('dashboardHopital.ajouterServiceTitre')}</Text>
 
-            <Text style={styles.modalLabel}>Nom du service</Text>
+            <Text style={styles.modalLabel}>{t('dashboardHopital.nomService')}</Text>
             <TextInput
               style={styles.modalInput}
-              placeholder="Ex: Consultation generale"
+              placeholder={t('dashboardHopital.exempleNomService')}
               value={nomService}
               onChangeText={setNomService}
             />
 
-            <Text style={styles.modalLabel}>Prix (FCFA)</Text>
+            <Text style={styles.modalLabel}>{t('dashboardHopital.prix')}</Text>
             <TextInput
               style={styles.modalInput}
-              placeholder="Ex: 5000"
+              placeholder={t('dashboardHopital.exemplePrix')}
               value={prixService}
               onChangeText={setPrixService}
               keyboardType="numeric"
@@ -255,10 +257,10 @@ export default function DashboardHopitalScreen({ navigation }) {
 
             <View style={styles.modalActions}>
               <TouchableOpacity style={styles.modalCancelBtn} onPress={() => setModalVisible(false)}>
-                <Text style={styles.modalCancelText}>Annuler</Text>
+                <Text style={styles.modalCancelText}>{t('dashboardHopital.annuler')}</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.modalSaveBtn} onPress={ajouterService}>
-                <Text style={styles.modalSaveText}>Ajouter</Text>
+                <Text style={styles.modalSaveText}>{t('dashboardHopital.ajouter')}</Text>
               </TouchableOpacity>
             </View>
           </View>

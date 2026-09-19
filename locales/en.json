@@ -130,5 +130,22 @@
     "enregistrer": "Save",
     "annuler": "Cancel",
     "nonRenseigne": "Not provided"
+  },
+  "dashboardHopital": {
+    "monEtablissement": "My establishment",
+    "rendezVous": "Appointments",
+    "services": "Services",
+    "aucunRdv": "No appointments yet",
+    "rejoindreTeleconsultation": "🎥 Join teleconsultation",
+    "confirmer": "Confirm",
+    "annuler": "Cancel",
+    "ajouterService": "+ Add a service",
+    "aucunService": "No services in your catalog",
+    "ajouterServiceTitre": "Add a service",
+    "nomService": "Service name",
+    "exempleNomService": "E.g: General consultation",
+    "prix": "Price (FCFA)",
+    "exemplePrix": "E.g: 5000",
+    "ajouter": "Add"
   }
 }

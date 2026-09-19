@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { alertCompatible } from '../utils/alertCompatible';
 import {
@@ -25,6 +26,7 @@ function genererCode() {
 }
 
 export default function FamilleScreen() {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [familleId, setFamilleId] = useState(null);
   const [codeInvitation, setCodeInvitation] = useState('');
@@ -313,7 +315,7 @@ export default function FamilleScreen() {
       <ScrollView style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.headerEmoji}>👨‍👩‍👧‍👦</Text>
-          <Text style={styles.headerTitle}>Ma famille</Text>
+          <Text style={styles.headerTitle}>{t('famille.maFamille')}</Text>
           <Text style={styles.headerSubtitle}>
             Suis la santé de tes proches, même ceux qui n'ont pas de téléphone.
           </Text>
@@ -321,35 +323,35 @@ export default function FamilleScreen() {
 
         <View style={styles.section}>
           <TouchableOpacity style={styles.primaryBtn} onPress={creerFamille}>
-            <Text style={styles.primaryBtnText}>+ Créer ma famille</Text>
+            <Text style={styles.primaryBtnText}>+ {t('famille.creerFamille')}</Text>
           </TouchableOpacity>
 
-          <Text style={styles.ou}>ou</Text>
+          <Text style={styles.ou}>{t('famille.ou')}</Text>
 
-          <Text style={styles.label}>Rejoindre avec un code</Text>
+          <Text style={styles.label}>{t('famille.rejoindreAvecCode')}</Text>
           <TextInput
             style={styles.input}
-            placeholder="Ex: AB3X9K"
+            placeholder={t('famille.exempleCode')}
             value={codeSaisi}
             onChangeText={setCodeSaisi}
             autoCapitalize="characters"
           />
           <TouchableOpacity style={styles.secondaryBtn} onPress={rejoindreFamille} disabled={jointure}>
-            {jointure ? <ActivityIndicator color="#fff" /> : <Text style={styles.secondaryBtnText}>Rejoindre</Text>}
+            {jointure ? <ActivityIndicator color="#fff" /> : <Text style={styles.secondaryBtnText}>{t('famille.rejoindre')}</Text>}
           </TouchableOpacity>
 
-          <Text style={styles.ou}>ou</Text>
+          <Text style={styles.ou}>{t('famille.ou')}</Text>
 
-          <Text style={styles.label}>Lier mon compte a un proche</Text>
+          <Text style={styles.label}>{t('famille.lierCompteProche')}</Text>
           <TextInput
             style={styles.input}
-            placeholder="Code recu de ton parent"
+            placeholder={t('famille.codeRecu')}
             value={codeLiaisonSaisi}
             onChangeText={setCodeLiaisonSaisi}
             autoCapitalize="characters"
           />
           <TouchableOpacity style={styles.secondaryBtn} onPress={lierCompteDependant}>
-            <Text style={styles.secondaryBtnText}>Lier mon compte</Text>
+            <Text style={styles.secondaryBtnText}>{t('famille.lierMonCompte')}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -361,18 +363,18 @@ export default function FamilleScreen() {
       <ScrollView>
         <View style={styles.header}>
           <Text style={styles.headerEmoji}>👨‍👩‍👧‍👦</Text>
-          <Text style={styles.headerTitle}>Ma famille</Text>
+          <Text style={styles.headerTitle}>{t('famille.maFamille')}</Text>
         </View>
 
         <TouchableOpacity style={styles.chatBtn} onPress={() => setChatVisible(true)}>
-          <Text style={styles.chatBtnText}>💬 Discussion familiale</Text>
+          <Text style={styles.chatBtnText}>💬 {t('famille.discussionFamiliale')}</Text>
         </TouchableOpacity>
 
         <View style={styles.codeCard}>
-          <Text style={styles.codeLabel}>Code d'invitation</Text>
+          <Text style={styles.codeLabel}>{t('famille.codeInvitation')}</Text>
           <Text style={styles.codeValue}>{codeInvitation}</Text>
           <TouchableOpacity style={styles.shareBtn} onPress={partagerCode}>
-            <Text style={styles.shareBtnText}>📤 Partager le code</Text>
+            <Text style={styles.shareBtnText}>📤 {t('famille.partagerCode')}</Text>
           </TouchableOpacity>
         </View>
 
@@ -381,7 +383,7 @@ export default function FamilleScreen() {
           {membres.map((m) => (
             <TouchableOpacity key={m.id} style={styles.membreRow} onPress={() => setModalMembre(m)}>
               <Text style={styles.membreNom}>{m.nom}</Text>
-              <Text style={styles.membreRole}>{m.role === 'proprietaire' ? 'Propriétaire' : 'Membre'}</Text>
+              <Text style={styles.membreRole}>{m.role === 'proprietaire' ? t('famille.proprietaire') : t('famille.membre')}</Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -390,12 +392,12 @@ export default function FamilleScreen() {
           <View style={styles.sectionHeaderRow}>
             <Text style={styles.sectionTitle}>Proches suivis ({dependants.length})</Text>
             <TouchableOpacity onPress={() => setModalAjout(true)}>
-              <Text style={styles.addLink}>+ Ajouter</Text>
+              <Text style={styles.addLink}>+ {t('famille.ajouter')}</Text>
             </TouchableOpacity>
           </View>
 
           {dependants.length === 0 ? (
-            <Text style={styles.videTexte}>Aucun proche ajouté pour l'instant.</Text>
+            <Text style={styles.videTexte}>{t('famille.aucunProche')}</Text>
           ) : (
             dependants.map((d) => (
               <TouchableOpacity key={d.id} style={styles.dependantCard} onPress={() => setModalDetail(d)}>
@@ -415,7 +417,7 @@ export default function FamilleScreen() {
             <TouchableOpacity onPress={() => setChatVisible(false)} style={{ marginRight: 12 }}>
               <Text style={{ fontSize: 20 }}>←</Text>
             </TouchableOpacity>
-            <Text style={styles.chatHeaderTitre}>Discussion familiale</Text>
+            <Text style={styles.chatHeaderTitre}>{t('famille.discussionFamiliale')}</Text>
           </View>
 
           <FlatList
@@ -442,7 +444,7 @@ export default function FamilleScreen() {
               style={styles.chatInput}
               value={texteMessage}
               onChangeText={setTexteMessage}
-              placeholder="Écris un message a la famille..."
+              placeholder={t('famille.ecrireMessage')}
               multiline
             />
             <TouchableOpacity style={styles.sendBtn} onPress={envoyerMessageFamille} disabled={envoiMessage}>
@@ -457,12 +459,12 @@ export default function FamilleScreen() {
           <TouchableOpacity onPress={() => setModalAjout(false)} style={{ marginBottom: 10 }}>
             <Text style={{ fontSize: 24 }}>⬅️</Text>
           </TouchableOpacity>
-          <Text style={styles.modalTitle}>Ajouter un proche</Text>
+          <Text style={styles.modalTitle}>{t('famille.ajouterProche')}</Text>
 
-          <Text style={styles.label}>Nom complet *</Text>
+          <Text style={styles.label}>{t('famille.nomComplet')}</Text>
           <TextInput style={styles.input} value={nomDependant} onChangeText={setNomDependant} placeholder="Ex: Maman Ngo Bertoua" />
 
-          <Text style={styles.label}>Lien de parenté</Text>
+          <Text style={styles.label}>{t('famille.lienParente')}</Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
             {LIENS_PARENTE.map((lien) => (
               <TouchableOpacity
@@ -475,10 +477,10 @@ export default function FamilleScreen() {
             ))}
           </View>
 
-          <Text style={styles.label}>Âge</Text>
+          <Text style={styles.label}>{t('famille.age')}</Text>
           <TextInput style={styles.input} value={ageDependant} onChangeText={setAgeDependant} placeholder="Ex: 68" keyboardType="numeric" />
 
-          <Text style={styles.label}>Groupe sanguin</Text>
+          <Text style={styles.label}>{t('famille.groupeSanguin')}</Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
             {GROUPES_SANGUINS.map((g) => (
               <TouchableOpacity
@@ -491,24 +493,24 @@ export default function FamilleScreen() {
             ))}
           </View>
 
-          <Text style={styles.label}>Allergies</Text>
+          <Text style={styles.label}>{t('famille.allergies')}</Text>
           <TextInput style={styles.input} value={allergies} onChangeText={setAllergies} placeholder="Ex: Penicilline" multiline />
 
-          <Text style={styles.label}>Maladies chroniques</Text>
+          <Text style={styles.label}>{t('famille.maladiesChroniques')}</Text>
           <TextInput style={styles.input} value={maladiesChroniques} onChangeText={setMaladiesChroniques} placeholder="Ex: Diabete, hypertension" multiline />
 
-          <Text style={styles.label}>Contact d'urgence (nom)</Text>
+          <Text style={styles.label}>{t('famille.contactUrgenceNom')}</Text>
           <TextInput style={styles.input} value={contactNom} onChangeText={setContactNom} placeholder="Ex: Jean Ateba" />
 
-          <Text style={styles.label}>Contact d'urgence (téléphone)</Text>
+          <Text style={styles.label}>{t('famille.contactUrgenceTelephone')}</Text>
           <TextInput style={styles.input} value={contactTel} onChangeText={setContactTel} placeholder="Ex: +237699887766" keyboardType="phone-pad" />
 
           <TouchableOpacity style={styles.primaryBtn} onPress={ajouterDependant} disabled={enregistrement}>
-            {enregistrement ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryBtnText}>Enregistrer</Text>}
+            {enregistrement ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryBtnText}>{t('famille.enregistrer')}</Text>}
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.cancelBtn} onPress={() => { setModalAjout(false); reinitialiserFormulaire(); }}>
-            <Text style={styles.cancelBtnText}>Annuler</Text>
+            <Text style={styles.cancelBtnText}>{t('famille.annuler')}</Text>
           </TouchableOpacity>
         </ScrollView>
       </Modal>
@@ -520,21 +522,21 @@ export default function FamilleScreen() {
             <Text style={styles.sousTitre}>{modalDetail.lienParente}{modalDetail.age ? ` • ${modalDetail.age} ans` : ''}</Text>
 
             <View style={styles.infoCard}>
-              <Text style={styles.infoLabel}>Groupe sanguin</Text>
-              <Text style={styles.infoValue}>{modalDetail.groupeSanguin || 'Non renseigné'}</Text>
+              <Text style={styles.infoLabel}>{t('famille.groupeSanguin')}</Text>
+              <Text style={styles.infoValue}>{modalDetail.groupeSanguin || t('famille.nonRenseigne')}</Text>
             </View>
             <View style={styles.infoCard}>
-              <Text style={styles.infoLabel}>Allergies</Text>
+              <Text style={styles.infoLabel}>{t('famille.allergies')}</Text>
               <Text style={styles.infoValue}>{modalDetail.allergies || 'Aucune renseignée'}</Text>
             </View>
             <View style={styles.infoCard}>
-              <Text style={styles.infoLabel}>Maladies chroniques</Text>
+              <Text style={styles.infoLabel}>{t('famille.maladiesChroniques')}</Text>
               <Text style={styles.infoValue}>{modalDetail.maladiesChroniques || 'Aucune renseignée'}</Text>
             </View>
             <View style={styles.infoCard}>
               <Text style={styles.infoLabel}>Contact d'urgence</Text>
               <Text style={styles.infoValue}>
-                {modalDetail.contactUrgenceNom ? `${modalDetail.contactUrgenceNom} - ${modalDetail.contactUrgenceTel}` : 'Non renseigné'}
+                {modalDetail.contactUrgenceNom ? `${modalDetail.contactUrgenceNom} - ${modalDetail.contactUrgenceTel}` : t('famille.nonRenseigne')}
               </Text>
             </View>
 
@@ -597,21 +599,21 @@ export default function FamilleScreen() {
             {dependants.find(d => d.compteLie === modalMembre.id) && (
               <>
                 <View style={styles.infoCard}>
-                  <Text style={styles.infoLabel}>Groupe sanguin</Text>
+                  <Text style={styles.infoLabel}>{t('famille.groupeSanguin')}</Text>
                   <Text style={styles.infoValue}>
                     {dependants.find(d => d.compteLie === modalMembre.id).groupeSanguin || 'Non renseigne'}
                   </Text>
                 </View>
 
                 <View style={styles.infoCard}>
-                  <Text style={styles.infoLabel}>Allergies</Text>
+                  <Text style={styles.infoLabel}>{t('famille.allergies')}</Text>
                   <Text style={styles.infoValue}>
                     {dependants.find(d => d.compteLie === modalMembre.id).allergies || 'Aucun'}
                   </Text>
                 </View>
 
                 <View style={styles.infoCard}>
-                  <Text style={styles.infoLabel}>Maladies chroniques</Text>
+                  <Text style={styles.infoLabel}>{t('famille.maladiesChroniques')}</Text>
                   <Text style={styles.infoValue}>
                     {dependants.find(d => d.compteLie === modalMembre.id).maladiesChroniques || 'Aucun'}
                   </Text>

@@ -179,5 +179,9 @@
   },
   "assistant": {
     "placeholderQuestion": "Pose ta question sante..."
+  },
+  "messages": {
+    "aucunMessage": "Aucun message",
+    "sousTitreAucunMessage": "Tes conversations depuis la Marketplace apparaitront ici."
   }
 }

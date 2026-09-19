@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, FlatList } from 'react-native';
 import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
@@ -5,6 +6,7 @@ import { db, auth } from '../config/firebase';
 import ChatModal from '../components/ChatModal';
 
 export default function MessagesScreen() {
+  const { t } = useTranslation();
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [chatConfig, setChatConfig] = useState(null);
@@ -80,8 +82,8 @@ export default function MessagesScreen() {
       ) : conversations.length === 0 ? (
         <View style={styles.emptyState}>
           <Text style={styles.emoji}>💬</Text>
-          <Text style={styles.title}>Aucun message</Text>
-          <Text style={styles.subtitle}>Tes conversations depuis la Marketplace apparaîtront ici.</Text>
+          <Text style={styles.title}>{t('messages.aucunMessage')}</Text>
+          <Text style={styles.subtitle}>{t('messages.sousTitreAucunMessage')}</Text>
         </View>
       ) : (
         <FlatList

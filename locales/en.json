@@ -183,5 +183,13 @@
   "messages": {
     "aucunMessage": "No messages",
     "sousTitreAucunMessage": "Your conversations from the Marketplace will appear here."
+  },
+  "plus": {
+    "assistantSanteIA": "AI Health Assistant",
+    "medicaments": "Medications",
+    "rendezVous": "Appointments",
+    "mesCommandes": "My orders",
+    "scannerEtablissement": "Scan an establishment",
+    "coffreFortMedical": "Medical safe"
   }
 }

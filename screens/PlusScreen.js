@@ -1,16 +1,18 @@
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 
 const OPTIONS = [
-  { nom: 'Assistant', label: 'Assistant sante IA', emoji: '🤖' },
-  { nom: 'Medicaments', label: 'Medicaments', emoji: '💊' },
-  { nom: 'Rdv', label: 'Rendez-vous', emoji: '📅' },
-  { nom: 'Commandes', label: 'Mes commandes', emoji: '📦' },
-  { nom: 'Scanner', label: 'Scanner un etablissement', emoji: '📷' },
-  { nom: 'Profil', label: 'Coffre-fort medical', emoji: '🗂️' },
+  { nom: 'Assistant', cle: 'plus.assistantSanteIA', emoji: '🤖' },
+  { nom: 'Medicaments', cle: 'plus.medicaments', emoji: '💊' },
+  { nom: 'Rdv', cle: 'plus.rendezVous', emoji: '📅' },
+  { nom: 'Commandes', cle: 'plus.mesCommandes', emoji: '📦' },
+  { nom: 'Scanner', cle: 'plus.scannerEtablissement', emoji: '📷' },
+  { nom: 'Profil', cle: 'plus.coffreFortMedical', emoji: '🗂️' },
 ];
 
 export default function PlusScreen({ navigation }) {
+  const { t } = useTranslation();
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ padding: 16 }}>
       {OPTIONS.map((opt) => (
@@ -20,7 +22,7 @@ export default function PlusScreen({ navigation }) {
           onPress={() => navigation.navigate(opt.nom)}
         >
           <Text style={styles.emoji}>{opt.emoji}</Text>
-          <Text style={styles.label}>{opt.label}</Text>
+          <Text style={styles.label}>{t(opt.cle)}</Text>
           <Text style={styles.chevron}>›</Text>
         </TouchableOpacity>
       ))}

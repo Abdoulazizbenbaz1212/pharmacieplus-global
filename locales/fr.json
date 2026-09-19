@@ -183,5 +183,13 @@
   "messages": {
     "aucunMessage": "Aucun message",
     "sousTitreAucunMessage": "Tes conversations depuis la Marketplace apparaitront ici."
+  },
+  "plus": {
+    "assistantSanteIA": "Assistant sante IA",
+    "medicaments": "Medicaments",
+    "rendezVous": "Rendez-vous",
+    "mesCommandes": "Mes commandes",
+    "scannerEtablissement": "Scanner un etablissement",
+    "coffreFortMedical": "Coffre-fort medical"
   }
 }

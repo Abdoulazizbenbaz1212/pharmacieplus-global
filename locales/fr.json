@@ -79,5 +79,23 @@
     "exempleDescription": "Ex: Paracetamol x2, Vitamine C",
     "annuler": "Annuler",
     "creer": "Creer"
+  },
+  "marketplace": {
+    "aucuneDescription": "Aucune description.",
+    "appeler": "Appeler",
+    "chat": "Chat",
+    "supprimerAnnonce": "Supprimer mon annonce",
+    "rechercherAnnonce": "Rechercher une annonce...",
+    "aucuneAnnonce": "Aucune annonce",
+    "publier": "+ Publier",
+    "publierAnnonce": "Publier une annonce",
+    "titre": "Titre *",
+    "description": "Description",
+    "detailsAnnonce": "Details de l'annonce...",
+    "prix": "Prix (FCFA) *",
+    "categorie": "Categorie",
+    "photo": "Photo",
+    "ajouterPhoto": "📷 Ajouter une photo",
+    "annuler": "Annuler"
   }
 }

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState, useEffect, useCallback } from 'react';
 import { alertCompatible } from '../utils/alertCompatible';
 import {
@@ -90,15 +91,15 @@ function AnnonceCard({ item, currentUserId, onDeleted, onOpenChat }) {
               </Text>
             </View>
           )}
-          <Text style={styles.description}>{item.description || 'Aucune description.'}</Text>
+          <Text style={styles.description}>{item.description || t('marketplace.aucuneDescription')}</Text>
 
           {!estProprietaire && (
             <View style={styles.contactRow}>
               <TouchableOpacity style={styles.callBtn} onPress={appelerVendeur}>
-                <Text style={styles.callBtnText}>📞 Appeler</Text>
+                <Text style={styles.callBtnText}>📞 {t('marketplace.appeler')}</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.chatBtn} onPress={() => onOpenChat(item)}>
-                <Text style={styles.chatBtnText}>💬 Chat</Text>
+                <Text style={styles.chatBtnText}>💬 {t('marketplace.chat')}</Text>
               </TouchableOpacity>
             </View>
           )}
@@ -112,7 +113,7 @@ function AnnonceCard({ item, currentUserId, onDeleted, onOpenChat }) {
               {suppression ? (
                 <ActivityIndicator color="#e74c3c" size="small" />
               ) : (
-                <Text style={styles.deleteBtnText}>🗑️ Supprimer mon annonce</Text>
+                <Text style={styles.deleteBtnText}>🗑️ {t('marketplace.supprimerAnnonce')}</Text>
               )}
             </TouchableOpacity>
           )}
@@ -123,6 +124,7 @@ function AnnonceCard({ item, currentUserId, onDeleted, onOpenChat }) {
 }
 
 export default function MarketplaceScreen() {
+  const { t } = useTranslation();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [recherche, setRecherche] = useState('');
@@ -268,7 +270,7 @@ export default function MarketplaceScreen() {
       <View style={styles.searchBar}>
         <TextInput
           style={styles.searchInput}
-          placeholder="Rechercher une annonce..."
+          placeholder={t('marketplace.rechercherAnnonce')}
           value={recherche}
           onChangeText={setRecherche}
         />
@@ -291,7 +293,7 @@ export default function MarketplaceScreen() {
       ) : itemsFiltres.length === 0 ? (
         <View style={styles.emptyState}>
           <Text style={styles.emoji}>🛒</Text>
-          <Text style={styles.title}>Aucune annonce</Text>
+          <Text style={styles.title}>{t('marketplace.aucuneAnnonce')}</Text>
           <Text style={styles.subtitle}>
             {peutVendre ? 'Sois le premier à publier un produit ou un service.' : 'Reviens bientôt : les pharmacies, hôpitaux et fournisseurs y publieront leurs produits.'}
           </Text>
@@ -314,30 +316,30 @@ export default function MarketplaceScreen() {
 
       {!chargementRole && peutVendre && (
         <TouchableOpacity style={styles.fab} onPress={() => setModalVisible(true)}>
-          <Text style={styles.fabText}>+ Publier</Text>
+          <Text style={styles.fabText}>+ {t('marketplace.publier')}</Text>
         </TouchableOpacity>
       )}
 
       <Modal visible={modalVisible} animationType="slide" onRequestClose={() => setModalVisible(false)}>
         <ScrollView style={styles.modalContainer} contentContainerStyle={{ padding: 20 }}>
-          <Text style={styles.modalTitle}>Publier une annonce</Text>
+          <Text style={styles.modalTitle}>{t('marketplace.publierAnnonce')}</Text>
 
-          <Text style={styles.label}>Titre *</Text>
+          <Text style={styles.label}>{t('marketplace.titre')}</Text>
           <TextInput style={styles.input} value={titre} onChangeText={setTitre} placeholder="Ex: Paracétamol 500mg, boîte de 20" />
 
-          <Text style={styles.label}>Description</Text>
+          <Text style={styles.label}>{t('marketplace.description')}</Text>
           <TextInput
             style={[styles.input, { height: 90 }]}
             value={description}
             onChangeText={setDescription}
-            placeholder="Détails de l'annonce..."
+            placeholder={t('marketplace.detailsAnnonce')}
             multiline
           />
 
-          <Text style={styles.label}>Prix (FCFA) *</Text>
+          <Text style={styles.label}>{t('marketplace.prix')}</Text>
           <TextInput style={styles.input} value={prix} onChangeText={setPrix} placeholder="Ex: 1500" keyboardType="numeric" />
 
-          <Text style={styles.label}>Catégorie</Text>
+          <Text style={styles.label}>{t('marketplace.categorie')}</Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
             {CATEGORIES.filter(c => c !== 'Tous').map(cat => (
               <TouchableOpacity
@@ -365,12 +367,12 @@ export default function MarketplaceScreen() {
             </TouchableOpacity>
           )}
 
-          <Text style={styles.label}>Photo</Text>
+          <Text style={styles.label}>{t('marketplace.photo')}</Text>
           <TouchableOpacity style={styles.imagePicker} onPress={choisirImage}>
             {imageBase64 ? (
               <Image source={{ uri: `data:image/jpeg;base64,${imageBase64}` }} style={styles.imagePreview} />
             ) : (
-              <Text style={{ color: '#7f8c8d' }}>📷 Ajouter une photo</Text>
+              <Text style={{ color: '#7f8c8d' }}>📷 {t('marketplace.ajouterPhoto')}</Text>
             )}
           </TouchableOpacity>
 
@@ -379,7 +381,7 @@ export default function MarketplaceScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.cancelBtn} onPress={() => setModalVisible(false)}>
-            <Text style={styles.cancelBtnText}>Annuler</Text>
+            <Text style={styles.cancelBtnText}>{t('marketplace.annuler')}</Text>
           </TouchableOpacity>
         </ScrollView>
       </Modal>

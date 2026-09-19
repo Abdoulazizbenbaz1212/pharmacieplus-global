@@ -7,7 +7,6 @@ import {
 import { doc, getDoc, setDoc, collection } from 'firebase/firestore';
 import { db, auth } from '../config/firebase';
 import { useTranslation } from 'react-i18next';
-import { useTranslation } from 'react-i18next';
 import { signOut, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
 import DocumentsMedicaux from '../components/DocumentsMedicaux';
 

@@ -113,7 +113,7 @@ export default function ProfilScreen() {
   const handleDeconnexion = () => {
     alertCompatible('Deconnexion', 'Voulez-vous vraiment vous deconnecter ?', [
       { text: 'Annuler', style: 'cancel' },
-      { text: '{t('profil.seDeconnecter')}', style: 'destructive', onPress: () => signOut(auth) },
+      { text: t('profil.seDeconnecter'), style: 'destructive', onPress: () => signOut(auth) },
     ]);
   };
 

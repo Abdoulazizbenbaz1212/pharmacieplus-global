@@ -15,7 +15,6 @@ const GROUPES_SANGUINS = ['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-'];
 
 export default function ProfilScreen() {
   const { t } = useTranslation();
-  const { t } = useTranslation();
   const [groupeSanguin, setGroupeSanguin] = useState('');
   const [allergies, setAllergies] = useState('');
   const [maladiesChroniques, setMaladiesChroniques] = useState('');

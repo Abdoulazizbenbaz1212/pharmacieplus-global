@@ -206,5 +206,25 @@
     "appeler": "📞 Appeler",
     "scannerAutreQr": "Scanner un autre QR code",
     "viserQrCode": "Vise le QR code de l'etablissement"
+  },
+  "admin": {
+    "stats": "Stats",
+    "utilisateurs": "Utilisateurs",
+    "commandes": "Commandes",
+    "marketplace": "Marketplace",
+    "utilisateursAuTotal": "Utilisateurs au total",
+    "patients": "Patients",
+    "pharmacies": "Pharmacies",
+    "hopitaux": "Hopitaux",
+    "fournisseurs": "Fournisseurs",
+    "commandesPassees": "Commandes passees",
+    "annoncesMarketplace": "Annonces marketplace",
+    "sansNom": "Sans nom",
+    "sansDescription": "Sans description",
+    "client": "Client",
+    "vendeur": "Vendeur",
+    "inconnue": "inconnue",
+    "sansTitre": "Sans titre",
+    "supprimerAnnonce": "Supprimer l'annonce"
   }
 }

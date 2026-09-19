@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   View, Text, StyleSheet, FlatList, TouchableOpacity,
@@ -8,13 +9,14 @@ import { db } from '../config/firebase';
 import { alertCompatible } from '../utils/alertCompatible';
 
 const ONGLETS = [
-  { id: 'stats', label: 'Stats' },
-  { id: 'utilisateurs', label: 'Utilisateurs' },
-  { id: 'commandes', label: 'Commandes' },
-  { id: 'marketplace', label: 'Marketplace' },
+  { id: 'stats', cle: 'admin.stats' },
+  { id: 'utilisateurs', cle: 'admin.utilisateurs' },
+  { id: 'commandes', cle: 'admin.commandes' },
+  { id: 'marketplace', cle: 'admin.marketplace' },
 ];
 
 export default function AdminScreen() {
+  const { t } = useTranslation();
   const [onglet, setOnglet] = useState('stats');
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -86,7 +88,7 @@ export default function AdminScreen() {
             style={[styles.ongletBtn, onglet === o.id && styles.ongletBtnActif]}
             onPress={() => setOnglet(o.id)}
           >
-            <Text style={[styles.ongletTxt, onglet === o.id && styles.ongletTxtActif]}>{o.label}</Text>
+            <Text style={[styles.ongletTxt, onglet === o.id && styles.ongletTxtActif]}>{t(o.cle)}</Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -95,21 +97,21 @@ export default function AdminScreen() {
         <View style={styles.contenu}>
           <View style={styles.statCard}>
             <Text style={styles.statNombre}>{utilisateurs.length}</Text>
-            <Text style={styles.statLabel}>Utilisateurs au total</Text>
+            <Text style={styles.statLabel}>{t('admin.utilisateursAuTotal')}</Text>
           </View>
           <View style={styles.statsGrille}>
-            <View style={styles.statMini}><Text style={styles.statMiniNombre}>{compterParRole('patient')}</Text><Text style={styles.statMiniLabel}>Patients</Text></View>
-            <View style={styles.statMini}><Text style={styles.statMiniNombre}>{compterParRole('pharmacie')}</Text><Text style={styles.statMiniLabel}>Pharmacies</Text></View>
-            <View style={styles.statMini}><Text style={styles.statMiniNombre}>{compterParRole('hopital')}</Text><Text style={styles.statMiniLabel}>Hopitaux</Text></View>
-            <View style={styles.statMini}><Text style={styles.statMiniNombre}>{compterParRole('fournisseur')}</Text><Text style={styles.statMiniLabel}>Fournisseurs</Text></View>
+            <View style={styles.statMini}><Text style={styles.statMiniNombre}>{compterParRole('patient')}</Text><Text style={styles.statMiniLabel}>{t('admin.patients')}</Text></View>
+            <View style={styles.statMini}><Text style={styles.statMiniNombre}>{compterParRole('pharmacie')}</Text><Text style={styles.statMiniLabel}>{t('admin.pharmacies')}</Text></View>
+            <View style={styles.statMini}><Text style={styles.statMiniNombre}>{compterParRole('hopital')}</Text><Text style={styles.statMiniLabel}>{t('admin.hopitaux')}</Text></View>
+            <View style={styles.statMini}><Text style={styles.statMiniNombre}>{compterParRole('fournisseur')}</Text><Text style={styles.statMiniLabel}>{t('admin.fournisseurs')}</Text></View>
           </View>
           <View style={styles.statCard}>
             <Text style={styles.statNombre}>{commandes.length}</Text>
-            <Text style={styles.statLabel}>Commandes passees</Text>
+            <Text style={styles.statLabel}>{t('admin.commandesPassees')}</Text>
           </View>
           <View style={styles.statCard}>
             <Text style={styles.statNombre}>{marketplaceItems.length}</Text>
-            <Text style={styles.statLabel}>Annonces marketplace</Text>
+            <Text style={styles.statLabel}>{t('admin.annoncesMarketplace')}</Text>
           </View>
         </View>
       )}
@@ -122,7 +124,7 @@ export default function AdminScreen() {
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
           renderItem={({ item }) => (
             <View style={styles.ligneCard}>
-              <Text style={styles.ligneTitre}>{item.nom || 'Sans nom'}</Text>
+              <Text style={styles.ligneTitre}>{item.nom || t('admin.sansNom')}</Text>
               <Text style={styles.ligneDetail}>{item.email}</Text>
               <View style={styles.badgeRole}><Text style={styles.badgeRoleTxt}>{item.role || 'patient'}</Text></View>
               {item.pays && <Text style={styles.ligneDetail}>{item.pays}</Text>}
@@ -139,10 +141,10 @@ export default function AdminScreen() {
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
           renderItem={({ item }) => (
             <View style={styles.ligneCard}>
-              <Text style={styles.ligneTitre}>{item.description || 'Sans description'}</Text>
-              <Text style={styles.ligneDetail}>Client: {item.clientEmail}</Text>
-              <Text style={styles.ligneDetail}>Vendeur: {item.vendeurNom}</Text>
-              <View style={styles.badgeRole}><Text style={styles.badgeRoleTxt}>{item.statut || 'inconnue'}</Text></View>
+              <Text style={styles.ligneTitre}>{item.description || t('admin.sansDescription')}</Text>
+              <Text style={styles.ligneDetail}>{t('admin.client')}: {item.clientEmail}</Text>
+              <Text style={styles.ligneDetail}>{t('admin.vendeur')}: {item.vendeurNom}</Text>
+              <View style={styles.badgeRole}><Text style={styles.badgeRoleTxt}>{item.statut || t('admin.inconnue')}</Text></View>
             </View>
           )}
         />
@@ -156,10 +158,10 @@ export default function AdminScreen() {
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
           renderItem={({ item }) => (
             <View style={styles.ligneCard}>
-              <Text style={styles.ligneTitre}>{item.titre || item.nom || 'Sans titre'}</Text>
+              <Text style={styles.ligneTitre}>{item.titre || item.nom || t('admin.sansTitre')}</Text>
               <Text style={styles.ligneDetail}>{item.categorie}</Text>
               <TouchableOpacity style={styles.btnSupprimer} onPress={() => supprimerAnnonce(item.id)}>
-                <Text style={styles.btnSupprimerTxt}>Supprimer l'annonce</Text>
+                <Text style={styles.btnSupprimerTxt}>{t('admin.supprimerAnnonce')}</Text>
               </TouchableOpacity>
             </View>
           )}

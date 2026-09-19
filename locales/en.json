@@ -206,5 +206,25 @@
     "appeler": "📞 Call",
     "scannerAutreQr": "Scan another QR code",
     "viserQrCode": "Point at the establishment's QR code"
+  },
+  "admin": {
+    "stats": "Stats",
+    "utilisateurs": "Users",
+    "commandes": "Orders",
+    "marketplace": "Marketplace",
+    "utilisateursAuTotal": "Total users",
+    "patients": "Patients",
+    "pharmacies": "Pharmacies",
+    "hopitaux": "Hospitals",
+    "fournisseurs": "Suppliers",
+    "commandesPassees": "Orders placed",
+    "annoncesMarketplace": "Marketplace listings",
+    "sansNom": "No name",
+    "sansDescription": "No description",
+    "client": "Client",
+    "vendeur": "Seller",
+    "inconnue": "unknown",
+    "sansTitre": "No title",
+    "supprimerAnnonce": "Delete listing"
   }
 }

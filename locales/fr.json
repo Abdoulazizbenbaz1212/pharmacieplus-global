@@ -161,5 +161,20 @@
     "exempleVille": "Ex: Bertoua",
     "annuler": "Annuler",
     "ajouter": "Ajouter"
+  },
+  "dashboardFournisseur": {
+    "monEntreprise": "Mon entreprise",
+    "produitsEnCatalogue": "produits en catalogue",
+    "ajouterProduit": "+ Ajouter un produit",
+    "aucunProduit": "Aucun produit dans votre catalogue",
+    "ajouterProduitTitre": "Ajouter un produit",
+    "nomProduit": "Nom du produit",
+    "exempleNomProduit": "Ex: Gants latex (boite de 100)",
+    "prix": "Prix (FCFA)",
+    "exemplePrix": "Ex: 5000",
+    "quantiteDisponible": "Quantite disponible (optionnel)",
+    "exempleQuantite": "Ex: 200",
+    "annuler": "Annuler",
+    "ajouter": "Ajouter"
   }
 }

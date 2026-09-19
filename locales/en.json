@@ -161,5 +161,20 @@
     "exempleVille": "E.g: Bertoua",
     "annuler": "Cancel",
     "ajouter": "Add"
+  },
+  "dashboardFournisseur": {
+    "monEntreprise": "My business",
+    "produitsEnCatalogue": "products in catalog",
+    "ajouterProduit": "+ Add a product",
+    "aucunProduit": "No products in your catalog",
+    "ajouterProduitTitre": "Add a product",
+    "nomProduit": "Product name",
+    "exempleNomProduit": "E.g: Latex gloves (box of 100)",
+    "prix": "Price (FCFA)",
+    "exemplePrix": "E.g: 5000",
+    "quantiteDisponible": "Available quantity (optional)",
+    "exempleQuantite": "E.g: 200",
+    "annuler": "Cancel",
+    "ajouter": "Add"
   }
 }

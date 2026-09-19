@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState, useEffect } from 'react';
 import { alertCompatible } from '../utils/alertCompatible';
 import {
@@ -10,6 +11,7 @@ import {
 import { db, auth } from '../config/firebase';
 
 export default function DashboardFournisseurScreen() {
+  const { t } = useTranslation();
   const [nomFournisseur, setNomFournisseur] = useState('');
   const [mesProduits, setMesProduits] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -115,12 +117,12 @@ export default function DashboardFournisseurScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.headerBar}>
-        <Text style={styles.headerNom}>{nomFournisseur || 'Mon entreprise'}</Text>
-        <Text style={styles.headerCount}>{mesProduits.length} produits en catalogue</Text>
+        <Text style={styles.headerNom}>{nomFournisseur || t('dashboardFournisseur.monEntreprise')}</Text>
+        <Text style={styles.headerCount}>{mesProduits.length} {t('dashboardFournisseur.produitsEnCatalogue')}</Text>
       </View>
 
       <TouchableOpacity style={styles.addBtn} onPress={() => setModalVisible(true)}>
-        <Text style={styles.addBtnText}>+ Ajouter un produit</Text>
+        <Text style={styles.addBtnText}>+ {t('dashboardFournisseur.ajouterProduit')}</Text>
       </TouchableOpacity>
 
       <FlatList
@@ -128,7 +130,7 @@ export default function DashboardFournisseurScreen() {
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ padding: 15 }}
         ListEmptyComponent={
-          <Text style={styles.emptyText}>Aucun produit dans votre catalogue</Text>
+          <Text style={styles.emptyText}>{t('dashboardFournisseur.aucunProduit')}</Text>
         }
         renderItem={({ item }) => (
           <View style={styles.produitCard}>
@@ -156,29 +158,29 @@ export default function DashboardFournisseurScreen() {
       <Modal visible={modalVisible} transparent animationType="slide">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Ajouter un produit</Text>
+            <Text style={styles.modalTitle}>{t('dashboardFournisseur.ajouterProduitTitre')}</Text>
 
-            <Text style={styles.modalLabel}>Nom du produit</Text>
+            <Text style={styles.modalLabel}>{t('dashboardFournisseur.nomProduit')}</Text>
             <TextInput
               style={styles.modalInput}
-              placeholder="Ex: Gants latex (boite de 100)"
+              placeholder={t('dashboardFournisseur.exempleNomProduit')}
               value={nomProduit}
               onChangeText={setNomProduit}
             />
 
-            <Text style={styles.modalLabel}>Prix (FCFA)</Text>
+            <Text style={styles.modalLabel}>{t('dashboardFournisseur.prix')}</Text>
             <TextInput
               style={styles.modalInput}
-              placeholder="Ex: 5000"
+              placeholder={t('dashboardFournisseur.exemplePrix')}
               value={prixProduit}
               onChangeText={setPrixProduit}
               keyboardType="numeric"
             />
 
-            <Text style={styles.modalLabel}>Quantite disponible (optionnel)</Text>
+            <Text style={styles.modalLabel}>{t('dashboardFournisseur.quantiteDisponible')}</Text>
             <TextInput
               style={styles.modalInput}
-              placeholder="Ex: 200"
+              placeholder={t('dashboardFournisseur.exempleQuantite')}
               value={quantiteProduit}
               onChangeText={setQuantiteProduit}
               keyboardType="numeric"
@@ -189,10 +191,10 @@ export default function DashboardFournisseurScreen() {
                 style={styles.modalCancelBtn}
                 onPress={() => setModalVisible(false)}
               >
-                <Text style={styles.modalCancelText}>Annuler</Text>
+                <Text style={styles.modalCancelText}>{t('dashboardFournisseur.annuler')}</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.modalSaveBtn} onPress={ajouterProduit}>
-                <Text style={styles.modalSaveText}>Ajouter</Text>
+                <Text style={styles.modalSaveText}>{t('dashboardFournisseur.ajouter')}</Text>
               </TouchableOpacity>
             </View>
           </View>

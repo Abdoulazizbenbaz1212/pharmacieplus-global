@@ -38,5 +38,33 @@
     "localiserMaps": "Locate on Maps",
     "fermer": "Close",
     "telephone": "Phone"
+  },
+  "profil": {
+    "coffreFort": "Medical safe",
+    "mesDocuments": "📄 My medical documents",
+    "groupeSanguin": "Blood type",
+    "nonRenseigne": "Not provided",
+    "allergies": "Allergies",
+    "aucuneRenseignee": "None provided",
+    "maladiesChroniques": "Chronic conditions",
+    "contactUrgence": "Emergency contact",
+    "modifierInfos": "Edit my information",
+    "exempleAllergies": "E.g: Penicillin, peanuts",
+    "exempleMaladies": "E.g: Type 2 diabetes, hypertension",
+    "nomContactUrgence": "Emergency contact name",
+    "exempleNomContact": "E.g: Mary Smith",
+    "telephoneContactUrgence": "Emergency contact phone",
+    "exempleTelephoneContact": "E.g: +237699887766",
+    "enregistrer": "Save",
+    "changerMotDePasse": "Change password",
+    "seDeconnecter": "Log out",
+    "motDePasseActuel": "Current password",
+    "exempleMotDePasseActuel": "Your current password",
+    "nouveauMotDePasse": "New password",
+    "minCaracteres": "6 characters minimum",
+    "confirmerNouveauMotDePasse": "Confirm new password",
+    "retaperNouveauMotDePasse": "Retype new password",
+    "annuler": "Cancel",
+    "confirmer": "Confirm"
   }
 }

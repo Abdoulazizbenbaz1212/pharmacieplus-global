@@ -6,12 +6,16 @@ import {
 } from 'react-native';
 import { doc, getDoc, setDoc, collection } from 'firebase/firestore';
 import { db, auth } from '../config/firebase';
+import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { signOut, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
 import DocumentsMedicaux from '../components/DocumentsMedicaux';
 
 const GROUPES_SANGUINS = ['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-'];
 
 export default function ProfilScreen() {
+  const { t } = useTranslation();
+  const { t } = useTranslation();
   const [groupeSanguin, setGroupeSanguin] = useState('');
   const [allergies, setAllergies] = useState('');
   const [maladiesChroniques, setMaladiesChroniques] = useState('');
@@ -111,7 +115,7 @@ export default function ProfilScreen() {
   const handleDeconnexion = () => {
     alertCompatible('Deconnexion', 'Voulez-vous vraiment vous deconnecter ?', [
       { text: 'Annuler', style: 'cancel' },
-      { text: 'Se deconnecter', style: 'destructive', onPress: () => signOut(auth) },
+      { text: '{t('profil.seDeconnecter')}', style: 'destructive', onPress: () => signOut(auth) },
     ]);
   };
 
@@ -129,7 +133,7 @@ export default function ProfilScreen() {
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerEmoji}>🗂️</Text>
-        <Text style={styles.headerTitle}>Coffre-fort medical</Text>
+        <Text style={styles.headerTitle}>{t('profil.coffreFort')}</Text>
         <Text style={styles.headerSubtitle}>
           Vos informations vitales, accessibles en cas d'urgence
         </Text>
@@ -137,41 +141,41 @@ export default function ProfilScreen() {
 
       <View style={styles.section}>
         <TouchableOpacity style={styles.documentsBtn} onPress={() => setDocumentsVisible(true)}>
-          <Text style={styles.documentsBtnText}>📄 Mes documents médicaux</Text>
+          <Text style={styles.documentsBtnText}>📄 {t('profil.mesDocuments')}</Text>
         </TouchableOpacity>
       </View>
 
       {!modeEdition ? (
         <View style={styles.viewMode}>
           <View style={styles.infoCard}>
-            <Text style={styles.infoLabel}>Groupe sanguin</Text>
-            <Text style={styles.infoValue}>{groupeSanguin || 'Non renseigne'}</Text>
+            <Text style={styles.infoLabel}>{t('profil.groupeSanguin')}</Text>
+            <Text style={styles.infoValue}>{groupeSanguin || t('profil.nonRenseigne')}</Text>
           </View>
 
           <View style={styles.infoCard}>
-            <Text style={styles.infoLabel}>Allergies</Text>
-            <Text style={styles.infoValue}>{allergies || 'Aucune renseignee'}</Text>
+            <Text style={styles.infoLabel}>{t('profil.allergies')}</Text>
+            <Text style={styles.infoValue}>{allergies || t('profil.aucuneRenseignee')}</Text>
           </View>
 
           <View style={styles.infoCard}>
-            <Text style={styles.infoLabel}>Maladies chroniques</Text>
-            <Text style={styles.infoValue}>{maladiesChroniques || 'Aucune renseignee'}</Text>
+            <Text style={styles.infoLabel}>{t('profil.maladiesChroniques')}</Text>
+            <Text style={styles.infoValue}>{maladiesChroniques || t('profil.aucuneRenseignee')}</Text>
           </View>
 
           <View style={styles.infoCard}>
-            <Text style={styles.infoLabel}>Contact d'urgence</Text>
+            <Text style={styles.infoLabel}>{t('profil.contactUrgence')}</Text>
             <Text style={styles.infoValue}>
-              {contactNom ? `${contactNom} - ${contactTel}` : 'Non renseigne'}
+              {contactNom ? `${contactNom} - ${contactTel}` : t('profil.nonRenseigne')}
             </Text>
           </View>
 
           <TouchableOpacity style={styles.editBtn} onPress={() => setModeEdition(true)}>
-            <Text style={styles.editBtnText}>Modifier mes informations</Text>
+            <Text style={styles.editBtnText}>{t('profil.modifierInfos')}</Text>
           </TouchableOpacity>
         </View>
       ) : (
         <View style={styles.editMode}>
-          <Text style={styles.label}>Groupe sanguin</Text>
+          <Text style={styles.label}>{t('profil.groupeSanguin')}</Text>
           <View style={styles.groupesRow}>
             {GROUPES_SANGUINS.map((g) => (
               <TouchableOpacity
@@ -186,36 +190,36 @@ export default function ProfilScreen() {
             ))}
           </View>
 
-          <Text style={styles.label}>Allergies</Text>
+          <Text style={styles.label}>{t('profil.allergies')}</Text>
           <TextInput
             style={styles.input}
-            placeholder="Ex: Penicilline, arachides"
+            placeholder={t('profil.exempleAllergies')}
             value={allergies}
             onChangeText={setAllergies}
             multiline
           />
 
-          <Text style={styles.label}>Maladies chroniques</Text>
+          <Text style={styles.label}>{t('profil.maladiesChroniques')}</Text>
           <TextInput
             style={styles.input}
-            placeholder="Ex: Diabete type 2, hypertension"
+            placeholder={t('profil.exempleMaladies')}
             value={maladiesChroniques}
             onChangeText={setMaladiesChroniques}
             multiline
           />
 
-          <Text style={styles.label}>Nom du contact d'urgence</Text>
+          <Text style={styles.label}>{t('profil.nomContactUrgence')}</Text>
           <TextInput
             style={styles.input}
-            placeholder="Ex: Marie Mballa"
+            placeholder={t('profil.exempleNomContact')}
             value={contactNom}
             onChangeText={setContactNom}
           />
 
-          <Text style={styles.label}>Telephone du contact d'urgence</Text>
+          <Text style={styles.label}>{t('profil.telephoneContactUrgence')}</Text>
           <TextInput
             style={styles.input}
-            placeholder="Ex: +237699887766"
+            placeholder={t('profil.exempleTelephoneContact')}
             value={contactTel}
             onChangeText={setContactTel}
             keyboardType="phone-pad"
@@ -225,47 +229,47 @@ export default function ProfilScreen() {
             <ActivityIndicator size="large" color="#e74c3c" style={{ marginTop: 20 }} />
           ) : (
             <TouchableOpacity style={styles.saveBtn} onPress={enregistrerProfil}>
-              <Text style={styles.saveBtnText}>Enregistrer</Text>
+              <Text style={styles.saveBtnText}>{t('profil.enregistrer')}</Text>
             </TouchableOpacity>
           )}
         </View>
       )}
 
       <TouchableOpacity style={styles.changerMdpBtn} onPress={() => setModalMotDePasseVisible(true)}>
-        <Text style={styles.changerMdpBtnText}>Changer le mot de passe</Text>
+        <Text style={styles.changerMdpBtnText}>{t('profil.changerMotDePasse')}</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.logoutBtn} onPress={handleDeconnexion}>
-        <Text style={styles.logoutBtnText}>Se deconnecter</Text>
+        <Text style={styles.logoutBtnText}>{t('profil.seDeconnecter')}</Text>
       </TouchableOpacity>
 
       <Modal visible={modalMotDePasseVisible} transparent animationType="slide">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Changer le mot de passe</Text>
+            <Text style={styles.modalTitle}>{t('profil.changerMotDePasse')}</Text>
 
-            <Text style={styles.label}>Mot de passe actuel</Text>
+            <Text style={styles.label}>{t('profil.motDePasseActuel')}</Text>
             <TextInput
               style={styles.input}
-              placeholder="Votre mot de passe actuel"
+              placeholder={t('profil.exempleMotDePasseActuel')}
               value={ancienMotDePasse}
               onChangeText={setAncienMotDePasse}
               secureTextEntry
             />
 
-            <Text style={styles.label}>Nouveau mot de passe</Text>
+            <Text style={styles.label}>{t('profil.nouveauMotDePasse')}</Text>
             <TextInput
               style={styles.input}
-              placeholder="6 caracteres minimum"
+              placeholder={t('profil.minCaracteres')}
               value={nouveauMotDePasse}
               onChangeText={setNouveauMotDePasse}
               secureTextEntry
             />
 
-            <Text style={styles.label}>Confirmer le nouveau mot de passe</Text>
+            <Text style={styles.label}>{t('profil.confirmerNouveauMotDePasse')}</Text>
             <TextInput
               style={styles.input}
-              placeholder="Retapez le nouveau mot de passe"
+              placeholder={t('profil.retaperNouveauMotDePasse')}
               value={confirmationNouveauMdp}
               onChangeText={setConfirmationNouveauMdp}
               secureTextEntry
@@ -276,7 +280,7 @@ export default function ProfilScreen() {
                 style={[styles.changerMdpBtn, { flex: 1, backgroundColor: '#eee' }]}
                 onPress={() => setModalMotDePasseVisible(false)}
               >
-                <Text style={[styles.changerMdpBtnText, { color: '#555' }]}>Annuler</Text>
+                <Text style={[styles.changerMdpBtnText, { color: '#555' }]}>{t('profil.annuler')}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.changerMdpBtn, { flex: 1 }]}
@@ -286,7 +290,7 @@ export default function ProfilScreen() {
                 {changementEnCours ? (
                   <ActivityIndicator color="#fff" />
                 ) : (
-                  <Text style={styles.changerMdpBtnText}>Confirmer</Text>
+                  <Text style={styles.changerMdpBtnText}>{t('profil.confirmer')}</Text>
                 )}
               </TouchableOpacity>
             </View>

@@ -38,5 +38,33 @@
     "localiserMaps": "Localiser sur Maps",
     "fermer": "Fermer",
     "telephone": "Telephone"
+  },
+  "profil": {
+    "coffreFort": "Coffre-fort medical",
+    "mesDocuments": "📄 Mes documents medicaux",
+    "groupeSanguin": "Groupe sanguin",
+    "nonRenseigne": "Non renseigne",
+    "allergies": "Allergies",
+    "aucuneRenseignee": "Aucune renseignee",
+    "maladiesChroniques": "Maladies chroniques",
+    "contactUrgence": "Contact d'urgence",
+    "modifierInfos": "Modifier mes informations",
+    "exempleAllergies": "Ex: Penicilline, arachides",
+    "exempleMaladies": "Ex: Diabete type 2, hypertension",
+    "nomContactUrgence": "Nom du contact d'urgence",
+    "exempleNomContact": "Ex: Marie Mballa",
+    "telephoneContactUrgence": "Telephone du contact d'urgence",
+    "exempleTelephoneContact": "Ex: +237699887766",
+    "enregistrer": "Enregistrer",
+    "changerMotDePasse": "Changer le mot de passe",
+    "seDeconnecter": "Se deconnecter",
+    "motDePasseActuel": "Mot de passe actuel",
+    "exempleMotDePasseActuel": "Votre mot de passe actuel",
+    "nouveauMotDePasse": "Nouveau mot de passe",
+    "minCaracteres": "6 caracteres minimum",
+    "confirmerNouveauMotDePasse": "Confirmer le nouveau mot de passe",
+    "retaperNouveauMotDePasse": "Retapez le nouveau mot de passe",
+    "annuler": "Annuler",
+    "confirmer": "Confirmer"
   }
 }

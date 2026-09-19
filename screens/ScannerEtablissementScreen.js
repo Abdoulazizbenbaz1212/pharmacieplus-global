@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Linking,
@@ -7,6 +8,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../config/firebase';
 
 export default function ScannerEtablissementScreen() {
+  const { t } = useTranslation();
   const [permission, requestPermission] = useCameraPermissions();
   const [scanEnCours, setScanEnCours] = useState(true);
   const [chargement, setChargement] = useState(false);
@@ -52,9 +54,9 @@ export default function ScannerEtablissementScreen() {
   if (!permission.granted) {
     return (
       <View style={styles.center}>
-        <Text style={styles.permText}>Autorise l'acces a la camera pour scanner un QR code.</Text>
+        <Text style={styles.permText}>{t('scanner.autoriserAccesCamera')}</Text>
         <TouchableOpacity style={styles.permBtn} onPress={requestPermission}>
-          <Text style={styles.permBtnText}>Autoriser la camera</Text>
+          <Text style={styles.permBtnText}>{t('scanner.autoriserCamera')}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -64,7 +66,7 @@ export default function ScannerEtablissementScreen() {
     return (
       <View style={styles.center}>
         <ActivityIndicator size="large" color="#e74c3c" />
-        <Text style={{ marginTop: 10, color: '#6b7b82' }}>Recherche de l'etablissement...</Text>
+        <Text style={{ marginTop: 10, color: '#6b7b82' }}>{t('scanner.rechercheEtablissement')}</Text>
       </View>
     );
   }
@@ -74,7 +76,7 @@ export default function ScannerEtablissementScreen() {
       <View style={styles.center}>
         <Text style={styles.erreurText}>{erreur}</Text>
         <TouchableOpacity style={styles.permBtn} onPress={relancerScan}>
-          <Text style={styles.permBtnText}>Scanner a nouveau</Text>
+          <Text style={styles.permBtnText}>{t('scanner.scannerNouveau')}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -92,19 +94,19 @@ export default function ScannerEtablissementScreen() {
         {(mode === 'fiche' || mode === 'rdv') && (
           <>
             <View style={styles.infoCard}>
-              <Text style={styles.infoLabel}>Adresse</Text>
-              <Text style={styles.infoValue}>{etablissement.adresse || 'Non renseignee'}</Text>
+              <Text style={styles.infoLabel}>{t('scanner.adresse')}</Text>
+              <Text style={styles.infoValue}>{etablissement.adresse || t('scanner.nonRenseignee')}</Text>
             </View>
             <View style={styles.infoCard}>
-              <Text style={styles.infoLabel}>Horaires</Text>
-              <Text style={styles.infoValue}>{etablissement.horaires || 'Non renseignes'}</Text>
+              <Text style={styles.infoLabel}>{t('scanner.horaires')}</Text>
+              <Text style={styles.infoValue}>{etablissement.horaires || t('scanner.nonRenseignes')}</Text>
             </View>
           </>
         )}
 
         <View style={styles.infoCard}>
-          <Text style={styles.infoLabel}>Telephone</Text>
-          <Text style={styles.infoValue}>{etablissement.telephone || 'Non renseigne'}</Text>
+          <Text style={styles.infoLabel}>{t('scanner.telephone')}</Text>
+          <Text style={styles.infoValue}>{etablissement.telephone || t('scanner.nonRenseigne')}</Text>
         </View>
 
         {mode === 'rdv' && (
@@ -120,12 +122,12 @@ export default function ScannerEtablissementScreen() {
             style={styles.callBtn}
             onPress={() => Linking.openURL(`tel:${etablissement.telephone}`)}
           >
-            <Text style={styles.callBtnText}>📞 Appeler</Text>
+            <Text style={styles.callBtnText}>📞 {t('scanner.appeler')}</Text>
           </TouchableOpacity>
         ) : null}
 
         <TouchableOpacity style={styles.permBtn} onPress={relancerScan}>
-          <Text style={styles.permBtnText}>Scanner un autre QR code</Text>
+          <Text style={styles.permBtnText}>{t('scanner.scannerAutreQr')}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -140,7 +142,7 @@ export default function ScannerEtablissementScreen() {
       />
       <View style={styles.overlay}>
         <View style={styles.cadre} />
-        <Text style={styles.overlayText}>Vise le QR code de l'etablissement</Text>
+        <Text style={styles.overlayText}>{t('scanner.viserQrCode')}</Text>
       </View>
     </View>
   );

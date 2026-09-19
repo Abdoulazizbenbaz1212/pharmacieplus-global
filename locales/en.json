@@ -191,5 +191,20 @@
     "mesCommandes": "My orders",
     "scannerEtablissement": "Scan an establishment",
     "coffreFortMedical": "Medical safe"
+  },
+  "scanner": {
+    "autoriserAccesCamera": "Allow camera access to scan a QR code.",
+    "autoriserCamera": "Allow camera",
+    "rechercheEtablissement": "Searching for the establishment...",
+    "scannerNouveau": "Scan again",
+    "adresse": "Address",
+    "nonRenseignee": "Not provided",
+    "horaires": "Hours",
+    "nonRenseignes": "Not provided",
+    "telephone": "Phone",
+    "nonRenseigne": "Not provided",
+    "appeler": "📞 Call",
+    "scannerAutreQr": "Scan another QR code",
+    "viserQrCode": "Point at the establishment's QR code"
   }
 }

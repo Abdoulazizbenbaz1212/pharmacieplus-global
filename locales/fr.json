@@ -191,5 +191,20 @@
     "mesCommandes": "Mes commandes",
     "scannerEtablissement": "Scanner un etablissement",
     "coffreFortMedical": "Coffre-fort medical"
+  },
+  "scanner": {
+    "autoriserAccesCamera": "Autorise l'acces a la camera pour scanner un QR code.",
+    "autoriserCamera": "Autoriser la camera",
+    "rechercheEtablissement": "Recherche de l'etablissement...",
+    "scannerNouveau": "Scanner a nouveau",
+    "adresse": "Adresse",
+    "nonRenseignee": "Non renseignee",
+    "horaires": "Horaires",
+    "nonRenseignes": "Non renseignes",
+    "telephone": "Telephone",
+    "nonRenseigne": "Non renseigne",
+    "appeler": "📞 Appeler",
+    "scannerAutreQr": "Scanner un autre QR code",
+    "viserQrCode": "Vise le QR code de l'etablissement"
   }
 }

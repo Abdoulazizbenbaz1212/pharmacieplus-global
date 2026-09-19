@@ -176,5 +176,8 @@
     "exempleQuantite": "E.g: 200",
     "annuler": "Cancel",
     "ajouter": "Add"
+  },
+  "assistant": {
+    "placeholderQuestion": "Ask your health question..."
   }
 }

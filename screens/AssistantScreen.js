@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState, useRef, useEffect } from 'react';
 import {
   View, Text, StyleSheet, TextInput, TouchableOpacity,
@@ -11,6 +12,7 @@ const MESSAGE_BIENVENUE = {
 };
 
 export default function AssistantScreen() {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState([MESSAGE_BIENVENUE]);
   const [texte, setTexte] = useState('');
   const [enChargement, setEnChargement] = useState(false);
@@ -111,7 +113,7 @@ export default function AssistantScreen() {
       <View style={[styles.inputRow, { marginBottom: hauteurClavier }]}>
         <TextInput
           style={styles.input}
-          placeholder="Pose ta question sante..."
+          placeholder={t('assistant.placeholderQuestion')}
           value={texte}
           onChangeText={setTexte}
           multiline

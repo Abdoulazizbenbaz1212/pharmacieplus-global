@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState, useEffect, useCallback } from 'react';
 import { alertCompatible } from '../utils/alertCompatible';
 import {
@@ -20,6 +21,7 @@ function etapeInfo(statut) {
 }
 
 export default function CommandesScreen() {
+  const { t } = useTranslation();
   const [role, setRole] = useState('');
   const [commandes, setCommandes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -151,7 +153,7 @@ export default function CommandesScreen() {
     <View style={styles.container}>
       {role !== 'patient' && (
         <TouchableOpacity style={styles.addBtn} onPress={() => setModalVisible(true)}>
-          <Text style={styles.addBtnText}>+ Nouvelle commande</Text>
+          <Text style={styles.addBtnText}>+ {t('commandes.nouvelleCommande')}</Text>
         </TouchableOpacity>
       )}
 
@@ -159,7 +161,7 @@ export default function CommandesScreen() {
         data={commandes}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ padding: 15 }}
-        ListEmptyComponent={<Text style={styles.emptyText}>Aucune commande pour le moment</Text>}
+        ListEmptyComponent={<Text style={styles.emptyText}>{t('commandes.aucuneCommande')}</Text>}
         renderItem={({ item }) => {
           const etape = etapeInfo(item.statut);
           return (
@@ -192,7 +194,7 @@ export default function CommandesScreen() {
                     if (suivante) changerStatut(item.id, suivante.id);
                   }}
                 >
-                  <Text style={styles.avancerBtnText}>Passer a l'etape suivante</Text>
+                  <Text style={styles.avancerBtnText}>{t('commandes.passerEtapeSuivante')}</Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -203,41 +205,41 @@ export default function CommandesScreen() {
       <Modal visible={modalVisible} transparent animationType="slide">
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContent, { marginBottom: hauteurClavier }]}>
-            <Text style={styles.modalTitle}>Nouvelle commande</Text>
+            <Text style={styles.modalTitle}>{t('commandes.nouvelleCommande')}</Text>
 
-            <Text style={styles.modalLabel}>Email du client</Text>
+            <Text style={styles.modalLabel}>{t('commandes.emailClient')}</Text>
             <TextInput
               style={styles.modalInput}
-              placeholder="client@email.com"
+              placeholder={t('commandes.exempleEmailClient')}
               value={emailClient}
               onChangeText={setEmailClient}
               autoCapitalize="none"
               keyboardType="email-address"
             />
 
-            <Text style={styles.modalLabel}>Telephone du client (optionnel)</Text>
+            <Text style={styles.modalLabel}>{t('commandes.telephoneClientOptionnel')}</Text>
             <TextInput
               style={styles.modalInput}
-              placeholder="Ex: 699887766"
+              placeholder={t('commandes.exempleTelephone')}
               value={telephoneClient}
               onChangeText={setTelephoneClient}
               keyboardType="phone-pad"
             />
 
-            <Text style={styles.modalLabel}>Description</Text>
+            <Text style={styles.modalLabel}>{t('commandes.description')}</Text>
             <TextInput
               style={styles.modalInput}
-              placeholder="Ex: Paracetamol x2, Vitamine C"
+              placeholder={t('commandes.exempleDescription')}
               value={description}
               onChangeText={setDescription}
             />
 
             <View style={styles.modalActions}>
               <TouchableOpacity style={styles.modalCancelBtn} onPress={() => setModalVisible(false)}>
-                <Text style={styles.modalCancelText}>Annuler</Text>
+                <Text style={styles.modalCancelText}>{t('commandes.annuler')}</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.modalSaveBtn} onPress={creerCommande} disabled={creation}>
-                {creation ? <ActivityIndicator color="#fff" /> : <Text style={styles.modalSaveText}>Creer</Text>}
+                {creation ? <ActivityIndicator color="#fff" /> : <Text style={styles.modalSaveText}>{t('commandes.creer')}</Text>}
               </TouchableOpacity>
             </View>
           </View>

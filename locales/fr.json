@@ -66,5 +66,18 @@
     "retaperNouveauMotDePasse": "Retapez le nouveau mot de passe",
     "annuler": "Annuler",
     "confirmer": "Confirmer"
+  },
+  "commandes": {
+    "nouvelleCommande": "+ Nouvelle commande",
+    "aucuneCommande": "Aucune commande pour le moment",
+    "passerEtapeSuivante": "Passer a l'etape suivante",
+    "emailClient": "Email du client",
+    "exempleEmailClient": "client@email.com",
+    "telephoneClientOptionnel": "Telephone du client (optionnel)",
+    "exempleTelephone": "Ex: 699887766",
+    "description": "Description",
+    "exempleDescription": "Ex: Paracetamol x2, Vitamine C",
+    "annuler": "Annuler",
+    "creer": "Creer"
   }
 }

@@ -147,5 +147,19 @@
     "prix": "Prix (FCFA)",
     "exemplePrix": "Ex: 5000",
     "ajouter": "Ajouter"
+  },
+  "dashboardPharmacie": {
+    "maPharmacie": "Ma pharmacie",
+    "produitsEnCatalogue": "produits en catalogue",
+    "ajouterMedicament": "+ Ajouter un medicament",
+    "aucunProduit": "Aucun produit dans votre catalogue",
+    "ajouterMedicamentTitre": "Ajouter un medicament",
+    "choisirMedicament": "Choisir un medicament",
+    "prix": "Prix (FCFA)",
+    "exemplePrix": "Ex: 500",
+    "ville": "Ville",
+    "exempleVille": "Ex: Bertoua",
+    "annuler": "Annuler",
+    "ajouter": "Ajouter"
   }
 }

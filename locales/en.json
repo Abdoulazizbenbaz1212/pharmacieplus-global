@@ -147,5 +147,19 @@
     "prix": "Price (FCFA)",
     "exemplePrix": "E.g: 5000",
     "ajouter": "Add"
+  },
+  "dashboardPharmacie": {
+    "maPharmacie": "My pharmacy",
+    "produitsEnCatalogue": "products in catalog",
+    "ajouterMedicament": "+ Add a medication",
+    "aucunProduit": "No products in your catalog",
+    "ajouterMedicamentTitre": "Add a medication",
+    "choisirMedicament": "Choose a medication",
+    "prix": "Price (FCFA)",
+    "exemplePrix": "E.g: 500",
+    "ville": "City",
+    "exempleVille": "E.g: Bertoua",
+    "annuler": "Cancel",
+    "ajouter": "Add"
   }
 }

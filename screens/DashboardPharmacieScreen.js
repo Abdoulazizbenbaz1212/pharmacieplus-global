@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState, useEffect } from 'react';
 import { alertCompatible } from '../utils/alertCompatible';
 import {
@@ -10,6 +11,7 @@ import {
 import { db, auth } from '../config/firebase';
 
 export default function DashboardPharmacieScreen() {
+  const { t } = useTranslation();
   const [nomPharmacie, setNomPharmacie] = useState('');
   const [mesProduits, setMesProduits] = useState([]);
   const [medicamentsDisponibles, setMedicamentsDisponibles] = useState([]);
@@ -104,12 +106,12 @@ export default function DashboardPharmacieScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.headerBar}>
-        <Text style={styles.headerNom}>{nomPharmacie || 'Ma pharmacie'}</Text>
-        <Text style={styles.headerCount}>{mesProduits.length} produits en catalogue</Text>
+        <Text style={styles.headerNom}>{nomPharmacie || t('dashboardPharmacie.maPharmacie')}</Text>
+        <Text style={styles.headerCount}>{mesProduits.length} {t('dashboardPharmacie.produitsEnCatalogue')}</Text>
       </View>
 
       <TouchableOpacity style={styles.addBtn} onPress={() => setModalVisible(true)}>
-        <Text style={styles.addBtnText}>+ Ajouter un medicament</Text>
+        <Text style={styles.addBtnText}>+ {t('dashboardPharmacie.ajouterMedicament')}</Text>
       </TouchableOpacity>
 
       <FlatList
@@ -117,7 +119,7 @@ export default function DashboardPharmacieScreen() {
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ padding: 15 }}
         ListEmptyComponent={
-          <Text style={styles.emptyText}>Aucun produit dans votre catalogue</Text>
+          <Text style={styles.emptyText}>{t('dashboardPharmacie.aucunProduit')}</Text>
         }
         renderItem={({ item }) => (
           <View style={styles.produitCard}>
@@ -140,9 +142,9 @@ export default function DashboardPharmacieScreen() {
       <Modal visible={modalVisible} transparent animationType="slide">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Ajouter un medicament</Text>
+            <Text style={styles.modalTitle}>{t('dashboardPharmacie.ajouterMedicamentTitre')}</Text>
 
-            <Text style={styles.modalLabel}>Choisir un medicament</Text>
+            <Text style={styles.modalLabel}>{t('dashboardPharmacie.choisirMedicament')}</Text>
             <FlatList
               style={{ maxHeight: 150 }}
               data={medicamentsDisponibles}
@@ -160,19 +162,19 @@ export default function DashboardPharmacieScreen() {
               )}
             />
 
-            <Text style={styles.modalLabel}>Prix (FCFA)</Text>
+            <Text style={styles.modalLabel}>{t('dashboardPharmacie.prix')}</Text>
             <TextInput
               style={styles.modalInput}
-              placeholder="Ex: 500"
+              placeholder={t('dashboardPharmacie.exemplePrix')}
               value={nouveauPrix}
               onChangeText={setNouveauPrix}
               keyboardType="numeric"
             />
 
-            <Text style={styles.modalLabel}>Ville</Text>
+            <Text style={styles.modalLabel}>{t('dashboardPharmacie.ville')}</Text>
             <TextInput
               style={styles.modalInput}
-              placeholder="Ex: Bertoua"
+              placeholder={t('dashboardPharmacie.exempleVille')}
               value={ville}
               onChangeText={setVille}
             />
@@ -182,10 +184,10 @@ export default function DashboardPharmacieScreen() {
                 style={styles.modalCancelBtn}
                 onPress={() => setModalVisible(false)}
               >
-                <Text style={styles.modalCancelText}>Annuler</Text>
+                <Text style={styles.modalCancelText}>{t('dashboardPharmacie.annuler')}</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.modalSaveBtn} onPress={ajouterProduit}>
-                <Text style={styles.modalSaveText}>Ajouter</Text>
+                <Text style={styles.modalSaveText}>{t('dashboardPharmacie.ajouter')}</Text>
               </TouchableOpacity>
             </View>
           </View>

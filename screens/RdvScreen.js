@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState, useEffect } from 'react';
 import { alertCompatible } from '../utils/alertCompatible';
 import {
@@ -22,6 +23,7 @@ function formatHeure(d) {
 }
 
 export default function RdvScreen({ navigation }) {
+  const { t } = useTranslation();
   const [hopitaux, setHopitaux] = useState([]);
   const [hopitalSelectionne, setHopitalSelectionne] = useState(null);
   const [dateObj, setDateObj] = useState(new Date());
@@ -100,9 +102,9 @@ export default function RdvScreen({ navigation }) {
   };
 
   const statutLabel = (statut) => {
-    if (statut === 'confirme') return { text: 'Confirme', color: '#27ae60' };
-    if (statut === 'annule') return { text: 'Annule', color: '#e74c3c' };
-    return { text: 'En attente', color: '#f39c12' };
+    if (statut === 'confirme') return { text: t('rdv.confirme'), color: '#27ae60' };
+    if (statut === 'annule') return { text: t('rdv.annule'), color: '#e74c3c' };
+    return { text: t('rdv.enAttente'), color: '#f39c12' };
   };
 
   if (loading) {
@@ -136,7 +138,7 @@ export default function RdvScreen({ navigation }) {
 
       {vue === 'nouveau' && (
         <ScrollView style={styles.content}>
-          <Text style={styles.label}>1. Choisissez un hopital</Text>
+          <Text style={styles.label}>{t('rdv.choisissezHopital')}</Text>
           {hopitaux.map((h) => (
             <TouchableOpacity
               key={h.id}
@@ -151,7 +153,7 @@ export default function RdvScreen({ navigation }) {
             </TouchableOpacity>
           ))}
 
-          <Text style={styles.label}>2. Date souhaitee</Text>
+          <Text style={styles.label}>{t('rdv.dateSouhaitee')}</Text>
           <TouchableOpacity style={styles.input} onPress={() => setShowDatePicker(true)}>
             <Text style={styles.inputText}>{formatDate(dateObj)}</Text>
           </TouchableOpacity>
@@ -168,7 +170,7 @@ export default function RdvScreen({ navigation }) {
             />
           )}
 
-          <Text style={styles.label}>3. Heure souhaitee</Text>
+          <Text style={styles.label}>{t('rdv.heureSouhaitee')}</Text>
           <TouchableOpacity style={styles.input} onPress={() => setShowTimePicker(true)}>
             <Text style={styles.inputText}>{formatHeure(heureObj)}</Text>
           </TouchableOpacity>
@@ -189,7 +191,7 @@ export default function RdvScreen({ navigation }) {
             <ActivityIndicator size="large" color="#e74c3c" style={{ marginTop: 20 }} />
           ) : (
             <TouchableOpacity style={styles.submitBtn} onPress={prendreRdv}>
-              <Text style={styles.submitBtnText}>Demander le rendez-vous</Text>
+              <Text style={styles.submitBtnText}>{t('rdv.demanderRdv')}</Text>
             </TouchableOpacity>
           )}
         </ScrollView>
@@ -201,7 +203,7 @@ export default function RdvScreen({ navigation }) {
           data={mesRdv}
           keyExtractor={(item) => item.id}
           ListEmptyComponent={
-            <Text style={styles.emptyText}>Vous n'avez pas encore de rendez-vous</Text>
+            <Text style={styles.emptyText}>{t('rdv.aucunRdv')}</Text>
           }
           renderItem={({ item }) => {
             const statut = statutLabel(item.statut);
@@ -215,7 +217,7 @@ export default function RdvScreen({ navigation }) {
                     style={styles.visioBtn}
                     onPress={() => navigation.navigate('Visio', { roomName: 'pharmacieplus_rdv_' + item.id })}
                   >
-                    <Text style={styles.visioBtnText}>🎥 Demarrer la teleconsultation</Text>
+                    <Text style={styles.visioBtnText}>🎥 {t('rdv.demarrerTeleconsultation')}</Text>
                   </TouchableOpacity>
                 )}
               </View>

@@ -237,5 +237,18 @@
     "dosage": "Dosage",
     "contreIndications": "⚠️ Contraindications",
     "comparerPrix": "💰 Compare prices"
+  },
+  "rdv": {
+    "confirme": "Confirmed",
+    "annule": "Cancelled",
+    "enAttente": "Pending",
+    "nouveauRdv": "New",
+    "mesRdv": "My appointments",
+    "choisissezHopital": "1. Choose a hospital",
+    "dateSouhaitee": "2. Preferred date",
+    "heureSouhaitee": "3. Preferred time",
+    "demanderRdv": "Request appointment",
+    "aucunRdv": "You don't have any appointments yet",
+    "demarrerTeleconsultation": "🎥 Start teleconsultation"
   }
 }

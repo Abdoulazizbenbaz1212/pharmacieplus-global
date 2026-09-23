@@ -237,5 +237,18 @@
     "dosage": "Dosage",
     "contreIndications": "⚠️ Contre-indications",
     "comparerPrix": "💰 Comparer les prix"
+  },
+  "rdv": {
+    "confirme": "Confirme",
+    "annule": "Annule",
+    "enAttente": "En attente",
+    "nouveauRdv": "Nouveau",
+    "mesRdv": "Mes rendez-vous",
+    "choisissezHopital": "1. Choisissez un hopital",
+    "dateSouhaitee": "2. Date souhaitee",
+    "heureSouhaitee": "3. Heure souhaitee",
+    "demanderRdv": "Demander le rendez-vous",
+    "aucunRdv": "Vous n'avez pas encore de rendez-vous",
+    "demarrerTeleconsultation": "🎥 Demarrer la teleconsultation"
   }
 }

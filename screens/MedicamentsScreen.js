@@ -138,7 +138,7 @@ export default function MedicamentsScreen() {
             style={styles.retourBtn}
             onPress={() => setMedicamentSelectionne(null)}
           >
-            <Text style={styles.retourBtnText}>{t('medicaments.retourListe')}</Text>
+            <Text style={styles.retourBtnText}>←</Text>
           </TouchableOpacity>
 
           <TouchableOpacity

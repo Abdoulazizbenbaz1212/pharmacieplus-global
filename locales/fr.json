@@ -226,5 +226,16 @@
     "inconnue": "inconnue",
     "sansTitre": "Sans titre",
     "supprimerAnnonce": "Supprimer l'annonce"
+  },
+  "medicaments": {
+    "pharmacie": "Pharmacie",
+    "ville": "Ville",
+    "rechercherPlaceholder": "Nom, symptome (ex: palu, toux, fievre)...",
+    "aucunMedicament": "Aucun medicament trouve pour",
+    "retourListe": "← Retour a la liste",
+    "description": "Description",
+    "dosage": "Dosage",
+    "contreIndications": "⚠️ Contre-indications",
+    "comparerPrix": "💰 Comparer les prix"
   }
 }

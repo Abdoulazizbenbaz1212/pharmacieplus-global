@@ -226,5 +226,16 @@
     "inconnue": "unknown",
     "sansTitre": "No title",
     "supprimerAnnonce": "Delete listing"
+  },
+  "medicaments": {
+    "pharmacie": "Pharmacy",
+    "ville": "City",
+    "rechercherPlaceholder": "Name, symptom (e.g: malaria, cough, fever)...",
+    "aucunMedicament": "No medication found for",
+    "retourListe": "← Back to list",
+    "description": "Description",
+    "dosage": "Dosage",
+    "contreIndications": "⚠️ Contraindications",
+    "comparerPrix": "💰 Compare prices"
   }
 }

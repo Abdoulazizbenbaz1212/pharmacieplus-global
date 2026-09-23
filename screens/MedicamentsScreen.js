@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState, useEffect } from 'react';
 import {
   View, Text, TextInput, StyleSheet,
@@ -31,9 +32,9 @@ function PharmacieCard({ p }) {
       </View>
       {ouvert && (
         <View style={styles.prixCardDetails}>
-          <Text style={styles.detailLabel}>Pharmacie</Text>
+          <Text style={styles.detailLabel}>{t('medicaments.pharmacie')}</Text>
           <Text style={styles.detailValue}>{p.pharmacie_nom}</Text>
-          <Text style={styles.detailLabel}>Ville</Text>
+          <Text style={styles.detailLabel}>{t('medicaments.ville')}</Text>
           <Text style={styles.detailValue}>{p.ville}</Text>
         </View>
       )}
@@ -42,6 +43,7 @@ function PharmacieCard({ p }) {
 }
 
 export default function MedicamentsScreen() {
+  const { t } = useTranslation();
   const [recherche, setRecherche] = useState('');
   const [tousLesMedicaments, setTousLesMedicaments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -103,7 +105,7 @@ export default function MedicamentsScreen() {
       <View style={styles.searchBar}>
         <TextInput
           style={styles.input}
-          placeholder="Nom, symptôme (ex: palu, toux, fièvre)..."
+          placeholder={t('medicaments.rechercherPlaceholder')}
           value={recherche}
           onChangeText={(text) => {
             setRecherche(text);
@@ -119,7 +121,7 @@ export default function MedicamentsScreen() {
           data={resultatsFiltres}
           keyExtractor={(item) => item.id}
           ListEmptyComponent={
-            <Text style={styles.warning}>Aucun médicament trouvé pour "{recherche}"</Text>
+            <Text style={styles.warning}>{t('medicaments.aucunMedicament')} "{recherche}"</Text>
           }
           renderItem={({ item }) => (
             <TouchableOpacity style={styles.listItem} onPress={() => selectionnerMedicament(item)}>
@@ -136,7 +138,7 @@ export default function MedicamentsScreen() {
             style={styles.retourBtn}
             onPress={() => setMedicamentSelectionne(null)}
           >
-            <Text style={styles.retourBtnText}>← Retour à la liste</Text>
+            <Text style={styles.retourBtnText}>{t('medicaments.retourListe')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -154,11 +156,11 @@ export default function MedicamentsScreen() {
 
             {fichedOuverte && (
               <View>
-                <Text style={styles.label}>Description</Text>
+                <Text style={styles.label}>{t('medicaments.description')}</Text>
                 <Text style={styles.value}>{medicamentSelectionne.description}</Text>
-                <Text style={styles.label}>Dosage</Text>
+                <Text style={styles.label}>{t('medicaments.dosage')}</Text>
                 <Text style={styles.value}>{medicamentSelectionne.dosage}</Text>
-                <Text style={styles.label}>⚠️ Contre-indications</Text>
+                <Text style={styles.label}>⚠️ {t('medicaments.contreIndications')}</Text>
                 <Text style={styles.value}>{medicamentSelectionne.contre_indications}</Text>
               </View>
             )}
@@ -168,7 +170,7 @@ export default function MedicamentsScreen() {
 
           {prixListe.length > 0 && (
             <View style={styles.prixSection}>
-              <Text style={styles.prixTitle}>💰 Comparer les prix ({prixListe.length})</Text>
+              <Text style={styles.prixTitle}>💰 {t('medicaments.comparerPrix')} ({prixListe.length})</Text>
               {prixListe.map((p) => (
                 <PharmacieCard key={p.id} p={p} />
               ))}

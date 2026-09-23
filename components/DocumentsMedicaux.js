@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState, useEffect, useCallback } from 'react';
 import { alertCompatible } from '../utils/alertCompatible';
 import {
@@ -25,6 +26,7 @@ function labelType(valeur) {
 }
 
 export default function DocumentsMedicaux({ visible, onClose, collectionRef, titre }) {
+  const { t } = useTranslation();
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalAjout, setModalAjout] = useState(false);
@@ -156,9 +158,9 @@ export default function DocumentsMedicaux({ visible, onClose, collectionRef, tit
 
   async function supprimerDocument(documentId) {
     alertCompatible('Supprimer ce document ?', 'Cette action est définitive.', [
-      { text: 'Annuler', style: 'cancel' },
+      { text: t('documentsMedicaux.annuler'), style: 'cancel' },
       {
-        text: 'Supprimer', style: 'destructive', onPress: async () => {
+        text: t('documentsMedicaux.supprimer'), style: 'destructive', onPress: async () => {
           try {
             await deleteDoc(doc(collectionRef, documentId));
             setDocumentAgrandi(null);
@@ -177,7 +179,7 @@ export default function DocumentsMedicaux({ visible, onClose, collectionRef, tit
         <TouchableOpacity onPress={onClose} style={{ marginRight: 12 }}>
           <Text style={{ fontSize: 20 }}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitre}>{titre || 'Documents médicaux'}</Text>
+        <Text style={styles.headerTitre}>{titre || t('documentsMedicaux.documentsMedicaux')}</Text>
       </View>
 
       {loading ? (
@@ -185,7 +187,7 @@ export default function DocumentsMedicaux({ visible, onClose, collectionRef, tit
       ) : documents.length === 0 ? (
         <View style={styles.center}>
           <Text style={styles.emoji}>📄</Text>
-          <Text style={styles.videTexte}>Aucun document pour l'instant.</Text>
+          <Text style={styles.videTexte}>{t('documentsMedicaux.aucunDocument')}</Text>
         </View>
       ) : (
         <FlatList
@@ -218,14 +220,14 @@ export default function DocumentsMedicaux({ visible, onClose, collectionRef, tit
       )}
 
       <TouchableOpacity style={styles.fab} onPress={() => setModalAjout(true)}>
-        <Text style={styles.fabText}>+ Ajouter</Text>
+        <Text style={styles.fabText}>+ {t('documentsMedicaux.ajouter')}</Text>
       </TouchableOpacity>
 
       <Modal visible={modalAjout} animationType="slide" onRequestClose={() => setModalAjout(false)}>
         <ScrollView style={styles.modalContainer} contentContainerStyle={{ padding: 20 }}>
-          <Text style={styles.modalTitle}>Ajouter un document</Text>
+          <Text style={styles.modalTitle}>{t('documentsMedicaux.ajouterDocument')}</Text>
 
-          <Text style={styles.label}>Type de document</Text>
+          <Text style={styles.label}>{t('documentsMedicaux.typeDocument')}</Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
             {TYPES_DOCUMENTS.map((t) => (
               <TouchableOpacity
@@ -240,42 +242,42 @@ export default function DocumentsMedicaux({ visible, onClose, collectionRef, tit
             ))}
           </View>
 
-          <Text style={styles.label}>Photo du document</Text>
+          <Text style={styles.label}>{t('documentsMedicaux.photoDocument')}</Text>
           {imageBase64 ? (
             <Image source={{ uri: `data:image/jpeg;base64,${imageBase64}` }} style={styles.apercu} />
           ) : (
             <View style={styles.apercuVide}>
-              <Text style={{ color: '#7f8c8d' }}>Aucune photo choisie</Text>
+              <Text style={{ color: '#7f8c8d' }}>{t('documentsMedicaux.aucunePhotoChoisie')}</Text>
             </View>
           )}
 
           {ocrEnCours ? (
             <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
               <ActivityIndicator size="small" color="#e74c3c" />
-              <Text style={{ marginLeft: 8, color: '#7f8c8d', fontSize: 13 }}>Lecture du texte en cours...</Text>
+              <Text style={{ marginLeft: 8, color: '#7f8c8d', fontSize: 13 }}>{t('documentsMedicaux.lectureEnCours')}</Text>
             </View>
           ) : texteExtrait ? (
             <View style={{ backgroundColor: '#f4f7f8', borderRadius: 10, padding: 12, marginTop: 10 }}>
-              <Text style={{ fontSize: 12, fontWeight: '700', color: '#2c3e50', marginBottom: 6 }}>Texte detecte</Text>
+              <Text style={{ fontSize: 12, fontWeight: '700', color: '#2c3e50', marginBottom: 6 }}>{t('documentsMedicaux.texteDetecte')}</Text>
               <Text style={{ fontSize: 13, color: '#34495e' }}>{texteExtrait}</Text>
             </View>
           ) : null}
 
           <View style={{ flexDirection: 'row', gap: 10, marginTop: 10 }}>
             <TouchableOpacity style={styles.choixBtn} onPress={prendrePhoto}>
-              <Text style={styles.choixBtnText}>📷 Prendre une photo</Text>
+              <Text style={styles.choixBtnText}>📷 {t('documentsMedicaux.prendrePhoto')}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.choixBtn} onPress={choisirImage}>
-              <Text style={styles.choixBtnText}>🖼️ Galerie</Text>
+              <Text style={styles.choixBtnText}>🖼️ {t('documentsMedicaux.galerie')}</Text>
             </TouchableOpacity>
           </View>
 
           <TouchableOpacity style={styles.primaryBtn} onPress={ajouterDocument} disabled={enregistrement}>
-            {enregistrement ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryBtnText}>Enregistrer</Text>}
+            {enregistrement ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryBtnText}>{t('documentsMedicaux.enregistrer')}</Text>}
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.cancelBtn} onPress={() => { setModalAjout(false); setImageBase64(null); setImageUri(null); setTexteExtrait(''); }}>
-            <Text style={styles.cancelBtnText}>Annuler</Text>
+            <Text style={styles.cancelBtnText}>{t('documentsMedicaux.annuler')}</Text>
           </TouchableOpacity>
         </ScrollView>
       </Modal>
@@ -293,7 +295,7 @@ export default function DocumentsMedicaux({ visible, onClose, collectionRef, tit
             />
             <Text style={styles.agrandiType}>{labelType(documentAgrandi.type)}</Text>
             <TouchableOpacity style={styles.deleteBtn} onPress={() => supprimerDocument(documentAgrandi.id)}>
-              <Text style={styles.deleteBtnText}>🗑️ Supprimer ce document</Text>
+              <Text style={styles.deleteBtnText}>🗑️ {t('documentsMedicaux.supprimerDocument')}</Text>
             </TouchableOpacity>
           </View>
         )}

@@ -250,5 +250,22 @@
     "demanderRdv": "Demander le rendez-vous",
     "aucunRdv": "Vous n'avez pas encore de rendez-vous",
     "demarrerTeleconsultation": "🎥 Demarrer la teleconsultation"
+  },
+  "documentsMedicaux": {
+    "annuler": "Annuler",
+    "supprimer": "Supprimer",
+    "documentsMedicaux": "Documents medicaux",
+    "aucunDocument": "Aucun document pour l'instant.",
+    "ajouter": "+ Ajouter",
+    "ajouterDocument": "Ajouter un document",
+    "typeDocument": "Type de document",
+    "photoDocument": "Photo du document",
+    "aucunePhotoChoisie": "Aucune photo choisie",
+    "lectureEnCours": "Lecture du texte en cours...",
+    "texteDetecte": "Texte detecte",
+    "prendrePhoto": "📷 Prendre une photo",
+    "galerie": "🖼️ Galerie",
+    "enregistrer": "Enregistrer",
+    "supprimerDocument": "🗑️ Supprimer ce document"
   }
 }

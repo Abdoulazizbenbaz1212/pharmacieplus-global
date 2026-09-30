@@ -1,3 +1,4 @@
+import { traduireTexte } from '../utils/traduireTexte';
 import { useTranslation } from 'react-i18next';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { alertCompatible } from '../utils/alertCompatible';
@@ -15,6 +16,37 @@ import QRCode from 'react-native-qrcode-svg';
 
 const GROUPES_SANGUINS = ['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-'];
 const LIENS_PARENTE = ['Père', 'Mère', 'Enfant', 'Conjoint(e)', 'Grand-parent', 'Autre'];
+
+function BulleMessageFamille({ msg, estMoi }) {
+  const [texteTraduit, setTexteTraduit] = useState(null);
+  const [enCours, setEnCours] = useState(false);
+  const { i18n } = useTranslation();
+
+  const gererTraduction = async () => {
+    if (texteTraduit) {
+      setTexteTraduit(null);
+      return;
+    }
+    setEnCours(true);
+    const resultat = await traduireTexte(msg.texte, i18n.language);
+    setTexteTraduit(resultat);
+    setEnCours(false);
+  };
+
+  return (
+    <View style={[styles.bulleContainer, estMoi ? styles.bulleContainerMoi : styles.bulleContainerAutre]}>
+      {!estMoi && <Text style={styles.bulleAuteur}>{msg.senderNom}</Text>}
+      <View style={[styles.bulle, estMoi ? styles.bulleMoi : styles.bulleAutre]}>
+        <Text style={estMoi ? styles.bulleTexteMoi : styles.bulleTexteAutre}>{texteTraduit || msg.texte}</Text>
+        <TouchableOpacity onPress={gererTraduction} disabled={enCours}>
+          <Text style={{ fontSize: 10, color: estMoi ? '#e0f5f0' : '#0e9594', marginTop: 3 }}>
+            {enCours ? '...' : texteTraduit ? '↩' : '🌐'}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
 
 function genererCode() {
   const caracteres = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -425,17 +457,9 @@ export default function FamilleScreen() {
             data={messages}
             keyExtractor={m => m.id}
             contentContainerStyle={{ padding: 15 }}
-            renderItem={({ item: msg }) => {
-              const estMoi = msg.senderId === user.uid;
-              return (
-                <View style={[styles.bulleContainer, estMoi ? styles.bulleContainerMoi : styles.bulleContainerAutre]}>
-                  {!estMoi && <Text style={styles.bulleAuteur}>{msg.senderNom}</Text>}
-                  <View style={[styles.bulle, estMoi ? styles.bulleMoi : styles.bulleAutre]}>
-                    <Text style={estMoi ? styles.bulleTexteMoi : styles.bulleTexteAutre}>{msg.texte}</Text>
-                  </View>
-                </View>
-              );
-            }}
+            renderItem={({ item: msg }) => (
+              <BulleMessageFamille msg={msg} estMoi={msg.senderId === user.uid} />
+            )}
             onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
           />
 

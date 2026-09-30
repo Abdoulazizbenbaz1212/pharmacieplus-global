@@ -17,6 +17,9 @@ import ChatModal from '../components/ChatModal';
 const CATEGORIES = ['Tous', 'Médicaments', 'Matériel médical', 'Services', 'Autre'];
 const ROLES_VENDEURS = ['hopital', 'pharmacie', 'fournisseur'];
 
+import { traduireTexte } from '../utils/traduireTexte';
+import { useTranslation as useTraduction } from 'react-i18next';
+
 function normaliser(texte) {
   return texte.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
@@ -33,6 +36,21 @@ function roleLabel(role) {
 function AnnonceCard({ item, currentUserId, onDeleted, onOpenChat }) {
   const [ouvert, setOuvert] = useState(false);
   const [suppression, setSuppression] = useState(false);
+  const [descriptionTraduite, setDescriptionTraduite] = useState(null);
+  const [traductionEnCours, setTraductionEnCours] = useState(false);
+  const { i18n: i18nCard } = useTraduction();
+
+  const gererTraduction = async () => {
+    if (descriptionTraduite) {
+      setDescriptionTraduite(null);
+      return;
+    }
+    setTraductionEnCours(true);
+    const texteOriginal = item.description || '';
+    const resultat = await traduireTexte(texteOriginal, i18nCard.language);
+    setDescriptionTraduite(resultat);
+    setTraductionEnCours(false);
+  };
   const estProprietaire = item.vendeurId === currentUserId;
 
   function confirmerSuppression() {
@@ -91,7 +109,14 @@ function AnnonceCard({ item, currentUserId, onDeleted, onOpenChat }) {
               </Text>
             </View>
           )}
-          <Text style={styles.description}>{item.description || t('marketplace.aucuneDescription')}</Text>
+          <Text style={styles.description}>{descriptionTraduite || item.description || t('marketplace.aucuneDescription')}</Text>
+          {item.description && (
+            <TouchableOpacity onPress={gererTraduction} disabled={traductionEnCours}>
+              <Text style={{ color: '#0e9594', fontSize: 12, fontWeight: '600', marginTop: 4 }}>
+                {traductionEnCours ? '...' : descriptionTraduite ? '↩ Voir original' : '🌐 Traduire'}
+              </Text>
+            </TouchableOpacity>
+          )}
 
           {!estProprietaire && (
             <View style={styles.contactRow}>

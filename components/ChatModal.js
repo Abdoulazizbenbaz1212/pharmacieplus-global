@@ -1,3 +1,5 @@
+import { traduireTexte } from '../utils/traduireTexte';
+import { useTranslation } from 'react-i18next';
 import React, { useState, useEffect, useRef } from 'react';
 import { alertCompatible } from '../utils/alertCompatible';
 import {
@@ -9,6 +11,34 @@ import {
   serverTimestamp, onSnapshot, setDoc,
 } from 'firebase/firestore';
 import { db, auth } from '../config/firebase';
+
+function BulleMessage({ msg, estMoi }) {
+  const [texteTraduit, setTexteTraduit] = useState(null);
+  const [enCours, setEnCours] = useState(false);
+  const { i18n } = useTranslation();
+
+  const gererTraduction = async () => {
+    if (texteTraduit) {
+      setTexteTraduit(null);
+      return;
+    }
+    setEnCours(true);
+    const resultat = await traduireTexte(msg.texte, i18n.language);
+    setTexteTraduit(resultat);
+    setEnCours(false);
+  };
+
+  return (
+    <View style={[styles.bulle, estMoi ? styles.bulleMoi : styles.bulleAutre]}>
+      <Text style={estMoi ? styles.bulleTexteMoi : styles.bulleTexteAutre}>{texteTraduit || msg.texte}</Text>
+      <TouchableOpacity onPress={gererTraduction} disabled={enCours}>
+        <Text style={{ fontSize: 10, color: estMoi ? '#e0f5f0' : '#0e9594', marginTop: 3 }}>
+          {enCours ? '...' : texteTraduit ? '↩' : '🌐'}
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
 
 export default function ChatModal({
   visible, onClose, conversationId, titre, autreNom, monNom,
@@ -117,14 +147,9 @@ export default function ChatModal({
           data={messages}
           keyExtractor={m => m.id}
           contentContainerStyle={{ padding: 15 }}
-          renderItem={({ item: msg }) => {
-            const estMoi = msg.senderId === user.uid;
-            return (
-              <View style={[styles.bulle, estMoi ? styles.bulleMoi : styles.bulleAutre]}>
-                <Text style={estMoi ? styles.bulleTexteMoi : styles.bulleTexteAutre}>{msg.texte}</Text>
-              </View>
-            );
-          }}
+          renderItem={({ item: msg }) => (
+            <BulleMessage msg={msg} estMoi={msg.senderId === user.uid} />
+          )}
           onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
         />
 

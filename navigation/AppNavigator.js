@@ -30,6 +30,7 @@ import DashboardHopitalScreen from '../screens/DashboardHopitalScreen';
 import DashboardPharmacieScreen from '../screens/DashboardPharmacieScreen';
 import DashboardFournisseurScreen from '../screens/DashboardFournisseurScreen';
 import AdminScreen from '../screens/AdminScreen';
+import LangueScreen from '../screens/LangueScreen';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -285,6 +286,11 @@ export default function AppNavigator() {
             name="Scanner"
             component={ScannerEtablissementScreen}
             options={{ headerShown: true, title: 'Scanner un etablissement' }}
+          />
+          <Stack.Screen
+            name="Langue"
+            component={LangueScreen}
+            options={{ headerShown: true, title: 'Choisir la langue' }}
           />
           <Stack.Screen
             name="Assistant"

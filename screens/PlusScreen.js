@@ -9,6 +9,7 @@ const OPTIONS = [
   { nom: 'Commandes', cle: 'plus.mesCommandes', emoji: '📦' },
   { nom: 'Scanner', cle: 'plus.scannerEtablissement', emoji: '📷' },
   { nom: 'Profil', cle: 'plus.coffreFortMedical', emoji: '🗂️' },
+  { nom: 'Langue', cle: 'plus.langue', emoji: '🌐' },
 ];
 
 export default function PlusScreen({ navigation }) {

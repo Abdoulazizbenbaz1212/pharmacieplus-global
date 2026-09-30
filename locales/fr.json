@@ -190,7 +190,8 @@
     "rendezVous": "Rendez-vous",
     "mesCommandes": "Mes commandes",
     "scannerEtablissement": "Scanner un etablissement",
-    "coffreFortMedical": "Coffre-fort medical"
+    "coffreFortMedical": "Coffre-fort medical",
+    "langue": "Langue"
   },
   "scanner": {
     "autoriserAccesCamera": "Autorise l'acces a la camera pour scanner un QR code.",

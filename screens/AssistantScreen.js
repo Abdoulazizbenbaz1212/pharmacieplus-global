@@ -12,6 +12,7 @@ const MESSAGE_BIENVENUE = {
 };
 
 export default function AssistantScreen() {
+  const { i18n } = useTranslation();
   const { t } = useTranslation();
   const [messages, setMessages] = useState([MESSAGE_BIENVENUE]);
   const [texte, setTexte] = useState('');
@@ -58,7 +59,7 @@ export default function AssistantScreen() {
           messages: [
             {
               role: 'system',
-              content: "Tu es un assistant sante bienveillant pour l'application Pharmacie+ Global, utilisee au Cameroun et ailleurs. Tu donnes des informations generales et educatives sur la sante (symptomes, premiers gestes, prevention). Tu ne poses jamais de diagnostic definitif et tu rappelles systematiquement, quand c'est pertinent, de consulter un professionnel de sante en cas de doute ou d'urgence. Reponds toujours en francais, de maniere simple et rassurante, en quelques phrases courtes.",
+              content: `Tu es un assistant sante bienveillant pour l'application Pharmacie+ Global, utilisee au Cameroun et ailleurs. Tu donnes des informations generales et educatives sur la sante (symptomes, premiers gestes, prevention). Tu ne poses jamais de diagnostic definitif et tu rappelles systematiquement, quand c'est pertinent, de consulter un professionnel de sante en cas de doute ou d'urgence. Reponds TOUJOURS dans la langue de code "${i18n.language}", de maniere simple et rassurante, en quelques phrases courtes.`,
             },
             ...historique.map((m) => ({ role: m.role, content: m.content })),
           ],

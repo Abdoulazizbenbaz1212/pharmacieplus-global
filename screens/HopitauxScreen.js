@@ -3,8 +3,8 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, Linking, ActivityIn
 import { useTranslation } from 'react-i18next';
 import { WebView } from 'react-native-webview';
 import * as Location from 'expo-location';
-import { collection, getDocs, query, where } from 'firebase/firestore';
-import { db } from '../config/firebase';
+import { collection, getDocs, query, where, doc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { db, auth } from '../config/firebase';
 
 function calculerDistance(lat1, lng1, lat2, lng2) {
   const R = 6371;
@@ -15,6 +15,33 @@ function calculerDistance(lat1, lng1, lat2, lng2) {
     Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
     Math.sin(dLng / 2) * Math.sin(dLng / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const noterEtablissement = async (uidEtablissement, note) => {
+    const utilisateur = auth.currentUser;
+    if (!utilisateur) return;
+    setNoteEnCours(true);
+    try {
+      const refAvis = doc(db, 'profils_etablissements', uidEtablissement, 'avis', utilisateur.uid);
+      await setDoc(refAvis, { note, creeLe: serverTimestamp() });
+
+      const avisSnap = await getDocs(collection(db, 'profils_etablissements', uidEtablissement, 'avis'));
+      let total = 0;
+      let compte = 0;
+      avisSnap.forEach((d) => { total += d.data().note; compte++; });
+      const moyenne = compte > 0 ? total / compte : 0;
+
+      await updateDoc(doc(db, 'profils_etablissements', uidEtablissement), {
+        noteMoyenne: moyenne,
+        nombreAvis: compte,
+      });
+
+      setEtablissementSelectionne((prev) => prev ? { ...prev, noteMoyenne: moyenne, nombreAvis: compte } : prev);
+    } catch (error) {
+      console.log('Erreur notation:', error);
+    } finally {
+      setNoteEnCours(false);
+    }
+  };
+
   return (R * c).toFixed(1);
 }
 
@@ -106,6 +133,7 @@ async function chercherEtablissementsFirestore(latitude, longitude, rayonKm = 10
       if (distance <= rayonKm) {
         resultats.push({
           id: 'app_' + docSnap.id,
+          uidEtablissement: docSnap.id,
           nom: data.nom || 'Etablissement',
           type: data.role === 'pharmacie' ? 'pharmacy' : data.role === 'hopital' ? 'hospital' : 'clinic',
           telephone: data.telephone || null,
@@ -113,6 +141,8 @@ async function chercherEtablissementsFirestore(latitude, longitude, rayonKm = 10
           lat: data.latitude,
           lng: data.longitude,
           source: 'app',
+          noteMoyenne: data.noteMoyenne || 0,
+          nombreAvis: data.nombreAvis || 0,
         });
       }
     });
@@ -211,6 +241,7 @@ export default function HopitauxScreen() {
   const [recherche, setRecherche] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
   const [etablissementSelectionne, setEtablissementSelectionne] = useState(null);
+  const [noteEnCours, setNoteEnCours] = useState(false);
 
   const lancerRecherche = useCallback(async (coords) => {
     setRecherche(true);
@@ -368,6 +399,32 @@ export default function HopitauxScreen() {
                 })()}
                 {etablissementSelectionne.telephone && (
                   <Text style={styles.modalDetail}>{t('hopitaux.telephone')} : {etablissementSelectionne.telephone}</Text>
+                )}
+
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10, gap: 4 }}>
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <Text key={n} style={{ fontSize: 16, color: n <= Math.round(etablissementSelectionne.noteMoyenne || 0) ? '#f39c12' : '#ddd' }}>★</Text>
+                  ))}
+                  <Text style={{ fontSize: 12, color: '#7f8c8d', marginLeft: 4 }}>
+                    {etablissementSelectionne.noteMoyenne ? etablissementSelectionne.noteMoyenne.toFixed(1) : '—'} ({etablissementSelectionne.nombreAvis || 0})
+                  </Text>
+                </View>
+
+                {etablissementSelectionne.uidEtablissement && (
+                  <View style={{ marginTop: 8 }}>
+                    <Text style={{ fontSize: 12, color: '#7f8c8d', marginBottom: 4 }}>Donner une note :</Text>
+                    <View style={{ flexDirection: 'row', gap: 6 }}>
+                      {[1, 2, 3, 4, 5].map((n) => (
+                        <TouchableOpacity
+                          key={n}
+                          disabled={noteEnCours}
+                          onPress={() => noterEtablissement(etablissementSelectionne.uidEtablissement, n)}
+                        >
+                          <Text style={{ fontSize: 24, color: '#f39c12' }}>{n <= Math.round(etablissementSelectionne.noteMoyenne || 0) ? '★' : '☆'}</Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  </View>
                 )}
 
                 <View style={{ flexDirection: 'row', gap: 10, marginTop: 20 }}>
